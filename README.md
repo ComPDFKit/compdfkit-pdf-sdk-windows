@@ -60,4 +60,4 @@ The ComPDFKit PDF SDK.Viewer is a utility class that provides the functionality 
 
 ## 1.3 License
 
-ComPDFKit PDF SDK is a commercial SDK, which requires a license to grant developer permission to release their apps. Each license is only valid for one device ID in development mode. Other flexible licensing options are also supported, please contact [our marketing team](mailto:support@compdf.com) to know more. However, any documents, sample code,or source code distribution from the released package of ComPDFKit PDF SDK to any third party is prohibited.
+ComPDFKit PDF SDK is a commercial SDK, which requires a license to grant developer permission to release their apps. Each license is only valid for one device ID in development mode. Other flexible licensing options are also supported, please contact [our marketing team](mailto:support@compdf.com) to know more. However, any documents, sample code, or source code distribution from the released package of ComPDFKit PDF SDK to any third party is prohibited.
