@@ -6,7 +6,11 @@ ComPDFKit PDF SDK for Windows is a powerful PDF library that ships with an easy-
 
 ## 1.1 ComPDFKit PDF SDK
 
-ComPDFKit PDF SDK consists of two elements.
+ComPDFKit PDF SDK consists of two elements as shown in the following picture.
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/ComPDFKit.png)
+
+The two elements for ComPDFKit:
 
 - **PDF Core API**
 
