@@ -79,3 +79,20 @@ Please make sure that the .NET Desktop Development and .NET Framework 4.6.1+ dev
 - Windows 7,8,10, and 11 (32-bit, 64-bit)  .
 - Visual Studio 2017 or higher.
 - .NET Framework 4.6.1 or higher.
+
+## 2.2 Windows Package Structure
+
+The package of ComPDFKit PDF SDK for Windows includes the following files as shown in Figure 2-1:
+
+- **lib** - Include the ComPDFKit dynamic library (x86, x64).
+- **ComPDFKit.Demo** - A folder containing Windows sample projects.
+- **api_reference_windows** - API reference.
+- **developer_guide_windows.pdf** - Developer guide.
+- **release_notes.txt** - Release information.
+- **legal.txt** - Legal and copyright information.
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220218141621062.png)
+
+<p align="center">
+Figure 2-1
+</p>
