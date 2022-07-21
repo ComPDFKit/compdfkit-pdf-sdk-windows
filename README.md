@@ -96,3 +96,7 @@ The package of ComPDFKit PDF SDK for Windows includes the following files as sho
 <p align="center">
 Figure 2-1
 </p>
+
+## 2.3 How to Run a Demo
+
+ComPDFKit PDF SDK for Windows provides one demo in C# for developers to learn how to call the SDK on Windows. You can find them in the ***"ComPDFKit.Demo"*** folder. In this guide, it takes the "C#" demo as an example to show how to run it in Visual Studio 2017.
