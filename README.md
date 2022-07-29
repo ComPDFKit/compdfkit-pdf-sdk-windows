@@ -106,3 +106,5 @@ ComPDFKit PDF SDK for Windows provides one demo in C# for developers to learn ho
 2. Click on ***"Start"*** to run the demo on a Windows device. In this guide, a Windows10 device will be used as an example. After building the demo successfully, click the ***"Open"*** button,and select a PDF Document, then it will be opened and displayed.
 
 ![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220218101311614.png)
+
+**Note:** *This is a demo project, presenting completed ComPDFKit PDF SDKfunctions. The functions might be different based on the license you have purchased. Please check that the functions you choose work fine in this demo project.*
