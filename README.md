@@ -111,4 +111,9 @@ ComPDFKit PDF SDK for Windows provides one demo in C# for developers to learn ho
 
 ## 2.4 How to Make a Windows Program in C# with ComPDFKit PDF SDK
 
-This section will help you to quickly get started with ComPDFKit PDF SDK to make a Windows project in C# with step-by-step instructions.
+This section will help you to quickly get started with ComPDFKit PDF SDK to make a Windows project in C# with step-by-step instructions, which include the following steps:
+
+1. Create a new Windows project in C#.
+2. Integrate ComPDFKit into your project.
+3. Apply the license key.
+4. Display a PDF document.
