@@ -117,3 +117,7 @@ This section will help you to quickly get started with ComPDFKit PDF SDK to make
 2. Integrate ComPDFKit into your project.
 3. Apply the license key.
 4. Display a PDF document.
+
+### 2.4.1 Create a New Windows Project in C#
+
+In this guide, we use Visual Studio 2017 to create a new Windows project.
