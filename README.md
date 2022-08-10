@@ -121,3 +121,11 @@ This section will help you to quickly get started with ComPDFKit PDF SDK to make
 ### 2.4.1 Create a New Windows Project in C#
 
 In this guide, we use Visual Studio 2017 to create a new Windows project.
+
+Fire up Visual Studio 2017, choose **File** -> **New** -> **Project...**, and then select **Visual C#**->**Windows Desktop** -> **WPF App(.NET Framework)** as shown in Figure 2-2.
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117173740405.png)
+
+<p align="center">
+Figure 2-2
+</p>
