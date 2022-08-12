@@ -129,3 +129,13 @@ Fire up Visual Studio 2017, choose **File** -> **New** -> **Project...**, and th
 <p align="center">
 Figure 2-2
 </p>
+
+Choose the options for your new project as shown in Figure 2-3. Please make sure to choose .NET Framework 4.6.1 as the programming framework.
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117173900713.png)
+
+<p align="center">
+Figure 2-3
+</p>
+
+Place the project to the location as desired. Then, click **OK**.
