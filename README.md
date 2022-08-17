@@ -139,3 +139,5 @@ Figure 2-3
 </p>
 
 Place the project to the location as desired. Then, click **OK**.
+
+### 2.4.2 Integrate ComPDFKit PDF SDK into your projects
