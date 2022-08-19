@@ -141,3 +141,5 @@ Figure 2-3
 Place the project to the location as desired. Then, click **OK**.
 
 ### 2.4.2 Integrate ComPDFKit PDF SDK into your projects
+
+1. Copy the ***"ComPDFKit.Desk.dll"*** and ***"ComPDFKit.Viewer.dll"*** DLL files and ***"x64"*** or ***"x86"*** folder depending on your build configurations in the ***"lib"*** folder to the project ***"PdfViewer"*** folder.
