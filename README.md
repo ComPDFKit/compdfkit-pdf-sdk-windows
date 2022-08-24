@@ -145,3 +145,7 @@ Place the project to the location as desired. Then, click **OK**.
 1. Copy the ***"ComPDFKit.Desk.dll"*** and ***"ComPDFKit.Viewer.dll"*** DLL files and ***"x64"*** or ***"x86"*** folder depending on your build configurations in the ***"lib"*** folder to the project ***"PdfViewer"*** folder.
 
 2. Add ComPDFKit PDF SDK dynamic library to **References**. In order to use ComPDFKit PDF SDK APIs in the project, you must first add a reference to it.
+
+In Solution Explorer, right-click the ***"PdfViewer"*** project and click **Add -> Reference…**
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117181014260.png)
