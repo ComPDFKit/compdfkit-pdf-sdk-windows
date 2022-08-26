@@ -149,3 +149,7 @@ Place the project to the location as desired. Then, click **OK**.
 In Solution Explorer, right-click the ***"PdfViewer"*** project and click **Add -> Reference…**
 
 ![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117181014260.png)
+
+In the Add Reference dialog, click Browse tab, navigate to the ***"PdfViewer"*** folder, select ***"ComPDFKit.Desk.dll"*** and ***"ComPDFKit.Viewer.dll"*** dynamic library, and then click **OK**.
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220207135940239.png)
