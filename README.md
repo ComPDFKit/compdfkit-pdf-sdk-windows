@@ -157,3 +157,5 @@ Place the project to the location as desired. Then, click **OK**.
 3. Add ***"ComPDFKit.dll"*** to the project. Include the ***"x64"*** or ***"x86"*** folder into the project. Please make sure to set the property ***"Copy to Output Directory"*** of ***"ComPDFKit.dll"*** to ***"Copy if newer"***. Otherwise, you should copy it to the same folder with the executable file manually before running the project.
 
 ![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220207140432182.png)
+
+### 2.4.3 Apply the License Key
