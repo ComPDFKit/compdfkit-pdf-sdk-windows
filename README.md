@@ -159,3 +159,24 @@ Place the project to the location as desired. Then, click **OK**.
 ![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220207140432182.png)
 
 ### 2.4.3 Apply the License Key
+
+It is important that you set the license key before using any ComPDFKit PDF SDK classes.
+
+```
+bool LicenseVerify()
+{
+    bool result = CPDFSDKVerifier.LoadNativeLibrary();
+    if (!result)
+        return false;
+
+    string devKey = "***";
+    string devSecret = "***";
+    string userKey = "***";
+    string userSecret = "***";
+    CPDFSDKVerifier.LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify(devKey, devSecret, userKey, userSecret);
+    if (verifyResult != CPDFSDKVerifier.LicenseErrorCode.LICENSE_ERR_SUCCESS)
+        return false;
+
+    return true;
+}
+```
