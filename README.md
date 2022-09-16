@@ -188,3 +188,19 @@ So far, we have added ***"ComPDFKit.Desk.dll"***, ***"ComPDFKit.Viewer.dll"*** a
 Then, add the following code to MainWindow.xaml and MainWindow.xaml.cs to display a PDF document. It’s really easy to present a PDF on screen. All you need is to create a `CPDFDocument` object and then show it with a `CPDFViewer` object.
 
  MainWindow.xaml
+
+```
+<Window x:Class="PdfViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PdfViewer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Loaded="Window_Loaded">
+    <Grid x:Name="PDFGrid">
+
+    </Grid>
+</Window>
+```
