@@ -204,3 +204,5 @@ Then, add the following code to MainWindow.xaml and MainWindow.xaml.cs to displa
     </Grid>
 </Window>
 ```
+
+MainWindow.xaml.cs
