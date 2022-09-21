@@ -206,3 +206,33 @@ Then, add the following code to MainWindow.xaml and MainWindow.xaml.cs to displa
 ```
 
 MainWindow.xaml.cs
+
+```
+using System.Windows;
+using ComPDFKit.PDFDocument;
+using ComPDFKitViewer.PdfViewer;
+
+namespace PdfViewer
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            string pdfPath = "";
+            CPDFViewer pdfViewer = new CPDFViewer();
+            pdfViewer.InitDocument(pdfPath);
+
+            if (pdfViewer.Document != null && pdfViewer.Document.ErrorType == CPDFDocumentError.CPDFDocumentErrorSuccess)
+            {
+                pdfViewer.Load();
+                PDFGrid.Children.Add(pdfViewer);
+            }
+        }
+    }
+}
+```
