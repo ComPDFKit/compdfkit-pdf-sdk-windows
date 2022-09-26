@@ -221,4 +221,18 @@ namespace PdfViewer
             InitializeComponent();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            string pdfPath = "";
+            CPDFViewer pdfViewer = new CPDFViewer();
+            pdfViewer.InitDocument(pdfPath);
+
+            if (pdfViewer.Document != null && pdfViewer.Document.ErrorType == CPDFDocumentError.CPDFDocumentErrorSuccess)
+            {
+                pdfViewer.Load();
+                PDFGrid.Children.Add(pdfViewer);
+            }
+        }
+    }
+}
 ```
