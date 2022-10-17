@@ -162,7 +162,7 @@ Place the project to the location as desired. Then, click **OK**.
 
 It is important that you set the license key before using any ComPDFKit PDF SDK classes.
 
-```C#
+```
 bool LicenseVerify()
 {
     bool result = CPDFSDKVerifier.LoadNativeLibrary();
