@@ -185,4 +185,4 @@ bool LicenseVerify()
 
 So far, we have added ***"ComPDFKit.Desk.dll"***, ***"ComPDFKit.Viewer.dll"*** and ***"ComPDFKit.dll"*** to the ***"PdfViewer"*** project, and finished the initialization of the ComPDFKit. Now, let’s start building a simple PDF viewer with just a few lines of code.
 
-Then, add the following code to MainWindow.xaml and MainWindow.xaml.cs to display a PDF document.
+Then, add the following code to MainWindow.xaml and MainWindow.xaml.cs to display a PDF document. It’s really easy to present a PDF on screen.
