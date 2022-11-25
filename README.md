@@ -189,7 +189,7 @@ Then, add the following code to MainWindow.xaml and MainWindow.xaml.cs to displa
 
 MainWindow.xaml
 
-```
+```C#
 <Window x:Class="PdfViewer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
