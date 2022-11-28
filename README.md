@@ -206,3 +206,9 @@ MainWindow.xaml
 ```
 
 MainWindow.xaml.cs
+
+```
+using System.Windows;
+using ComPDFKit.PDFDocument;
+using ComPDFKitViewer.PdfViewer;
+```
