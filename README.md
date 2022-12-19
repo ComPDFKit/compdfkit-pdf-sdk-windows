@@ -236,3 +236,5 @@ namespace PdfViewer
     }
 }
 ```
+
+# 3 Support
