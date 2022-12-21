@@ -238,3 +238,5 @@ namespace PdfViewer
 ```
 
 # 3 Support
+
+## 3.1 Reporting Problems
