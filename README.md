@@ -241,4 +241,4 @@ namespace PdfViewer
 
 ## 3.1 Reporting Problems
 
-Thank you for your interest in ComPDFKit PDF SDK, the only easy-to-use but powerful development solution to integrate high quality PDF rendering capabilities to your applications.
+Thank you for your interest in ComPDFKit PDF SDK, the only easy-to-use but powerful development solution to integrate high quality PDF rendering capabilities to your applications. If you encounter any technical questions or bug issues when using ComPDFKit PDF SDK for Windows, please submit the problem report to the ComPDFKit team. 
