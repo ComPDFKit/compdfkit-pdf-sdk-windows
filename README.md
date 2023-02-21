@@ -248,7 +248,7 @@ Thank you for your interest in ComPDFKit PDF SDK, the only easy-to-use but power
 - Detailed descriptions of the problem.
 - Any other related information, such as an error screenshot.
 
-## 4.2 Contact Information
+## 3.2 Contact Information
 
 **Home Link:**
 
