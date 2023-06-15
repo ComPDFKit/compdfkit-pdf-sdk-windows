@@ -8,7 +8,7 @@ ComPDFKit PDF SDK for Windows is a powerful PDF library that ships with an easy-
 
 ComPDFKit PDF SDK consists of two elements as shown in the following picture.
 
-![Alt text]([https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/ComPDFKit.png](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/ComPDFKit.png))
+![Image text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/ComPDFKit.png)
 
 The two elements for ComPDFKit:
 
@@ -91,7 +91,7 @@ The package of ComPDFKit PDF SDK for Windows includes the following files as sho
 - **release_notes.txt** - Release information.
 - **legal.txt** - Legal and copyright information.
 
-![Alt text]([https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220218141621062.png](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220218141621062.png))
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220218141621062.png)
 
 <p align="center">
 Figure 2-1
@@ -105,7 +105,9 @@ ComPDFKit PDF SDK for Windows provides one demo in C# for developers to learn ho
 
 2. Click on ***"Start"*** to run the demo on a Windows device. In this guide, a Windows10 device will be used as an example. After building the demo successfully, click the ***"Open"*** button,and select a PDF Document, then it will be opened and displayed.
 
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220218101311614.png)
+
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220218101311614.png)
+
 
 **Note:** *This is a demo project, presenting completed ComPDFKit PDF SDKfunctions. The functions might be different based on the license you have purchased. Please check that the functions you choose work fine in this demo project.*
 
@@ -123,8 +125,7 @@ This section will help you to quickly get started with ComPDFKit PDF SDK to make
 In this guide, we use Visual Studio 2017 to create a new Windows project.
 
 Fire up Visual Studio 2017, choose **File** -> **New** -> **Project...**, and then select **Visual C#**->**Windows Desktop** -> **WPF App(.NET Framework)** as shown in Figure 2-2.
-
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117173740405.png)
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220117173740405.png)
 
 <p align="center">
 Figure 2-2
@@ -132,7 +133,7 @@ Figure 2-2
 
 Choose the options for your new project as shown in Figure 2-3. Please make sure to choose .NET Framework 4.6.1 as the programming framework.
 
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117173900713.png)
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220117173900713.png)
 
 <p align="center">
 Figure 2-3
@@ -148,15 +149,15 @@ Place the project to the location as desired. Then, click **OK**.
 
 - In Solution Explorer, right-click the ***"PdfViewer"*** project and click **Add -> Reference…**
 
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220117181014260.png)
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220117181014260.png)
 
 - In the Add Reference dialog, click Browse tab, navigate to the ***"PdfViewer"*** folder, select ***"ComPDFKit.Desk.dll"*** and ***"ComPDFKit.Viewer.dll"*** dynamic library, and then click **OK**.
 
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220207135940239.png)
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220207135940239.png)
 
 3. Add ***"ComPDFKit.dll"*** to the project. Include the ***"x64"*** or ***"x86"*** folder into the project. Please make sure to set the property ***"Copy to Output Directory"*** of ***"ComPDFKit.dll"*** to ***"Copy if newer"***. Otherwise, you should copy it to the same folder with the executable file manually before running the project.
 
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220207140432182.png)
+![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220207140432182.png)
 
 ### 2.4.3 Apply the License Key
 
