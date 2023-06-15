@@ -91,7 +91,7 @@ The package of ComPDFKit PDF SDK for Windows includes the following files as sho
 - **release_notes.txt** - Release information.
 - **legal.txt** - Legal and copyright information.
 
-![Alt text](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220218141621062.png)
+![Alt text]([https://github.com/ComPDFKit/PDF-SDK-Windows/blob/main/images-windows/image-20220218141621062.png](https://github.com/ComPDFKit/PDF-SDK-Windows/blob/Tutorials-Blog/images-windows/image-20220218141621062.png))
 
 <p align="center">
 Figure 2-1
