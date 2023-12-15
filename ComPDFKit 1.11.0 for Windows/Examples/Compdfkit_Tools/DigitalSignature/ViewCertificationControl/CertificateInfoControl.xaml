@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.CertificateInfoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="750">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Asset/Styles/TabControlStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../Asset/Styles/TabItemStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <common:SigResourceConverter x:Key="SigResourceConverter"></common:SigResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <TabControl Style="{StaticResource LineTabControlStyle}"                
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
+                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
+            <TabItem Header="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_Summary}" Style="{StaticResource LineTabItemStyle}">
+                <Grid>
+                    <local:SummaryControl x:Name="SummaryControl" Height="160" VerticalAlignment="Top"></local:SummaryControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_Details}"  Style="{StaticResource LineTabItemStyle}">
+                <Grid>
+                    <local:CertificateDetailControl x:Name="CertificateDetailControl" Height="450" VerticalAlignment="Top"></local:CertificateDetailControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Title_Trust}"  Style="{StaticResource LineTabItemStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="150"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <local:ConfidenceControl x:Name="ConfidenceControl"></local:ConfidenceControl>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

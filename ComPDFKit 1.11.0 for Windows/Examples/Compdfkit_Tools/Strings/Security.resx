@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Title_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Text_OperationType" xml:space="preserve">
+    <value>Operation Types</value>
+  </data>
+  <data name="Rdo_RemovePassword" xml:space="preserve">
+    <value>Remove Passwords</value>
+  </data>
+  <data name="Rdo_AddPassword" xml:space="preserve">
+    <value>Add Passwords</value>
+  </data>
+  <data name="Title_Watermark" xml:space="preserve">
+    <value>Watermark</value>
+  </data>
+  <data name="Rdo_RemoveWatermark" xml:space="preserve">
+    <value>Remove Watermarks</value>
+  </data>
+  <data name="Rdo_AddWatermarks" xml:space="preserve">
+    <value>Add Watermarks</value>
+  </data>
+  <data name="Text_SecuritySettings" xml:space="preserve">
+    <value>Security Settings</value>
+  </data>
+  <data name="Text_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Holder_EnterPassword" xml:space="preserve">
+    <value>Please enter your password</value>
+  </data>
+  <data name="Text_Support" xml:space="preserve">
+    <value>Support: Numbers, letters, @, $, !, %, ?, &amp;</value>
+  </data>
+  <data name="Warn_Empty" xml:space="preserve">
+    <value>The password can`t be empty.</value>
+  </data>
+  <data name="Text_Permisions" xml:space="preserve">
+    <value>Permissions</value>
+  </data>
+  <data name="Holder_OwnerPassword" xml:space="preserve">
+    <value>Please enter the owner`s password</value>
+  </data>
+  <data name="Warn_SamePassword" xml:space="preserve">
+    <value>The password to open the document should be different from the owner`s password.</value>
+  </data>
+  <data name="Warn_EmptyPassword" xml:space="preserve">
+    <value>The password can`t be empty.</value>
+  </data>
+  <data name="Text_EmptyPassword" xml:space="preserve">
+    <value>Permission Settings</value>
+  </data>
+  <data name="Chk_NoPrint" xml:space="preserve">
+    <value>Restrict document printing</value>
+  </data>
+  <data name="Text_EncryptionLevel" xml:space="preserve">
+    <value>Encryption Level</value>
+  </data>
+  <data name="Text_Algorithm" xml:space="preserve">
+    <value>Algorithm</value>
+  </data>
+  <data name="Option_128RC4" xml:space="preserve">
+    <value>128-bit RC4</value>
+  </data>
+  <data name="Option_128AES" xml:space="preserve">
+    <value>128-bit AES</value>
+  </data>
+  <data name="Option_256AES" xml:space="preserve">
+    <value>256-bit AES</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Button_Encrypt" xml:space="preserve">
+    <value>Encrypt</value>
+  </data>
+  <data name="Chk_OwnerPassword" xml:space="preserve">
+    <value>Set the owner password for this document</value>
+  </data>
+  <data name="Warn_InvaildPassword" xml:space="preserve">
+    <value>Invalid Password</value>
+  </data>
+  <data name="Button_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Text_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="ToolTip_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="ToolTip_Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Rdo_TextWatermark" xml:space="preserve">
+    <value>Text Watermark</value>
+  </data>
+  <data name="Holder_TextWatermark" xml:space="preserve">
+    <value>Type your watermark text here.</value>
+  </data>
+  <data name="Rdo_ImageWatermark" xml:space="preserve">
+    <value>Image Watermark</value>
+  </data>
+  <data name="Button_ImageWatermark" xml:space="preserve">
+    <value>Click and Select your watermark image.</value>
+  </data>
+  <data name="Text_Ratio" xml:space="preserve">
+    <value>Ratio</value>
+  </data>
+  <data name="Text_Rotation" xml:space="preserve">
+    <value>Rotation</value>
+  </data>
+  <data name="Text_Opacity" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+  <data name="Text_Layout" xml:space="preserve">
+    <value>Layout Options</value>
+  </data>
+  <data name="Rdo_Front" xml:space="preserve">
+    <value>In front of the text</value>
+  </data>
+  <data name="Rdo_Behind" xml:space="preserve">
+    <value>Behind the text</value>
+  </data>
+  <data name="Text_PageRange" xml:space="preserve">
+    <value>Page Range</value>
+  </data>
+  <data name="Text_CurrentPage" xml:space="preserve">
+    <value>Current Page</value>
+  </data>
+  <data name="Option_AllPages" xml:space="preserve">
+    <value>All Pages</value>
+  </data>
+  <data name="Chk_Tile" xml:space="preserve">
+    <value>Tile</value>
+  </data>
+  <data name="Button_Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Title_RemoveWatermark" xml:space="preserve">
+    <value>Remove Watermarks</value>
+  </data>
+  <data name="Button_AddFiles" xml:space="preserve">
+    <value>Add Files</value>
+  </data>
+  <data name="Button_RemoveAll" xml:space="preserve">
+    <value>Remove All Files</value>
+  </data>
+  <data name="Button_RemoveSelected" xml:space="preserve">
+    <value>Remove Selected Files</value>
+  </data>
+  <data name="Text_FileCount" xml:space="preserve">
+    <value>File(s) in Total: </value>
+  </data>
+  <data name="Table_FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Table_PageRange" xml:space="preserve">
+    <value>Page Range</value>
+  </data>
+  <data name="Table_Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="Chk_NoCopy" xml:space="preserve">
+    <value>Restrict content copying</value>
+  </data>
+  <data name="Rdo_AllPages" xml:space="preserve">
+    <value>All pages in range</value>
+  </data>
+  <data name="Rdo_CustomPages" xml:space="preserve">
+    <value>Custom pages </value>
+  </data>
+  <data name="Rdo_EvenPages" xml:space="preserve">
+    <value>Even pages only</value>
+  </data>
+  <data name="Rdo_OddPages" xml:space="preserve">
+    <value>Odd pages only </value>
+  </data>
+  <data name="Table_FileSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Text_FontColor" xml:space="preserve">
+    <value>Font Color</value>
+  </data>
+  <data name="Title_WatermarkSettings" xml:space="preserve">
+    <value>Watermark Settings</value>
+  </data>
+  <data name="Tip_EasyUse" xml:space="preserve">
+    <value>PDF Password Remover is an easy-to-use PDF security remover,which helps users decrypt PDF protections and remove restrictions on printing,editing and copying.</value>
+  </data>
+  <data name="Tip_Require" xml:space="preserve">
+    <value>If open password is required,you need to enter the right password first and then remove protections from PDF files.</value>
+  </data>
+  <data name="Title_OpenPassword" xml:space="preserve">
+    <value>Open the Document</value>
+  </data>
+  <data name="Chk_OpenPassword" xml:space="preserve">
+    <value>Set the password to open the document</value>
+  </data>
+  <data name="Title_OwnerPassword" xml:space="preserve">
+    <value>Permissions Settings</value>
+  </data>
+  <data name="Title_Security" xml:space="preserve">
+    <value>Security Settings</value>
+  </data>
+  <data name="Title_AddWatermark" xml:space="preserve">
+    <value>Add Watermarks</value>
+  </data>
+  <data name="Title_OperationType" xml:space="preserve">
+    <value>Operation Type</value>
+  </data>
+  <data name="Title_RemoveSecurity" xml:space="preserve">
+    <value>Remove Security</value>
+  </data>
+  <data name="Warn_EmptyWatermarkImage" xml:space="preserve">
+    <value>No File Selected.</value>
+  </data>
+  <data name="Warn_EmptyWatermarkText" xml:space="preserve">
+    <value>No Text input.</value>
+  </data>
+  <data name="Text_EmptyPath" xml:space="preserve">
+    <value>No File Selected</value>
+  </data>
+  <data name="FileName_Watermark" xml:space="preserve">
+    <value>Watermark</value>
+  </data>
+  <data name="FileName_RemoveWatermark" xml:space="preserve">
+    <value>Watermark_Removed</value>
+  </data>
+  <data name="Button_Decrypt" xml:space="preserve">
+    <value>Decrypt</value>
+  </data>
+</root>

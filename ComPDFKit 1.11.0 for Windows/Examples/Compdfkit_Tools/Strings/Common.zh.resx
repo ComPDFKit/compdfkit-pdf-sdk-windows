@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Button_Create" xml:space="preserve">
+    <value>新建</value>
+  </data>
+  <data name="Button_OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Button_Open" xml:space="preserve">
+    <value>打开文档</value>
+  </data>
+  <data name="Button_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="FileMenu_Open" xml:space="preserve">
+    <value>打开文档</value>
+  </data>
+  <data name="FileMenu_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="FileMenu_SaveAs" xml:space="preserve">
+    <value>另存为</value>
+  </data>
+  <data name="FuncDetail_Annotations" xml:space="preserve">
+    <value>使用便签、链接、文本、线、矩形、箭头、圆、高亮、下划线、波浪线、删除线、图章、手绘、签名、录音等在PDF上添加注释和标记。支持创建、删除、编辑、导入、导出以及展平PDF注释。</value>
+  </data>
+  <data name="FuncDetail_Compress" xml:space="preserve">
+    <value>通过压缩来优化您的PDF文件，减小PDF文档大小，且无视觉质量损失。</value>
+  </data>
+  <data name="FuncDetail_ContentEditor" xml:space="preserve">
+    <value>使用ComPDFKit内容编辑器编辑PDF文本和图片。您可以自由调整大小、位置、样式、字体等。</value>
+  </data>
+  <data name="FuncDetail_Conversion" xml:space="preserve">
+    <value>将PDF转换为PDF/A。ComPDFKit还支持PDF文件与Word、Excel、PPT、PNG、JPG、HTML、TXT、CSV、RTF等格式的相互转换。</value>
+  </data>
+  <data name="FuncDetail_DocCompare" xml:space="preserve">
+    <value>允许通过内容对比和覆盖对比，对PDF文件和设计图纸进行比较。支持设置文件预览色进行对比、选择展示差异的方式等。</value>
+  </data>
+  <data name="FuncDetail_DocEditor" xml:space="preserve">
+    <value>处理PDF页面和文件。添加、插入、替换、提取、倒序、移动、复制、粘贴、旋转、删除、裁剪、缩放等。</value>
+  </data>
+  <data name="FuncDetail_Forms" xml:space="preserve">
+    <value>使用文本域、复选框、单选按钮、列表框、下拉菜单、按钮和签名等多种PDF表单域创建表单。支持创建、删除、编辑、填写、展平，导入或导出表单。</value>
+  </data>
+  <data name="FuncDetail_Measurement" xml:space="preserve">
+    <value>创建和编辑距离、周长、面积、角度、直径、半径和体积测量注释。且支持改变测量注释的比例和精度。</value>
+  </data>
+  <data name="FuncDetail_Redaction" xml:space="preserve">
+    <value>使用密文标记功能删除敏感图像、文本和矢量图形等信息，一旦应用无法恢复被标记的数据。通过选择区域或搜索特定文本进行标记，支持编辑标记的样式。</value>
+  </data>
+  <data name="FuncDetail_Security" xml:space="preserve">
+    <value>支持AES-128、AES-256或RC4加密保护您的文档F。允许加密、解密、和自定义权限、页眉和页脚、背景、贝茨码等。</value>
+  </data>
+  <data name="FuncDetail_Signatures" xml:space="preserve">
+    <value>用数字签名或电子签名签署PDF文件。可以选择绘制类、图片类，或输入签名的方式轻松签署文件。或使用您的数字ID安全地进行文档签署。</value>
+  </data>
+  <data name="FuncDetail_Viewer" xml:space="preserve">
+    <value>使用各种显示模式、PDF导航、主题、滚动、缩放、搜索、文本重排、分屏视图等工具查看PDF。</value>
+  </data>
+  <data name="FuncDetail_Watermark" xml:space="preserve">
+    <value>创建、插入和删除文字或图像水印，品牌化公司文件阻止未经授权的使用。</value>
+  </data>
+  <data name="Func_Annotations" xml:space="preserve">
+    <value>注释</value>
+  </data>
+  <data name="Func_Compress" xml:space="preserve">
+    <value>压缩</value>
+  </data>
+  <data name="Func_ContentEditor" xml:space="preserve">
+    <value>内容编辑器</value>
+  </data>
+  <data name="Func_Conversion" xml:space="preserve">
+    <value>转档</value>
+  </data>
+  <data name="Func_DocCompare" xml:space="preserve">
+    <value>文档对比</value>
+  </data>
+  <data name="Func_DocEditor" xml:space="preserve">
+    <value>文档编辑器</value>
+  </data>
+  <data name="Func_Forms" xml:space="preserve">
+    <value>表单</value>
+  </data>
+  <data name="Func_Measurement" xml:space="preserve">
+    <value>测量</value>
+  </data>
+  <data name="Func_Redaction" xml:space="preserve">
+    <value>密文标记</value>
+  </data>
+  <data name="Func_Security" xml:space="preserve">
+    <value>安全</value>
+  </data>
+  <data name="Func_Signatures" xml:space="preserve">
+    <value>签名</value>
+  </data>
+  <data name="Func_Viewer" xml:space="preserve">
+    <value>查看器</value>
+  </data>
+  <data name="Func_Watermark" xml:space="preserve">
+    <value>水印</value>
+  </data>
+  <data name="HelpMenu_About" xml:space="preserve">
+    <value>关于 ComPDFKit</value>
+  </data>
+  <data name="HelpMenu_Contact" xml:space="preserve">
+    <value>联系销售</value>
+  </data>
+  <data name="HelpMenu_DeviceID" xml:space="preserve">
+    <value>查看您的开发者设备 ID</value>
+  </data>
+  <data name="HelpMenu_Privacy" xml:space="preserve">
+    <value>隐私协议</value>
+  </data>
+  <data name="HelpMenu_Service" xml:space="preserve">
+    <value>服务条款</value>
+  </data>
+  <data name="HelpMenu_Support" xml:space="preserve">
+    <value>技术支持</value>
+  </data>
+  <data name="Menu_AutoSize" xml:space="preserve">
+    <value>自适应大小</value>
+  </data>
+  <data name="Menu_Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Menu_Cut" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="Menu_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Menu_DoubleContinuous" xml:space="preserve">
+    <value>双页连续</value>
+  </data>
+  <data name="Menu_DoublePage" xml:space="preserve">
+    <value>双页</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>帮助</value>
+  </data>
+  <data name="Menu_Highlight" xml:space="preserve">
+    <value>亮高</value>
+  </data>
+  <data name="Menu_Play" xml:space="preserve">
+    <value>播放</value>
+  </data>
+  <data name="Menu_RealSize" xml:space="preserve">
+    <value>实际大小</value>
+  </data>
+  <data name="Menu_Sign" xml:space="preserve">
+    <value>签名</value>
+  </data>
+  <data name="Menu_SingleContinuous" xml:space="preserve">
+    <value>单页连续</value>
+  </data>
+  <data name="Menu_SinglePage" xml:space="preserve">
+    <value>单页</value>
+  </data>
+  <data name="Menu_Squiggly" xml:space="preserve">
+    <value>波浪线</value>
+  </data>
+  <data name="Menu_Strikeout" xml:space="preserve">
+    <value>删除线</value>
+  </data>
+  <data name="Menu_Underline" xml:space="preserve">
+    <value>下划线</value>
+  </data>
+  <data name="Menu_ZoomIn" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="Menu_ZoomOut" xml:space="preserve">
+    <value>缩小</value>
+  </data>
+  <data name="Option_A3" xml:space="preserve">
+    <value>A3(297mm x 420mm)</value>
+  </data>
+  <data name="Option_A4" xml:space="preserve">
+    <value>A4(210mm x 297mm)</value>
+  </data>
+  <data name="Option_A5" xml:space="preserve">
+    <value>A5(148mm x 210mm)</value>
+  </data>
+  <data name="Option_Landscape" xml:space="preserve">
+    <value>横向</value>
+  </data>
+  <data name="Option_Portrait" xml:space="preserve">
+    <value>纵向</value>
+  </data>
+  <data name="Subtitle_Orientation" xml:space="preserve">
+    <value>页面方向</value>
+  </data>
+  <data name="Subtitle_PageSize" xml:space="preserve">
+    <value>页面大小</value>
+  </data>
+  <data name="Text_Page" xml:space="preserve">
+    <value>页码 </value>
+  </data>
+  <data name="Tip_Encrypted" xml:space="preserve">
+    <value>文件已加密！</value>
+  </data>
+  <data name="Tip_Password" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="Tip_WrongPassword" xml:space="preserve">
+    <value>密码错误</value>
+  </data>
+  <data name="Title_NewFile" xml:space="preserve">
+    <value>新建</value>
+  </data>
+  <data name="Title_Password" xml:space="preserve">
+    <value>请输入密码</value>
+  </data>
+  <data name="Title_QuickStart" xml:space="preserve">
+    <value>点击打开 &amp; 处理文档</value>
+  </data>
+  <data name="Tooltip_Open" xml:space="preserve">
+    <value>打开文件</value>
+  </data>
+  <data name="Tooltip_Redo" xml:space="preserve">
+    <value>重做</value>
+  </data>
+  <data name="Tooltip_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Tooltip_Undo" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="Zoom_FitPage" xml:space="preserve">
+    <value>适合页面</value>
+  </data>
+  <data name="Zoom_FitWidth" xml:space="preserve">
+    <value>适合宽度</value>
+  </data>
+  <data name="Zoom_Real" xml:space="preserve">
+    <value>实际大小</value>
+  </data>
+  <data name="Tooltip_Panel" xml:space="preserve">
+    <value>侧边栏</value>
+  </data>
+  <data name="Tooltip_ZoomIn" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="Tooltip_ZoomOut" xml:space="preserve">
+    <value>缩小</value>
+  </data>
+  <data name="Tooltip_Next" xml:space="preserve">
+    <value>下一页</value>
+  </data>
+  <data name="Tooltip_Previous" xml:space="preserve">
+    <value>上一页</value>
+  </data>
+  <data name="Tooltip_Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Tooltip_Display" xml:space="preserve">
+    <value>页面显示</value>
+  </data>
+  <data name="Tooltip_DocInfo" xml:space="preserve">
+    <value>文档信息</value>
+  </data>
+  <data name="Title_Display" xml:space="preserve">
+    <value>预览设置</value>
+  </data>
+  <data name="Title_DisplayMode" xml:space="preserve">
+    <value>显示模式</value>
+  </data>
+  <data name="Tooltip_SinglePage" xml:space="preserve">
+    <value>单页</value>
+  </data>
+  <data name="Tooltip_DoublePage" xml:space="preserve">
+    <value>双页</value>
+  </data>
+  <data name="Tooltip_CoverMode" xml:space="preserve">
+    <value>书本模式</value>
+  </data>
+  <data name="Toggle_Continuous" xml:space="preserve">
+    <value>连续滚动</value>
+  </data>
+  <data name="Toggle_Crop" xml:space="preserve">
+    <value>裁剪模式</value>
+  </data>
+  <data name="Title_SplitView" xml:space="preserve">
+    <value>分屏视图</value>
+  </data>
+  <data name="Tooltip_Vertical" xml:space="preserve">
+    <value>垂直</value>
+  </data>
+  <data name="Tooltip_Horizontal" xml:space="preserve">
+    <value>水平</value>
+  </data>
+  <data name="Title_Themes" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Tooltip_Light" xml:space="preserve">
+    <value>日间模式</value>
+  </data>
+  <data name="Tooltip_Dark" xml:space="preserve">
+    <value>夜间模式</value>
+  </data>
+  <data name="Tooltip_Sepia" xml:space="preserve">
+    <value>柔和模式</value>
+  </data>
+  <data name="Tooltip_Reseda" xml:space="preserve">
+    <value>护眼模式</value>
+  </data>
+  <data name="temp" xml:space="preserve">
+    <value>护眼模式</value>
+  </data>
+  <data name="Tooltip_Prop" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="Menu_Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="Menu_Reset" xml:space="preserve">
+    <value>重置表单</value>
+  </data>
+  <data name="Menu_MatchPaste" xml:space="preserve">
+    <value>带样式粘贴</value>
+  </data>
+  <data name="Menu_RotateLeft" xml:space="preserve">
+    <value>左旋转</value>
+  </data>
+  <data name="Menu_RotateRight" xml:space="preserve">
+    <value>右旋转</value>
+  </data>
+  <data name="Title_Preview" xml:space="preserve">
+    <value>预览</value>
+  </data>
+  <data name="Text_Tile" xml:space="preserve">
+    <value>平铺</value>
+  </data>
+  <data name="Option_AllPage" xml:space="preserve">
+    <value>全部页面</value>
+  </data>
+  <data name="Property_Progress" xml:space="preserve">
+    <value>进度</value>
+  </data>
+  <data name="Chk_Tile" xml:space="preserve">
+    <value>平铺</value>
+  </data>
+  <data name="Option_CustomPages" xml:space="preserve">
+    <value>自定义页面</value>
+  </data>
+  <data name="Option_EvenPages" xml:space="preserve">
+    <value>仅偶数页</value>
+  </data>
+  <data name="Option_OddPages" xml:space="preserve">
+    <value>仅奇数页</value>
+  </data>
+  <data name="Caption_Warning" xml:space="preserve">
+    <value>注意</value>
+  </data>
+  <data name="Warn_Delete" xml:space="preserve">
+    <value>确定删除该内容？</value>
+  </data>
+  <data name="Title_Features" xml:space="preserve">
+    <value>功能</value>
+  </data>
+  <data name="Warn_NotSave" xml:space="preserve">
+    <value>已修改，是否保存更改？</value>
+  </data>
+  <data name="Tip_Permission" xml:space="preserve">
+    <value>具有权限限制</value>
+  </data>
+  <data name="Text_ImageCorrupted" xml:space="preserve">
+    <value>图像加载失败，请检查图片是否损坏。</value>
+  </data>
+  <data name="Menu_Replace" xml:space="preserve">
+    <value>替换</value>
+  </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Menu_Opacity" xml:space="preserve">
+    <value>不透明度</value>
+  </data>
+  <data name="Menu_HFlip" xml:space="preserve">
+    <value>水平翻转</value>
+  </data>
+  <data name="Menu_VFlip" xml:space="preserve">
+    <value>垂直翻转</value>
+  </data>
+  <data name="Menu_Crop" xml:space="preserve">
+    <value>裁剪</value>
+  </data>
+</root>

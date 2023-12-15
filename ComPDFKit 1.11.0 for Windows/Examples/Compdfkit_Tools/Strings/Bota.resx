@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Title_Thumb" xml:space="preserve">
+        <value>Thumbnails</value>
+    </data>
+    <data name="Title_Outlines" xml:space="preserve">
+        <value>Outlines</value>
+    </data>
+    <data name="Text_NoOutline" xml:space="preserve">
+        <value>No Outlines</value>
+    </data>
+    <data name="Title_Bookmarks" xml:space="preserve">
+        <value>Bookmarks</value>
+    </data>
+    <data name="Text_NoBookmarks" xml:space="preserve">
+        <value>No Bookmarks</value>
+    </data>
+    <data name="Tooltip_AddBookmarks" xml:space="preserve">
+        <value>Add Bookmarks</value>
+    </data>
+    <data name="Holder_BookmarkTitle" xml:space="preserve">
+        <value>Bookmark Title</value>
+    </data>
+    <data name="Button_Create" xml:space="preserve">
+        <value>Create</value>
+    </data>
+    <data name="Tooltip_Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="Tooltip_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Tooltip_Search" xml:space="preserve">
+        <value>Search</value>
+    </data>
+    <data name="Holder_Search" xml:space="preserve">
+        <value>Search</value>
+    </data>
+    <data name="Button_Done" xml:space="preserve">
+        <value>Done</value>
+    </data>
+    <data name="Text_NoResult" xml:space="preserve">
+        <value>No Results</value>
+    </data>
+    <data name="Text_Result" xml:space="preserve">
+        <value>Results: </value>
+    </data>
+    <data name="Title_Sig" xml:space="preserve">
+        <value>Signature List</value>
+    </data>
+    <data name="Menu_SigDetail" xml:space="preserve">
+        <value>Signature Details</value>
+    </data>
+    <data name="Menu_CertDetail" xml:space="preserve">
+        <value>Certification Details</value>
+    </data>
+    <data name="Warn_Warning" xml:space="preserve">
+        <value>Warning</value>
+    </data>
+    <data name="Text_SureDelete" xml:space="preserve">
+        <value>Are you sure to delete it?</value>
+    </data>
+    <data name="Button_OK" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="Tooltip_Annot" xml:space="preserve">
+        <value>View Annotations</value>
+    </data>
+    <data name="Title_Annot" xml:space="preserve">
+        <value>Annotations</value>
+    </data>
+    <data name="Tooltip_Import" xml:space="preserve">
+        <value>Import Annotations</value>
+    </data>
+    <data name="Tooltip_Export" xml:space="preserve">
+        <value>Export Annotations</value>
+    </data>
+    <data name="Text_NoAnnotations" xml:space="preserve">
+        <value>No Annotations</value>
+    </data>
+    <data name="Text_Page" xml:space="preserve">
+        <value>Page</value>
+    </data>
+    <data name="Tooltip_Thumb" xml:space="preserve">
+        <value>View Thumbnails</value>
+    </data>
+    <data name="Menu_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Menu_DeleteAll" xml:space="preserve">
+        <value>Delete All</value>
+    </data>
+    <data name="Tooltip_Outlines" xml:space="preserve">
+        <value>View Outlines</value>
+    </data>
+    <data name="Tooltip_Bookmarks" xml:space="preserve">
+        <value>View Bookmarks</value>
+    </data>
+    <data name="Tooltip_Sig" xml:space="preserve">
+        <value>View Signatures</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Tip_Result" xml:space="preserve">
+        <value>result found</value>
+    </data>
+</root>

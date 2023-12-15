@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.SaveCertificateControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d"
+             Height="310" Width="550">
+    <UserControl.Resources>
+        <common:TextLengthToVisibilityConverter x:Key="TextLengthToVisibilityConverter"></common:TextLengthToVisibilityConverter>
+        <common:SigResourceConverter x:Key="SigResourceConverter"></common:SigResourceConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#000000" Margin="10,20,10,20" Height="40"
+                   Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Title_SaveSig}">
+        </TextBlock>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,0,8">
+            <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Save}" Foreground="#43474D" FontSize="14" VerticalAlignment="Center" Margin="10,0,10,0" HorizontalAlignment="Left" Width="148" FontFamily="Microsoft YaHei"></TextBlock>
+            <Grid>
+                <TextBox Width="258" Height="28"  x:Name="FileNameText" VerticalContentAlignment="Center" VerticalAlignment="Center" IsReadOnly="True" Text="{Binding FilePath, Mode =TwoWay}"/>
+                <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_SelectFile}" Margin="8" VerticalAlignment="Center"   Visibility="{Binding ElementName=FileNameText, Path=Text, Converter={StaticResource TextLengthToVisibilityConverter}}" IsHitTestVisible="False"  Foreground="#BBB"></TextBlock>
+            </Grid>
+            <Button x:Name="SelectFileBtn" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Browse}" Width="90" Height="28" FontSize="14" FontFamily="Microsoft YaHei" Margin="8,0,0,0" Click="SelectFileBtn_Click"></Button>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal"  Margin="10,0,0,8">
+            <TextBlock Foreground="#43474D" Width="148" FontSize="14" FontFamily="Microsoft YaHei" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_SetPassword}" VerticalAlignment="Top" Margin="10,5,10,0"></TextBlock>
+            <Grid>
+                <PasswordBox Name="SetPasswordPbx" Padding="5,0,0,0" Width="258" Height="28" VerticalContentAlignment="Center" VerticalAlignment="Center" PasswordChanged="SetPasswordPbx_OnPasswordChanged"></PasswordBox>
+                <TextBlock x:Name="PasswordTextBlock" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_SetPassword}" Margin="8" VerticalAlignment="Center" IsHitTestVisible="False" Foreground="#BBB"></TextBlock>
+            </Grid>
+
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal"  Margin="10,0,0,8">
+            <TextBlock Width="148" Foreground="#43474D" FontSize="14" FontFamily="Microsoft YaHei" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Confirm}" VerticalAlignment="Top" Margin="10,5,10,0"></TextBlock>
+            <Grid>
+                <PasswordBox Name="ConfirmPasswordPbx" Padding="5,0,0,0" Width="258" Height="28"  VerticalContentAlignment="Center" VerticalAlignment="Center" PasswordChanged="ConfirmPasswordPbx_OnPasswordChanged"></PasswordBox>
+                <TextBlock x:Name="ConfirmPasswordTextBlock" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_ConfirmPassword}" Margin="8" VerticalAlignment="Center" IsHitTestVisible="False" Foreground="#BBB"></TextBlock>
+            </Grid>
+        </StackPanel>
+        <TextBlock Name="ErrorTipsText" Foreground="Red" Margin="167,4,0,0" Grid.Row="4"></TextBlock>
+        <Grid Grid.Row="5">
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="24">
+                <Button x:Name="CancelBtn" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Cancel}"  Margin="0,0,10,0" Width="112" Height="32" BorderThickness="1" Click="CancelBtn_Click"></Button>
+                <Button x:Name="DoneBtn" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Finish}" Width="112" Height="32" BorderThickness="1" Click="DoneBtn_Click"></Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

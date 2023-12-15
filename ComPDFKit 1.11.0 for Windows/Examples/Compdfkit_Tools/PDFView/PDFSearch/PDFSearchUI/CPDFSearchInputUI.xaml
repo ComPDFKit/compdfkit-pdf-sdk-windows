@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControlUI.CPDFSearchInputUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControlUI"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <common:TextLengthToVisibilityConverter x:Key="TextLengthToVisibilityConverter"/>
+            <common:InvertTextLengthToVisibilityConverter x:Key="InvertTextLengthToVisibilityConverter"/>
+            <common:TextLengthToBoolConverter x:Key="TextLengthToBoolConverter"/>
+            <common:BotaResourceConverter x:Key="BotaResourceConverter"></common:BotaResourceConverter>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Margin="0,0,8,0">
+            <TextBox Name="SearchTextBox" VerticalContentAlignment="Center" Height="30" KeyDown="SearchTextBox_KeyDown" Padding="5,0,30,0"></TextBox>
+            <TextBlock VerticalAlignment="Center" IsHitTestVisible="False" Margin="10,0,0,0" Foreground="#999999" 
+                       Visibility="{Binding ElementName=SearchTextBox,Path=Text,Converter={StaticResource TextLengthToVisibilityConverter}}"
+                       Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Holder_Search}"></TextBlock>
+            
+            <Border Visibility="{Binding ElementName=SearchTextBox,Path=Text,Converter={StaticResource InvertTextLengthToVisibilityConverter}}"
+                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                    Background="#01000000" MouseLeftButtonDown="TextClear_MouseLeftButtonDown">
+                <Path Fill="Black" IsHitTestVisible="False">
+                    <Path.Data>
+                        M12.5762 3.95117L8.5332 8L12.5762 12.0488L12.0488 12.5762L8 8.5332L3.95117 12.5762L3.42383 12.0488L7.4668 8L3.42383 3.95117L3.95117 3.42383L8 7.4668L12.0488 3.42383L12.5762 3.95117Z
+                    </Path.Data>
+                </Path>
+            </Border>
+        </Grid>
+        <Button Name="SearchBtn" Style="{StaticResource ButtonStyle}" Grid.Column="1" Width="56" Height="30" FontSize="14" Click="SearchBtn_Click"
+                IsEnabled="{Binding ElementName=SearchTextBox,Path=Text,Converter={StaticResource TextLengthToBoolConverter}}"
+                Content="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Button_Done}">
+        </Button>
+    </Grid>
+</UserControl>

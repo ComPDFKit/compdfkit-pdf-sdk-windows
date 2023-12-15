@@ -1,0 +1,520 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Title_AddDigitalSign" xml:space="preserve">
+        <value>添加数字签名</value>
+    </data>
+    <data name="Title_IDType" xml:space="preserve">
+        <value>选择数字身份证类型：</value>
+    </data>
+    <data name="Option_FileID" xml:space="preserve">
+        <value>使用文件中的数字身份证</value>
+    </data>
+    <data name="Tip_ID" xml:space="preserve">
+        <value>需要数字身份证才能创建数字签名。最安全的数字身份证由受信任的证书机构颁发，并基于智能卡或令牌之类的安全设备。某些则基于文件。</value>
+    </data>
+    <data name="Option_NewID" xml:space="preserve">
+        <value>创建新的数字身份证</value>
+    </data>
+    <data name="Tip_NewID" xml:space="preserve">
+        <value>您还可以创建一个新的数字身份证，但它们只提供低级别的身份保证。</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Button_Continue" xml:space="preserve">
+        <value>继续</value>
+    </data>
+    <data name="Title_AddID" xml:space="preserve">
+        <value>添加数字身份证</value>
+    </data>
+    <data name="Tip_AddID" xml:space="preserve">
+        <value>浏览数字身份证文件。数字身份证受密码保护。如果你不知道密码，你就无法获取数字身份证。</value>
+    </data>
+    <data name="Holder_Path" xml:space="preserve">
+        <value>使用文件中的证书</value>
+    </data>
+    <data name="Button_Upload" xml:space="preserve">
+        <value>浏览</value>
+    </data>
+    <data name="Tip_Password" xml:space="preserve">
+        <value>证书密码</value>
+    </data>
+    <data name="Holder_Password" xml:space="preserve">
+        <value>请输入证书密码</value>
+    </data>
+    <data name="Tip_PasswordStatus" xml:space="preserve">
+        <value>密码错误，请重试</value>
+    </data>
+    <data name="Option_Trackpad" xml:space="preserve">
+        <value>触摸板</value>
+    </data>
+    <data name="Option_Keyboard" xml:space="preserve">
+        <value>键盘</value>
+    </data>
+    <data name="Option_Image" xml:space="preserve">
+        <value>图片</value>
+    </data>
+    <data name="Option_None" xml:space="preserve">
+        <value>无</value>
+    </data>
+    <data name="Button_Clear" xml:space="preserve">
+        <value>清除</value>
+    </data>
+    <data name="Unknown_Tip1" xml:space="preserve">
+        <value>请在此处输入签名！</value>
+    </data>
+    <data name="Tip_TextAlignment" xml:space="preserve">
+        <value>文本方向</value>
+    </data>
+    <data name="Tip_Include" xml:space="preserve">
+        <value>包含文本</value>
+    </data>
+    <data name="Tip_Name" xml:space="preserve">
+        <value>姓名</value>
+    </data>
+    <data name="Tip_DN" xml:space="preserve">
+        <value>辨别名</value>
+    </data>
+    <data name="Tip_Date" xml:space="preserve">
+        <value>日期</value>
+    </data>
+    <data name="Tip_Version" xml:space="preserve">
+        <value>ComPDFKit 版本</value>
+    </data>
+    <data name="Tip_Logo" xml:space="preserve">
+        <value>徽标</value>
+    </data>
+    <data name="Tip_Position" xml:space="preserve">
+        <value>位置</value>
+    </data>
+    <data name="Tip_Reason" xml:space="preserve">
+        <value>原因</value>
+    </data>
+    <data name="Tip_Tab" xml:space="preserve">
+        <value>标签</value>
+    </data>
+    <data name="Unknown_Tip2" xml:space="preserve">
+        <value>预设名</value>
+    </data>
+    <data name="Unknown_Tip3" xml:space="preserve">
+        <value>绘制签名</value>
+    </data>
+    <data name="Tip_DrawClear" xml:space="preserve">
+        <value>清除</value>
+    </data>
+    <data name="Tip_DrawCancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Tip_DrawOK" xml:space="preserve">
+        <value>确定</value>
+    </data>
+    <data name="Title_CreateID" xml:space="preserve">
+        <value>创建自签名数字身份证</value>
+    </data>
+    <data name="Tip_IDWarning" xml:space="preserve">
+        <value>自签名数字身份证不会保证身份信息的有效性。出于这一原因，它们在某些用例中可能不被接受。</value>
+    </data>
+    <data name="Holder_Name" xml:space="preserve">
+        <value>请输入身份证名称</value>
+    </data>
+    <data name="Tip_Unit" xml:space="preserve">
+        <value>部门</value>
+    </data>
+    <data name="Holder_Unit" xml:space="preserve">
+        <value>请输入部门</value>
+    </data>
+    <data name="Tip_Organization" xml:space="preserve">
+        <value>单位名称</value>
+    </data>
+    <data name="Holder_Organization" xml:space="preserve">
+        <value>请输入单位名称</value>
+    </data>
+    <data name="Tip_Email" xml:space="preserve">
+        <value>电子邮件地址</value>
+    </data>
+    <data name="Holder_Email" xml:space="preserve">
+        <value>请输入电子邮箱地址</value>
+    </data>
+    <data name="Tip_Country" xml:space="preserve">
+        <value>国家/地区</value>
+    </data>
+    <data name="Tip_Use" xml:space="preserve">
+        <value>数字ID用于</value>
+    </data>
+    <data name="Option_Sign" xml:space="preserve">
+        <value>数字签名</value>
+    </data>
+    <data name="Option_Encrypt" xml:space="preserve">
+        <value>数据加密</value>
+    </data>
+    <data name="Option_SignAndEncrypt" xml:space="preserve">
+        <value>数字签名和数据加密</value>
+    </data>
+    <data name="Warn_Email" xml:space="preserve">
+        <value>电子邮件无效。</value>
+    </data>
+    <data name="Warn_Name" xml:space="preserve">
+        <value>姓名为必填项。</value>
+    </data>
+    <data name="Title_Save" xml:space="preserve">
+        <value>保存到文件</value>
+    </data>
+    <data name="Button_OK" xml:space="preserve">
+        <value>完成</value>
+    </data>
+    <data name="Tip_Save" xml:space="preserve">
+        <value>保存地址</value>
+    </data>
+    <data name="Button_Browse" xml:space="preserve">
+        <value>浏览</value>
+    </data>
+    <data name="Warn_Password" xml:space="preserve">
+        <value>密码不一致，请重新输入</value>
+    </data>
+    <data name="Button_Finish" xml:space="preserve">
+        <value>完成</value>
+    </data>
+    <data name="Title_SignAp" xml:space="preserve">
+        <value>设置数字签名外观</value>
+    </data>
+    <data name="Unknown_Tip5" xml:space="preserve">
+        <value>请在此处输入签名！</value>
+    </data>
+    <data name="Chk_Name" xml:space="preserve">
+        <value>名称</value>
+    </data>
+    <data name="Chk_DN" xml:space="preserve">
+        <value>辨别名</value>
+    </data>
+    <data name="Chk_Date" xml:space="preserve">
+        <value>日期</value>
+    </data>
+    <data name="Chk_Version" xml:space="preserve">
+        <value>ComPDFKit 版本</value>
+    </data>
+    <data name="Chk_Logo" xml:space="preserve">
+        <value>徽标</value>
+    </data>
+    <data name="Chk_Position" xml:space="preserve">
+        <value>位置</value>
+    </data>
+    <data name="Chk_Reason" xml:space="preserve">
+        <value>原因</value>
+    </data>
+    <data name="Tip_Sign" xml:space="preserve">
+        <value>签署原因</value>
+    </data>
+    <data name="Option_Owner" xml:space="preserve">
+        <value>我是该文档的作者</value>
+    </data>
+    <data name="Option_Approving" xml:space="preserve">
+        <value>我正在批准该文档</value>
+    </data>
+    <data name="Option_Review" xml:space="preserve">
+        <value>我已审阅该文档</value>
+    </data>
+    <data name="Unknown_Label" xml:space="preserve">
+        <value>标签</value>
+    </data>
+    <data name="Unknown_Preset" xml:space="preserve">
+        <value>预设名</value>
+    </data>
+    <data name="Unknow_Draw" xml:space="preserve">
+        <value>绘制签名</value>
+    </data>
+    <data name="Text_Signer" xml:space="preserve">
+        <value>签名为：</value>
+    </data>
+    <data name="Text_Date" xml:space="preserve">
+        <value>日期：</value>
+    </data>
+    <data name="Text_Status" xml:space="preserve">
+        <value>状态：</value>
+    </data>
+    <data name="Text_SignerValid" xml:space="preserve">
+        <value>签名者的身份有效。</value>
+    </data>
+    <data name="Text_SignerInvalid" xml:space="preserve">
+        <value>签名者的身份无效。</value>
+    </data>
+    <data name="Text_SigExpired" xml:space="preserve">
+        <value>该文件是用已过期的证书签名的。如果您最近获取了此文件，则该文件可能不真实。</value>
+    </data>
+    <data name="Text_SigInvalid" xml:space="preserve">
+        <value>签名无效。</value>
+    </data>
+    <data name="Text_SigValid" xml:space="preserve">
+        <value>签名有效。</value>
+    </data>
+    <data name="Text_SigUnknown" xml:space="preserve">
+        <value>签名有效性未知，因为它未包含在您的受信任证书列表中，并且它的父证书都不是受信任证书。</value>
+    </data>
+    <data name="Text_SigNoModified" xml:space="preserve">
+        <value>自应用此签名以来，文档未被修改。</value>
+    </data>
+    <data name="Text_SigModified" xml:space="preserve">
+        <value>自当前用户签署文档以来，该文档已被更改或损坏。</value>
+    </data>
+    <data name="Text_MultiSig" xml:space="preserve">
+        <value>至少一个签名无效，文档可能被篡改。</value>
+    </data>
+    <data name="Button_AllSig" xml:space="preserve">
+        <value>查看所有签名</value>
+    </data>
+    <data name="Title_SigList" xml:space="preserve">
+        <value>签名列表</value>
+    </data>
+    <data name="Button_SigDetails" xml:space="preserve">
+        <value>查看签名详情</value>
+    </data>
+    <data name="Button_CertDetails" xml:space="preserve">
+        <value>查看证书详情</value>
+    </data>
+    <data name="Button_Delete" xml:space="preserve">
+        <value>删除</value>
+    </data>
+    <data name="Text_Warning" xml:space="preserve">
+        <value>注意</value>
+    </data>
+    <data name="Text_Delete " xml:space="preserve">
+        <value>确定删除该内容？</value>
+    </data>
+    <data name="Button_Details" xml:space="preserve">
+        <value>数字签名详细信息</value>
+    </data>
+    <data name="Text_Signature" xml:space="preserve">
+        <value>数字签名</value>
+    </data>
+    <data name="Text_SignTime" xml:space="preserve">
+        <value>签署时间：</value>
+    </data>
+    <data name="Text_Statement" xml:space="preserve">
+        <value>有效性小结</value>
+    </data>
+    <data name="Text_IDValid." xml:space="preserve">
+        <value>签名者的身份有效。</value>
+    </data>
+    <data name="Text_IDInvalid." xml:space="preserve">
+        <value>签名者的身份无效。</value>
+    </data>
+    <data name="Text_Unknow" xml:space="preserve">
+        <value>签名有效性未知，因为它未包含在您的受信任证书列表中，并且它的父证书都不是受信任证书。</value>
+    </data>
+    <data name="Text_Expired" xml:space="preserve">
+        <value>该文件是用已过期的证书签名的。如果您最近获取了此文件，则该文件可能不真实。</value>
+    </data>
+    <data name="Text_NotModified " xml:space="preserve">
+        <value>自应用此签名以来，文档未被修改。</value>
+    </data>
+    <data name="Text_Modified " xml:space="preserve">
+        <value>自当前用户签署文档以来，该文档已被更改或损坏。</value>
+    </data>
+    <data name="Button_Close" xml:space="preserve">
+        <value>关闭</value>
+    </data>
+    <data name="Text_ViewIDFile" xml:space="preserve">
+        <value>浏览数字身份证文件。数字身份证受密码保护。如果你不知道密码，你就无法获取数字身份证。</value>
+    </data>
+    <data name="Text_CertViewer" xml:space="preserve">
+        <value>证书查看程序</value>
+    </data>
+    <data name="Text_Summary" xml:space="preserve">
+        <value>小结</value>
+    </data>
+    <data name="Text_IssuedTo" xml:space="preserve">
+        <value>颁发给：</value>
+    </data>
+    <data name="Text_Issuer" xml:space="preserve">
+        <value>颁发者：</value>
+    </data>
+    <data name="Text_ValidFrom" xml:space="preserve">
+        <value>有效起始日期：</value>
+    </data>
+    <data name="Text_ValidTo" xml:space="preserve">
+        <value>有效截止日期：</value>
+    </data>
+    <data name="Text_Usage" xml:space="preserve">
+        <value>预期用途：</value>
+    </data>
+    <data name="Unknown_7" xml:space="preserve">
+        <value>数字签名，不可否认
+加密密钥
+加密文档
+关键协议
+客户端身份验证
+电子邮件保护</value>
+    </data>
+    <data name="Text_Details" xml:space="preserve">
+        <value>详细信息</value>
+    </data>
+    <data name="Text_Version" xml:space="preserve">
+        <value>版本：</value>
+    </data>
+    <data name="Text_Algorithm" xml:space="preserve">
+        <value>签名算法：</value>
+    </data>
+    <data name="Text_Subject" xml:space="preserve">
+        <value>主题：</value>
+    </data>
+    <data name="Text_SerialNum" xml:space="preserve">
+        <value>序列号：</value>
+    </data>
+    <data name="Text_CertPolicy" xml:space="preserve">
+        <value>证书策略：</value>
+    </data>
+    <data name="Text_CRL" xml:space="preserve">
+        <value>CRL分发点：</value>
+    </data>
+    <data name="Text_IssuerInfo" xml:space="preserve">
+        <value>颁发机构信息访问：</value>
+    </data>
+    <data name="Text_IssuerID" xml:space="preserve">
+        <value>颁发机构密钥标识符：</value>
+    </data>
+    <data name="Text_SubjectID" xml:space="preserve">
+        <value>主体密钥标识符：</value>
+    </data>
+    <data name="Text_BasicConstraints" xml:space="preserve">
+        <value>基本约束：</value>
+    </data>
+    <data name="Text_KeyUsage" xml:space="preserve">
+        <value>密钥用法：</value>
+    </data>
+    <data name="Text_PubKey" xml:space="preserve">
+        <value>公钥：</value>
+    </data>
+    <data name="Text_X509" xml:space="preserve">
+        <value>X.509：</value>
+    </data>
+    <data name="Text_SHA1" xml:space="preserve">
+        <value>SHA1：</value>
+    </data>
+    <data name="Text_MD5" xml:space="preserve">
+        <value>MD5：</value>
+    </data>
+    <data name="Title_Trust" xml:space="preserve">
+        <value>信任</value>
+    </data>
+    <data name="Tip_TrustTo" xml:space="preserve">
+        <value>本证书信任于：</value>
+    </data>
+    <data name="Unknown_Tip6" xml:space="preserve">
+        <value>签名文档或数据
+验证文档
+执行嵌入已验证文档的动态内容
+执行嵌入已验证文档的高优先级的
+JavaScript 脚本
+执行特权系统操作(建立网络连接、打
+印、文件访问等。)</value>
+    </data>
+    <data name="Button_AddTrust" xml:space="preserve">
+        <value>添加到可信任证书</value>
+    </data>
+    <data name="Tip_Cert" xml:space="preserve">
+        <value>证书文件</value>
+    </data>
+    <data name="Title_SigInfo" xml:space="preserve">
+        <value>签名信息</value>
+    </data>
+    <data name="Describe_Import" xml:space="preserve">
+        <value>导入以文件形式获取的现有数字身份证</value>
+    </data>
+    <data name="Describe_Create" xml:space="preserve">
+        <value>创建您的自签名数字身份证</value>
+    </data>
+    <data name="Button_Save" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="Holder_SelectFile" xml:space="preserve">
+        <value>选择文件</value>
+    </data>
+    <data name="Tip_Confirm" xml:space="preserve">
+        <value>重新输入密码</value>
+    </data>
+    <data name="Tip_SetPassword" xml:space="preserve">
+        <value>输入密码</value>
+    </data>
+    <data name="Holder_SetPassword" xml:space="preserve">
+        <value>请输入密码</value>
+    </data>
+    <data name="Holder_ConfirmPassword" xml:space="preserve">
+        <value>请再次输入密码</value>
+    </data>
+    <data name="Warn_NoFile" xml:space="preserve">
+        <value>请选择文件。</value>
+    </data>
+    <data name="Warn_NoPassword" xml:space="preserve">
+        <value>请输入密码</value>
+    </data>
+    <data name="Text_Valid" xml:space="preserve">
+        <value>签名有效，</value>
+    </data>
+    <data name="Text_Invalid" xml:space="preserve">
+        <value>签名无效，</value>
+    </data>
+    <data name="Text_Unknown" xml:space="preserve">
+        <value>签名有效性未知，</value>
+    </data>
+    <data name="Trust_Sign" xml:space="preserve">
+        <value>签名文档或数据</value>
+    </data>
+    <data name="Trust_Cert" xml:space="preserve">
+        <value>验证文档</value>
+    </data>
+    <data name="Usage_DigitalSignature" xml:space="preserve">
+        <value>数字签名</value>
+    </data>
+    <data name="Usage_NonRepudiation" xml:space="preserve">
+        <value>不可否认</value>
+    </data>
+    <data name="Usage_Client" xml:space="preserve">
+        <value>客户端身份验证</value>
+    </data>
+    <data name="Usage_Document" xml:space="preserve">
+        <value>加密文档</value>
+    </data>
+    <data name="Usage_Email" xml:space="preserve">
+        <value>电子邮件保护</value>
+    </data>
+    <data name="Usage_Keys" xml:space="preserve">
+        <value>加密密钥</value>
+    </data>
+    <data name="Usage_Key" xml:space="preserve">
+        <value>关键协议</value>
+    </data>
+    <data name="Title_Cert" xml:space="preserve">
+        <value>证书查看程序</value>
+    </data>
+    <data name="Title_Sig" xml:space="preserve">
+        <value>数字签名详细信息</value>
+    </data>
+    <data name="Title_SaveSig" xml:space="preserve">
+        <value>保存自签名数字身份证到文件中</value>
+    </data>
+    <data name="Reason_Approving" xml:space="preserve">
+        <value>我正在批准该文档</value>
+    </data>
+    <data name="Reason_None" xml:space="preserve">
+        <value>&lt; 无 &gt;</value>
+    </data>
+    <data name="Reason_Owner" xml:space="preserve">
+        <value>我是该文档的作者</value>
+    </data>
+    <data name="Reason_Reviewed" xml:space="preserve">
+        <value>我已审阅该文档</value>
+    </data>
+    <data name="Cmb_Reason" xml:space="preserve">
+        <value>签署原因：</value>
+    </data>
+</root>

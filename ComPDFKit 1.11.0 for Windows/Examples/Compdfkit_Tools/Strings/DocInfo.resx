@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Title_DocInfo" xml:space="preserve">
+        <value>Document Info</value>
+    </data>
+    <data name="Subtitle_Abstract" xml:space="preserve">
+        <value>Abstract</value>
+    </data>
+    <data name="Info_FileName" xml:space="preserve">
+        <value>File Name</value>
+    </data>
+    <data name="Info_Size" xml:space="preserve">
+        <value>File Size</value>
+    </data>
+    <data name="Info_Title" xml:space="preserve">
+        <value>Title</value>
+    </data>
+    <data name="Info_Author" xml:space="preserve">
+        <value>Author</value>
+    </data>
+    <data name="Info_Subject" xml:space="preserve">
+        <value>Subject</value>
+    </data>
+    <data name="Info_Keywords" xml:space="preserve">
+        <value>Keywords</value>
+    </data>
+    <data name="Subtitle_CreationInfo" xml:space="preserve">
+        <value>Create Information</value>
+    </data>
+    <data name="Info_Version" xml:space="preserve">
+        <value>Version</value>
+    </data>
+    <data name="Info_Pages" xml:space="preserve">
+        <value>Pages</value>
+    </data>
+    <data name="Info_Creator" xml:space="preserve">
+        <value>Creator</value>
+    </data>
+    <data name="Info_CreationDate" xml:space="preserve">
+        <value>Creation Date</value>
+    </data>
+    <data name="Info_ModDate" xml:space="preserve">
+        <value>Modification Date</value>
+    </data>
+    <data name="Subtitle_Permissions" xml:space="preserve">
+        <value>Access Permissions</value>
+    </data>
+    <data name="Info_Print" xml:space="preserve">
+        <value>Printing</value>
+    </data>
+    <data name="Info_Copy" xml:space="preserve">
+        <value>Content Copying</value>
+    </data>
+    <data name="Info_Mod" xml:space="preserve">
+        <value>Document Change</value>
+    </data>
+    <data name="Info_Assembly" xml:space="preserve">
+        <value>Document Assembly</value>
+    </data>
+    <data name="Info_Comment" xml:space="preserve">
+        <value>Commenting</value>
+    </data>
+    <data name="Info_Form" xml:space="preserve">
+        <value>Filling of Form Field</value>
+    </data>
+    <data name="Allow_True" xml:space="preserve">
+        <value>Allowed</value>
+    </data>
+    <data name="Allow_False" xml:space="preserve">
+        <value>Not Allowed</value>
+    </data>
+</root>

@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.CPDFSearchControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:ui="clr-namespace:Compdfkit_Tools.PDFControlUI"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <common:BotaResourceConverter x:Key="BotaResourceConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ui:CPDFSearchInputUI x:Name="SearchInput" InputTextBoxHeight="25"></ui:CPDFSearchInputUI>
+        
+        <Border Background="#F2F3F5" Grid.Row="1" Height="32">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Name="ResultText" Foreground="#666666" VerticalAlignment="Center" Margin="16,0,0,0"></TextBlock>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0" Foreground="#666666"
+                           Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Text_Page}"></TextBlock>
+            </Grid>
+        </Border>
+        <ui:CPDFSearchResultUI x:Name="SearchResult" Grid.Row="2"></ui:CPDFSearchResultUI>
+    </Grid>
+</UserControl>

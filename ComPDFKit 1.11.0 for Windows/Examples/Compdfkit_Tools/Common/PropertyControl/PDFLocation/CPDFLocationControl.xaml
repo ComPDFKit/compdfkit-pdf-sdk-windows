@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Compdfkit_Tools.Common.CPDFLocationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="92" d:DesignWidth="239"
+             Loaded="UserControl_Loaded" x:Name="LocationControl">
+    <Grid x:Name="Grid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <local:MatrixRadioControl x:Name="MatrixRadioControl" SelectedTag="{Binding SelectedTag, Mode=TwoWay}"></local:MatrixRadioControl>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="4">
+                <TextBlock Text="X" VerticalAlignment="Center" Margin="0,0,8,0"></TextBlock>
+                <local:NumericUpDownControl x:Name="XNumericControl" Height="32" Width="90" Unit="mm" Text="{Binding HorizOffsetValue, Mode=TwoWay}"  Minimum="0" Maxium="99"></local:NumericUpDownControl>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4">
+                <TextBlock Text="Y" VerticalAlignment="Center" Margin="0,0,8,0"></TextBlock>
+                <local:NumericUpDownControl x:Name="YNumericControl" Height="32" Width="90" Unit="mm"  Text="{Binding VertOffsetValue, Mode=TwoWay}"  Minimum="0" Maxium="99"></local:NumericUpDownControl>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

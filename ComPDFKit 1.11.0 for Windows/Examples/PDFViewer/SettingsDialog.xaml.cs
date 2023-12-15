@@ -1,0 +1,97 @@
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using Compdfkit_Tools.Helper;
+
+namespace PDFViewer
+{
+    /// <summary>
+    /// Interaction logic for SettingsDialog.xaml
+    /// </summary>
+    public partial class SettingsDialog : Window
+    {
+        public event EventHandler<string> LanguageChanged;
+        public SettingsDialog()
+        {
+            InitializeComponent();
+            Closing += MainWindow_Closing;
+            Title = App.MainResourceManager.GetString("Title_Settings");
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+            Compdfkit_Tools.Data.CPDFAnnotationData.Author = Properties.Settings.Default.DocumentAuthor;
+        }
+
+        private void EventSetter_ClickHandler(object sender, RoutedEventArgs e)
+        {
+            var webLocation = (sender as Button)?.Tag.ToString();
+            if (!string.IsNullOrEmpty(webLocation))
+            {
+                Process.Start(webLocation);
+            }
+        }
+
+        private void SettingsDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            HighlightFormTog.IsChecked = Properties.Settings.Default.IsHighlightFormArea;
+            HighlightLinkTog.IsChecked = Properties.Settings.Default.IsHighlightLinkArea;
+            AuthorTxb.Text = Properties.Settings.Default.DocumentAuthor;
+            SelectCurrentLanguage();
+        }
+        
+        private void SelectCurrentLanguage()
+        {
+            foreach (ComboBoxItem item in LanguageCmb.Items)
+            {
+                if (item.Tag.ToString() == App.CurrentCulture)
+                {
+                    item.IsSelected = true;
+                }
+            }
+        }
+
+        private void AuthorTxb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Properties.Settings.Default.DocumentAuthor = AuthorTxb.Text;
+        }
+
+        private void HighlightLinkTog_Click(object sender, RoutedEventArgs e)
+        {
+            if (HighlightLinkTog.IsChecked != null)
+                Properties.Settings.Default.IsHighlightLinkArea = HighlightLinkTog.IsChecked.Value;
+        }
+
+        private void HighlightFormTog_Click(object sender, RoutedEventArgs e)
+        {
+            if (HighlightFormTog.IsChecked != null)
+                Properties.Settings.Default.IsHighlightFormArea = HighlightFormTog.IsChecked.Value;
+        }
+
+        private void LanguageCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string language = ((ComboBoxItem)LanguageCmb.SelectedItem).Tag.ToString();
+            if (language.Equals(App.CurrentCulture))
+            {
+                return;
+            }
+            MessageBoxResult result = MessageBox.Show(App.MainResourceManager.GetString("Tip_Restart"),
+                App.MainResourceManager.GetString("Tip_RestartTitle"), 
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                Properties.Settings.Default.Cultrue = language;
+                Properties.Settings.Default.Save();
+                LanguageChanged?.Invoke(this, language);
+            }
+            else
+            {
+                SelectCurrentLanguage();
+            }
+        }
+    }
+}
