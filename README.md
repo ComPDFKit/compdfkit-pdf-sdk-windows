@@ -50,7 +50,7 @@ You can [contact us](https://www.compdf.com/contact-us) and access our PDF SDK i
 - ***"legal.txt"*** - Legal and copyright information.
 - ***"release_notes.txt"*** - Release information.
 
-![image-20220218141621062](images-windows\package_structure.png)
+![image-20220218141621062](images-windows/package_structure.png)
 
 
 
@@ -63,15 +63,15 @@ In this guide, we take ***"PDFViewer"*** as an example to show how to run it in 
 
 2. Find ***"Examples.sln"*** in the ***"Examples"*** folder and open it in Visual Studio 2022.
 
-   ![Alt text](images-windows\image.png)
+   ![Alt text](images-windows/image.png)
 
 3. Select ***"PDFViewer"*** and right-click to set it as a startup project.
 
-   ![Alt text](images-windows\image-2.png)
+   ![Alt text](images-windows/image-2.png)
 
 4. Run the project and then you can open the multifunctional ***"PDFViewer"*** demo.
 
-   ![Alt text](images-windows\image-1.png)
+   ![Alt text](images-windows/image-1.png)
 
 **Note:** *This is a demo project, presenting completed ComPDFKit PDF SDK functions. The functions might be different based on the license you have purchased. Please check that the functions you choose work fine in this demo project.*
 
