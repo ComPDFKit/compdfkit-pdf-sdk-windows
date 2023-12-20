@@ -90,7 +90,7 @@ There are two ways to add ComPDFKit to your Project: [Nuget Repository](https://
 
 Rather than targeting a package held at Nuget, you may set up a configuration to point to a local package. This can be useful for some situations, for example, your build machines don't have access to the internet.
 
-1. You can find ***"ComPDFKit.NetFramework....nupkg"*** file in the [SDK Package](./ComPDFKit 1.11.0 for Windows/nuget)
+1. You can find ***"ComPDFKit.NetFramework....nupkg"*** file in the [SDK Package](https://github.com/ComPDFKit/compdfkit-pdf-sdk-windows/tree/Tutorials-Blog/ComPDFKit%201.11.0%20for%20Windows/nuget)
 
 2. Create or edit a ***"nuget.config"*** file in the same directory as your solution file (e.g. ***"ComPDFKit Demo.sln"***).
 
