@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Compdfkit_Tools.Common.CPDFTileControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="72" d:DesignWidth="242"> 
+    <UserControl.Resources>
+        <local:CommonResourceConverter x:Key="CommonResourceConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <CheckBox x:Name="TileChk" VerticalAlignment="Center" Click="TileChk_Click">
+            <TextBlock  Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Chk_Tile}"></TextBlock>
+        </CheckBox>
+        <Grid Grid.Row="1" x:Name="TileGd">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked, ElementName=TileChk}" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                            <Setter Property="IsEnabled" Value="False"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <StackPanel Orientation="Horizontal">
+                <Canvas Width="16" Height="16" Margin="0,0,4,0">
+                    <Path Fill="Black" Data="M1,4H2V12H1V4ZM4.70703,7.5H11.2952L10.0278,6.23223L10.7349,5.52513L13.2097,8L10.7349,10.4749L10.0278,9.76777L11.2952,8.5H4.70703L5.97487,9.76777L5.26777,10.4749L2.79289,8L5.26777,5.52513L5.97487,6.23223L4.70703,7.5ZM15,4H14V12H15V4Z"/>
+                </Canvas>
+                <local:NumericUpDownControl x:Name="HorizontalNumericControl" Height="32" Width="90"  Margin="0,0,4,0" Minimum="0" Maximum="99" Text="{Binding HorizontalSpacingValue, Mode=TwoWay}" Unit="mm"></local:NumericUpDownControl>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Canvas Width="16" Height="16"  Margin="0,0,4,0">
+                    <Path Fill="Black" Data="M12,1V2L4,2V1L12,1ZM8.5,4.70703V11.2952L9.76777,10.0278L10.4749,10.7349L8,13.2097L5.52513,10.7349L6.23223,10.0278L7.5,11.2952L7.5,4.70703L6.23223,5.97487L5.52513,5.26777L8,2.79289L10.4749,5.26777L9.76777,5.97487L8.5,4.70703ZM12,15V14H4V15H12Z"/>
+                </Canvas>
+                <local:NumericUpDownControl  x:Name="VerticalNumericControl" Height="32" Width="90"  Margin="0,0,4,0"  Minimum="0" Maximum="99" Text="{Binding VerticalSpacingValue, Mode=TwoWay}" Unit="mm"></local:NumericUpDownControl>
+            </StackPanel>
+
+
+        </Grid>
+    </Grid>
+</UserControl>

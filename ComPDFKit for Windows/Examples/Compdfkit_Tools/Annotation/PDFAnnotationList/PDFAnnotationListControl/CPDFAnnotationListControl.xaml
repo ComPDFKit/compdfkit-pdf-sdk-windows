@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.CPDFAnnotationListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cpdftoolsui="clr-namespace:Compdfkit_Tools.PDFControlUI"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+              d:DesignHeight="800" d:DesignWidth="300" Background="#fff">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <common:BotaResourceConverter x:Key="BotaResourceConverter"></common:BotaResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Height="50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Title_Annot}"  FontSize="14" Foreground="#42464D" Margin="16,0,0,0" VerticalAlignment="Center"></TextBlock>
+            <Button x:Name="ImportBtn" Width="40" Height="40" Click="ImportBtn_Click" Style="{StaticResource TransparentButtonStyle}" Grid.Column="1" VerticalAlignment="Center" 
+                    ToolTip="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Tooltip_Import}">
+                <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="#43474D"
+                      Data="M9.56181 13.8733C9.85977 14.1611 10.3429 14.1611 10.6408 13.8733L14.7421 9.91282C15.0401 9.62509 15.0401 9.15858 14.7421 8.87085C14.4442 8.58311 13.9611 8.58311 13.6631 8.87085L10.75 11.6839L10.75 4C10.75 3.58579 10.4142 3.25 10 3.25C9.58581 3.25 9.25002 3.58579 9.25002 4L9.25003 11.4883L6.53951 8.87085C6.24155 8.58311 5.75846 8.58311 5.46049 8.87085C5.16253 9.15858 5.16253 9.62509 5.46049 9.91282L9.56181 13.8733ZM4 15.7543C3.58579 15.7543 3.25 16.0901 3.25 16.5043C3.25 16.9185 3.58579 17.2543 4 17.2543H16C16.4142 17.2543 16.75 16.9185 16.75 16.5043C16.75 16.0901 16.4142 15.7543 16 15.7543H4Z"></Path>
+            </Button>
+            <Button x:Name="ExportBtn" Width="40" Height="40" Click="ExportBtn_Click" Style="{StaticResource TransparentButtonStyle}" Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"
+                    ToolTip="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Tooltip_Export}">
+                <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="#43474D" 
+                      Data="M10.6374 2.96457C10.3413 2.6749 9.8613 2.6749 9.56523 2.96457L5.46391 6.97725C5.16784 7.26693 5.16784 7.73659 5.46391 8.02626C5.75999 8.31594 6.24002 8.31594 6.53609 8.02626L9.25012 5.37089L9.25012 12.8272C9.25012 13.2414 9.58591 13.5772 10.0001 13.5772C10.4143 13.5772 10.7501 13.2414 10.7501 12.8272L10.7501 5.17287L13.6665 8.02626C13.9626 8.31594 14.4426 8.31594 14.7387 8.02626C15.0348 7.73659 15.0348 7.26693 14.7387 6.97725L10.6374 2.96457ZM4 15.7516C3.58579 15.7516 3.25 16.0874 3.25 16.5016C3.25 16.9158 3.58579 17.2516 4 17.2516H16C16.4142 17.2516 16.75 16.9158 16.75 16.5016C16.75 16.0874 16.4142 15.7516 16 15.7516H4Z"></Path>
+            </Button>
+        </Grid>
+        <cpdftoolsui:CPDFAnnoationListUI x:Name="AnnotationList" Grid.Row="1" Loaded="AnnotationList_Loaded" Unloaded="AnnotationList_Unloaded"></cpdftoolsui:CPDFAnnoationListUI>
+    </Grid>
+</UserControl>

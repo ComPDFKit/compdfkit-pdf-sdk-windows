@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="Compdfkit_Tools.Measure.MeasureControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.Measure"
+             mc:Ignorable="d" 
+             xmlns:cpdftools="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:cpdfcommon="clr-namespace:Compdfkit_Tools.Common"    
+             Loaded="UserControl_Loaded"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <RoutedUICommand x:Key="Undo" Text="Undo"></RoutedUICommand>
+            <RoutedUICommand x:Key="Redo" Text="Redo"></RoutedUICommand>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Name="BodyGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0"></ColumnDefinition>
+                <ColumnDefinition Width="0"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="ToolBarContainer" Height="45" Visibility="Visible" BorderThickness="1" BorderBrush="#1A000000" Background="#F2F3F5" Grid.ColumnSpan="4">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <cpdftools:CPDFMeasureBarControl x:Name="PDFMeasureTool"  Grid.ColumnSpan="4" Height="44"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Visibility="Collapsed" Name="BotaContainer"></Border>
+            <GridSplitter  Grid.Row="1" Name="Splitter" Grid.Column="1" Width="15" ResizeBehavior="PreviousAndNext" Visibility="Collapsed">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="{x:Type GridSplitter}">
+                        <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                         BorderBrush="{TemplateBinding Border.BorderBrush}"
+                         Background="{TemplateBinding Panel.Background}" >
+                            <Path Fill="Gray" VerticalAlignment="Center">
+                                <Path.Data>
+                                    M15 3.75H1V2.25H15V3.75ZM15 8.75H1V7.25H15V8.75ZM1 13.75H15V12.25H1V13.75Z
+                                </Path.Data>
+                            </Path>
+                        </Border>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+            <Grid Grid.Row="1" Grid.Column="2">
+                <Border x:Name="PDFGrid" Background="#CECECE"></Border>
+                <local:MeasureInfoPanel x:Name="InfoPanel" Width="300" HorizontalAlignment="Right" Margin="0,20,30,0"
+                                        Visibility="Collapsed" VerticalAlignment="Top" 
+                                        SettingClick="MeasureInfoPanel_SettingClick"></local:MeasureInfoPanel>
+                <local:MeasureSettingPanel x:Name="SettingPanel" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                             Visibility="Collapsed"
+                             CancelEvent="SettingPanel_CancelEvent"
+                             DoneEvent="SettingPanel_DoneEvent">
+
+                </local:MeasureSettingPanel>
+            </Grid>
+            <Border Grid.Column="3" Name="PropertyContainer" Grid.Row="1" Visibility="Collapsed" ></Border>
+            <cpdfcommon:PageNumberControl  Grid.Column="2" Grid.Row="1" x:Name="FloatPageTool" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20"></cpdfcommon:PageNumberControl>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.CPDFDrawModeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:pdftoolsui="clr-namespace:Compdfkit_Tools.PDFControlUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="210">
+    <Grid>
+        <pdftoolsui:CPDFDrawModeUI x:Name="CPDFDrawModeUI"></pdftoolsui:CPDFDrawModeUI>
+    </Grid>
+</UserControl>

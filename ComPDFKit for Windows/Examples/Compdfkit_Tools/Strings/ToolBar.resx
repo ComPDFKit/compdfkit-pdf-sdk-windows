@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Tooltip_Note" xml:space="preserve">
+        <value>Note</value>
+    </data>
+    <data name="Tooltip_Highlight" xml:space="preserve">
+        <value>Highlight</value>
+    </data>
+    <data name="Tooltip_Underline" xml:space="preserve">
+        <value>Underline</value>
+    </data>
+    <data name="Tooltip_Strikeout" xml:space="preserve">
+        <value>Strikeout</value>
+    </data>
+    <data name="Tooltip_Squiggly" xml:space="preserve">
+        <value>Squiggly</value>
+    </data>
+    <data name="Tooltip_Freehand" xml:space="preserve">
+        <value>Ink</value>
+    </data>
+    <data name="Tooltip_Circle" xml:space="preserve">
+        <value>Circle</value>
+    </data>
+    <data name="Tooltip_Square" xml:space="preserve">
+        <value>Square</value>
+    </data>
+    <data name="Tooltip_Arrow" xml:space="preserve">
+        <value>Arrow</value>
+    </data>
+    <data name="Tooltip_Line" xml:space="preserve">
+        <value>Line</value>
+    </data>
+    <data name="Tooltip_FreeText" xml:space="preserve">
+        <value>FreeText</value>
+    </data>
+    <data name="Tooltip_Signature" xml:space="preserve">
+        <value>Signatures</value>
+    </data>
+    <data name="Tooltip_Stamp" xml:space="preserve">
+        <value>Stamp</value>
+    </data>
+    <data name="Tooltip_Image" xml:space="preserve">
+        <value>Image</value>
+    </data>
+    <data name="Tooltip_Link" xml:space="preserve">
+        <value>Link</value>
+    </data>
+    <data name="Tooltip_Audio" xml:space="preserve">
+        <value>Audio</value>
+    </data>
+    <data name="Button_TextField" xml:space="preserve">
+        <value>Text Field</value>
+    </data>
+    <data name="Button_Chb" xml:space="preserve">
+        <value>Check Box</value>
+    </data>
+    <data name="Button_Rdo" xml:space="preserve">
+        <value>Radio Button</value>
+    </data>
+    <data name="Button_ListBox" xml:space="preserve">
+        <value>List Box</value>
+    </data>
+    <data name="Button_Cmb" xml:space="preserve">
+        <value>Combo Button</value>
+    </data>
+    <data name="Button_Btn" xml:space="preserve">
+        <value>Push Button</value>
+    </data>
+    <data name="Button_Sig" xml:space="preserve">
+        <value>Signatures</value>
+    </data>
+    <data name="Button_Text" xml:space="preserve">
+        <value>Add Text</value>
+    </data>
+    <data name="Button_Image" xml:space="preserve">
+        <value>Add Image</value>
+    </data>
+    <data name="Button_Insert" xml:space="preserve">
+        <value>Insert</value>
+    </data>
+    <data name="Button_Replace" xml:space="preserve">
+        <value>Replace</value>
+    </data>
+    <data name="Button_Extract" xml:space="preserve">
+        <value>Extract</value>
+    </data>
+    <data name="Button_Merge" xml:space="preserve">
+        <value>Merge</value>
+    </data>
+    <data name="Button_Split" xml:space="preserve">
+        <value>Split</value>
+    </data>
+    <data name="Button_Reverse" xml:space="preserve">
+        <value>Reverse</value>
+    </data>
+    <data name="Button_NewSig" xml:space="preserve">
+        <value>Add a Signature Field</value>
+    </data>
+    <data name="Button_VerifySig" xml:space="preserve">
+        <value>Verify the Signature</value>
+    </data>
+    <data name="Button_Copy" xml:space="preserve">
+        <value>Copy</value>
+    </data>
+    <data name="Button_Paste" xml:space="preserve">
+        <value>Paste</value>
+    </data>
+    <data name="Button_Rotate" xml:space="preserve">
+        <value>Rotate</value>
+    </data>
+    <data name="Button_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Button_Line" xml:space="preserve">
+        <value>LIne</value>
+    </data>
+    <data name="Button_Multiline" xml:space="preserve">
+        <value>Multiline</value>
+    </data>
+    <data name="Button_Polygonal" xml:space="preserve">
+        <value>Polygon</value>
+    </data>
+    <data name="Button_Rectangle" xml:space="preserve">
+        <value>Rectangle</value>
+    </data>
+</root>

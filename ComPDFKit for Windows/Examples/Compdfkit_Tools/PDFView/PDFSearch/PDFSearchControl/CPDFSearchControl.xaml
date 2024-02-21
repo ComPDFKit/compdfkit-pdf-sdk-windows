@@ -1,0 +1,193 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.CPDFSearchControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:ui="clr-namespace:Compdfkit_Tools.PDFControlUI"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Background="White">
+    <UserControl.Resources>
+        <Style x:Key="MenuItemCheckBoxStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <BulletDecorator Background="Aquamarine">
+                            <BulletDecorator.Bullet>
+                                <Grid Width="13" Height="13">
+                                    <Path x:Name="CheckMark" VerticalAlignment="Center" Stroke="#FF707070" StrokeThickness="2" Data="M 0 4 L 4 8 L 8 0" Visibility="Collapsed"/>
+                                </Grid>
+                            </BulletDecorator.Bullet>
+                            <ContentPresenter Margin="4,0,0,0" VerticalAlignment="Center" />
+                        </BulletDecorator>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ButtonHoverStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="grid" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <Border Name="border" Background="Transparent" BorderThickness="0" CornerRadius="5">
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Focusable="False" 
+                                    RecognizesAccessKey="True">
+                                </ContentPresenter>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#AA738199" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DrawingImage x:Key="ImageDrawing">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                  <DrawingGroup.OpacityMask>
+                    <DrawingBrush ViewportUnits="Absolute" ViewboxUnits="Absolute" Viewport="-1.5,-1.5,19,19" Viewbox="-1.5,-1.5,19,19" Stretch="Uniform" TileMode="None">
+                      <DrawingBrush.Drawing>
+                        <DrawingGroup>
+                          <GeometryDrawing Brush="#FFFFFFFF">
+                            <GeometryDrawing.Geometry>
+                              <PathGeometry FillRule="EvenOdd" Figures="M3.3863,1.4636L4.7429,1.6591C5.1317,1.7151,5.5199,1.5529,5.7532,1.2369L6.5727,0.127C7.0358,0.0435 7.5128,0 8,0 8.437,0 8.8658,0.035 9.2837,0.1024L10.1213,1.2369C10.3546,1.5529,10.7428,1.7151,11.1316,1.6591L12.5924,1.4486C13.297,1.9434,13.9182,2.5491,14.4306,3.2402L14.2102,4.827C14.1574,5.2073,14.3132,5.5868,14.618,5.8204L15.9124,6.8121C15.9701,7.1997 16,7.5964 16,8 16,8.4458 15.9635,8.8831 15.8934,9.309L14.618,10.2863C14.3132,10.5199,14.1574,10.8993,14.2102,11.2797L14.4181,12.7766C13.8771,13.5023,13.216,14.1331,12.4642,14.6396L11.1316,14.4475C10.7428,14.3915,10.3546,14.5537,10.1213,14.8697L9.3735,15.8825C8.9273,15.9598 8.4683,16 8,16 7.4808,16 6.9731,15.9505 6.4814,15.8561L5.7532,14.8697C5.5199,14.5537,5.1317,14.3915,4.7429,14.4475L3.5137,14.6247C2.7216,14.0872,2.0309,13.4113,1.4765,12.6319L1.6643,11.2797C1.7171,10.8993,1.5613,10.5199,1.2565,10.2863L0.1256,9.4198C0.0431,8.959 0,8.4845 0,8 0,7.5584 0.0358,7.1251 0.1046,6.7029L1.2565,5.8204C1.5613,5.5868,1.7171,5.2073,1.6643,4.827L1.4641,3.3856C1.9908,2.6409,2.6416,1.9902,3.3863,1.4636z M10.1334,8C10.1334,9.1782 9.1783,10.1333 8,10.1333 6.8218,10.1333 5.8667,9.1782 5.8667,8 5.8667,6.8218 6.8218,5.8667 8,5.8667 9.1783,5.8667 10.1334,6.8218 10.1334,8z" />
+                            </GeometryDrawing.Geometry>
+                          </GeometryDrawing>
+                        </DrawingGroup>
+                      </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                  </DrawingGroup.OpacityMask>
+                  <GeometryDrawing Brush="#FF43474D">
+                    <GeometryDrawing.Geometry>
+                      <PathGeometry FillRule="Nonzero" Figures="M3.3863,1.4636L3.6003,-0.0211 3.0085,-0.1063 2.5203,0.2389 3.3863,1.4636z M4.7429,1.6591L4.529,3.1438 4.529,3.1438 4.7429,1.6591z M5.7532,1.2369L4.5465,0.3459 4.5465,0.3459 5.7532,1.2369z M6.5727,0.127L6.3068,-1.3493 5.7201,-1.2436 5.366,-0.764 6.5727,0.127z M9.2837,0.1024L10.4904,-0.7885 10.1268,-1.281 9.5226,-1.3784 9.2837,0.1024z M10.1213,1.2369L11.328,0.3459 11.328,0.3459 10.1213,1.2369z M11.1316,1.6591L11.3455,3.1438 11.3455,3.1438 11.1316,1.6591z M12.5924,1.4486L13.4544,0.221 12.9674,-0.121 12.3784,-0.0361 12.5924,1.4486z M14.4306,3.2402L15.9163,3.4465 16.0006,2.8393 15.6355,2.3468 14.4306,3.2402z M14.2102,4.827L12.7245,4.6206 12.7245,4.6206 14.2102,4.827z M14.618,5.8204L15.5303,4.6297 15.5303,4.6297 14.618,5.8204z M15.9124,6.8121L17.3961,6.5913 17.3067,5.9908 16.8247,5.6215 15.9124,6.8121z M15.8934,9.309L16.8057,10.4997 17.2771,10.1386 17.3735,9.5527 15.8934,9.309z M14.618,10.2863L13.7057,9.0956 14.618,10.2863z M14.2102,11.2797L12.7245,11.486 12.7245,11.486 14.2102,11.2797z M14.4181,12.7766L15.6207,13.6731 15.9885,13.1798 15.9038,12.5703 14.4181,12.7766z M12.4642,14.6396L12.2503,16.1242 12.8227,16.2067 13.3023,15.8836 12.4642,14.6396z M11.1316,14.4475L11.3455,12.9629 11.3455,12.9629 11.1316,14.4475z M10.1213,14.8697L11.328,15.7607 11.328,15.7607 10.1213,14.8697z M9.3735,15.8825L9.6293,17.3606 10.2226,17.2579 10.5802,16.7735 9.3735,15.8825z M6.4814,15.8561L5.2747,16.747 5.6228,17.2185 6.1984,17.3291 6.4814,15.8561z M5.7532,14.8697L6.9599,13.9788 6.9599,13.9787 5.7532,14.8697z M4.7429,14.4475L4.529,12.9629 4.529,12.9629 4.7429,14.4475z M3.5137,14.6247L2.6715,15.8659 3.1525,16.1922 3.7277,16.1093 3.5137,14.6247z M1.4765,12.6319L-0.0092,12.4256 -0.0912,13.0157 0.2542,13.5013 1.4765,12.6319z M1.6643,11.2797L3.15,11.486 1.6643,11.2797z M1.2565,10.2863L2.1688,9.0956 2.1688,9.0956 1.2565,10.2863z M0.1256,9.4198L-1.3509,9.6842 -1.2484,10.2567 -0.7867,10.6104 0.1256,9.4198z M0.1046,6.7029L-0.8077,5.5123 -1.2801,5.8742 -1.3758,6.4616 0.1046,6.7029z M1.2565,5.8204L0.3442,4.6297 0.3442,4.6297 1.2565,5.8204z M1.6643,4.827L3.15,4.6206 3.15,4.6206 1.6643,4.827z M1.4641,3.3856L0.2395,2.5194 -0.1033,3.004 -0.0216,3.5919 1.4641,3.3856z M3.1724,2.9483L4.529,3.1438 4.9569,0.1744 3.6003,-0.0211 3.1724,2.9483z M4.529,3.1438C5.4645,3.2786,6.3985,2.8883,6.9599,2.1279L4.5465,0.3459C4.6413,0.2176,4.7989,0.1517,4.9569,0.1744L4.529,3.1438z M6.9599,2.1279L7.7794,1.0179 5.366,-0.764 4.5465,0.3459 6.9599,2.1279z M6.8386,1.6032C7.2144,1.5355,7.6024,1.5,8,1.5L8,-1.5C7.4233,-1.5,6.8573,-1.4484,6.3068,-1.3493L6.8386,1.6032z M8,1.5C8.3567,1.5,8.7056,1.5286,9.0449,1.5833L9.5226,-1.3784C9.0259,-1.4585,8.5173,-1.5,8,-1.5L8,1.5z M8.077,0.9934L8.9146,2.1279 11.328,0.3459 10.4904,-0.7885 8.077,0.9934z M8.9146,2.1279C9.476,2.8883,10.41,3.2786,11.3455,3.1438L10.9176,0.1744C11.0756,0.1517,11.2333,0.2176,11.328,0.3459L8.9146,2.1279z M11.3455,3.1438L12.8063,2.9333 12.3784,-0.0361 10.9176,0.1744 11.3455,3.1438z M11.7303,2.6761C12.3034,3.0786,12.8088,3.5713,13.2256,4.1335L15.6355,2.3468C15.0275,1.5268,14.2906,0.8083,13.4544,0.221L11.7303,2.6761z M12.9448,3.0339L12.7245,4.6206 15.696,5.0333 15.9163,3.4465 12.9448,3.0339z M12.7245,4.6206C12.5974,5.536,12.9722,6.449,13.7057,7.011L15.5303,4.6297C15.6542,4.7246,15.7174,4.8787,15.696,5.0333L12.7245,4.6206z M13.7057,7.011L15.0001,8.0028 16.8247,5.6215 15.5303,4.6297 13.7057,7.011z M14.4288,7.033C14.4756,7.3477,14.5,7.6705,14.5,8L17.5,8C17.5,7.5222,17.4646,7.0517,17.3961,6.5913L14.4288,7.033z M14.5,8C14.5,8.3639,14.4702,8.7197,14.4133,9.0654L17.3735,9.5527C17.4568,9.0465,17.5,8.5277,17.5,8L14.5,8z M14.9811,8.1184L13.7057,9.0956 15.5303,11.4769 16.8057,10.4997 14.9811,8.1184z M13.7057,9.0956C12.9722,9.6577,12.5974,10.5707,12.7245,11.486L15.696,11.0734C15.7174,11.2279,15.6542,11.3821,15.5303,11.4769L13.7057,9.0956z M12.7245,11.486L12.9324,12.9829 15.9038,12.5703 15.696,11.0734 12.7245,11.486z M13.2155,11.8801C12.7754,12.4704,12.2375,12.9837,11.6261,13.3955L13.3023,15.8836C14.1946,15.2825,14.9789,14.5341,15.6207,13.6731L13.2155,11.8801z M12.6781,13.1549L11.3455,12.9629 10.9176,15.9322 12.2503,16.1242 12.6781,13.1549z M11.3455,12.9629C10.41,12.8281,9.476,13.2184,8.9146,13.9788L11.328,15.7607C11.2332,15.8891,11.0756,15.955,10.9176,15.9322L11.3455,12.9629z M8.9146,13.9788L8.1668,14.9916 10.5802,16.7735 11.328,15.7607 8.9146,13.9788z M9.1178,14.4045C8.7556,14.4672,8.3822,14.5,8,14.5L8,17.5C8.5544,17.5,9.0989,17.4523,9.6293,17.3606L9.1178,14.4045z M8,14.5C7.5763,14.5,7.1633,14.4597,6.7645,14.383L6.1984,17.3291C6.7829,17.4414,7.3853,17.5,8,17.5L8,14.5z M7.6882,14.9651L6.9599,13.9788 4.5465,15.7607 5.2747,16.747 7.6882,14.9651z M6.9599,13.9787C6.3985,13.2184,5.4645,12.8281,4.529,12.9629L4.9569,15.9322C4.7989,15.955,4.6413,15.8891,4.5465,15.7607L6.9599,13.9787z M4.529,12.9629L3.2998,13.14 3.7277,16.1093 4.9569,15.9322 4.529,12.9629z M4.356,13.3834C3.7118,12.9463,3.1498,12.3964,2.6988,11.7624L0.2542,13.5013C0.9121,14.4262,1.7314,15.228,2.6715,15.8659L4.356,13.3834z M2.9622,12.8382L3.15,11.486 0.1785,11.0734 -0.0092,12.4256 2.9622,12.8382z M3.15,11.486C3.2771,10.5707,2.9023,9.6577,2.1688,9.0956L0.3442,11.4769C0.2203,11.3821,0.1571,11.2279,0.1785,11.0734L3.15,11.486z M2.1688,9.0956L1.0379,8.2291 -0.7867,10.6104 0.3442,11.4769 2.1688,9.0956z M1.6021,9.1553C1.5351,8.7814,1.5,8.3955,1.5,8L-1.5,8C-1.5,8.5736,-1.449,9.1366,-1.3509,9.6842L1.6021,9.1553z M1.5,8C1.5,7.6395,1.5292,7.287,1.5851,6.9443L-1.3758,6.4616C-1.4576,6.9632,-1.5,7.4772,-1.5,8L1.5,8z M1.0169,7.8936L2.1688,7.011 0.3442,4.6297 -0.8077,5.5123 1.0169,7.8936z M2.1688,7.011C2.9023,6.449,3.2771,5.536,3.15,4.6206L0.1785,5.0333C0.1571,4.8787,0.2203,4.7246,0.3442,4.6297L2.1688,7.011z M3.15,4.6206L2.9499,3.1793 -0.0216,3.5919 0.1785,5.0333 3.15,4.6206z M2.6888,4.2518C3.1171,3.6461,3.6467,3.1167,4.2524,2.6883L2.5203,0.2389C1.6365,0.8638,0.8645,1.6357,0.2395,2.5194L2.6888,4.2518z M8,11.6333C10.0067,11.6333,11.6334,10.0066,11.6334,8L8.6334,8C8.6334,8.3498,8.3498,8.6333,8,8.6333L8,11.6333z M4.3667,8C4.3667,10.0066,5.9934,11.6333,8,11.6333L8,8.6333C7.6503,8.6333,7.3667,8.3498,7.3667,8L4.3667,8z M8,4.3667C5.9934,4.3667,4.3667,5.9934,4.3667,8L7.3667,8C7.3667,7.6502,7.6503,7.3667,8,7.3667L8,4.3667z M11.6334,8C11.6334,5.9934,10.0067,4.3667,8,4.3667L8,7.3667C8.3498,7.3667,8.6334,7.6502,8.6334,8L11.6334,8z" />
+                    </GeometryDrawing.Geometry>
+                  </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <common:BotaResourceConverter x:Key="BotaResourceConverter" />
+        <Style x:Key="UnderlineToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border>
+                            <Grid Background="Transparent">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                <Rectangle x:Name="Underline" Height="1" VerticalAlignment="Bottom" Fill="Blue" Visibility="Collapsed"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Underline" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="Blue"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ItemsPanelTemplate x:Key="MenuItemPanelTemplate">
+            <StackPanel  Background="Transparent"/>
+        </ItemsPanelTemplate>
+        <Style TargetType="{x:Type MenuItem}" x:Key="ItemStyle">
+            <Setter Property="ItemsPanel" Value="{StaticResource MenuItemPanelTemplate}"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <RadioButton Content="{Binding Converter={StaticResource BotaResourceConverter}, ConverterParameter=Button_Search}" Style="{StaticResource UnderlineToggleButtonStyle}" x:Name="SearchTog" Width="80" Margin="10,0,10,0" Checked="SearchTog_Checked"></RadioButton>
+            <RadioButton Content="{Binding Converter={StaticResource BotaResourceConverter}, ConverterParameter=Button_Replace}" Style="{StaticResource UnderlineToggleButtonStyle}" x:Name="ReplaceTog" Width="80" Checked="ReplaceTog_Checked" Visibility="Collapsed"></RadioButton>
+        </StackPanel>
+        <Menu HorizontalAlignment="Right" VerticalAlignment="Center" Width="25" Height="25"  Margin="0,3,10,0" Background="Transparent" BorderThickness="0">
+            <MenuItem Style="{StaticResource ItemStyle}" Padding="0">
+                <MenuItem.Header>
+                    <Image Source="{StaticResource ImageDrawing}" Width="25" Height="25" Margin="0,0,0,0"></Image>
+                </MenuItem.Header>
+                
+                <MenuItem IsCheckable="True" IsChecked="{Binding IsCaseSensitive,Mode=TwoWay}" x:Name="CaseChb" Header="{Binding Converter={StaticResource BotaResourceConverter}, ConverterParameter=Chb_Case}"></MenuItem>
+                <MenuItem IsCheckable="True" IsChecked="{Binding IsMatchWholeWord,Mode=OneWayToSource}" x:Name="MatchChb" Header="{Binding Converter={StaticResource BotaResourceConverter}, ConverterParameter=Chb_Match}"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <Border Grid.Row="1">
+            <ui:CPDFSearchInputUI Margin="5,0,5,0"  x:Name="SearchInput"></ui:CPDFSearchInputUI>
+            
+        </Border>
+        
+        <Border x:Name="ReplaceBorder" Grid.Row="2" Background="White" Height="120">
+            <StackPanel Margin="10" HorizontalAlignment="Center" Width="{Binding ElementName=ReplaceBorder,Path=ActualWidth}">
+                <Button Click="ReplaceCurrent_Click" Content="{Binding Converter={StaticResource BotaResourceConverter}, ConverterParameter=Button_Replace}" Margin="25,10,25,10" Height="30" Background="#2D3D62" Foreground="White" Style="{StaticResource ButtonHoverStyle}"></Button>
+                <Button Click="ReplaceAll_Click" Content="{Binding Converter={StaticResource BotaResourceConverter}, ConverterParameter=Button_ReplaceAll}" Margin="25,0,25,0" Height="30" Background="#E2E3E6" Foreground="Black" Style="{StaticResource ButtonHoverStyle}"></Button>
+            </StackPanel>
+        </Border>
+        
+        <Border x:Name="ResultBorder" Visibility="Collapsed" Background="#F2F3F5" Grid.Row="2" Height="32">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
+                    <TextBlock Name="ResultNum" Foreground="#666666" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Name="ResultText" Foreground="#666666" VerticalAlignment="Center" Margin="3,0,0,0"></TextBlock>
+                </StackPanel>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0" Foreground="#666666"
+                           Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Text_Page}"></TextBlock>
+            </Grid>
+        </Border>
+        <ui:CPDFSearchResultUI x:Name="SearchResult" Grid.Row="3" Visibility="Collapsed"></ui:CPDFSearchResultUI>
+        <Border Grid.Row="4" x:Name="ProgressBorder" Visibility="Hidden">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Rectangle Height="1" VerticalAlignment="Top" Fill="#50000000" Grid.ColumnSpan="2"></Rectangle>
+                <common:CustomProgressBarControl x:Name="ProgressBar" Height="30" ProgressBarHeight="10" ></common:CustomProgressBarControl>
+                <Button Grid.Column="1" HorizontalAlignment="Right" Width="20" Height="20" Background="#01000000" BorderThickness="0" Margin="10,0,5,0" Click="SearchCancel_Click">
+                    <Path Fill="Black" IsHitTestVisible="False">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <TranslateTransform X="8" Y="-8"/>
+                                <RotateTransform Angle="45"/>
+                                <TranslateTransform X="-4" Y="-5"/>
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                        <Path.Data>
+                            M9.48528137,2.98528137 L9.48428137,8.48428137 L14.9852814,8.48528137 L14.9852814,9.48528137 L9.48428137,9.48428137 L9.48528137,14.9852814 L8.48528137,14.9852814 
+                            L8.48428137,9.48428137 L2.98528137,9.48528137 L2.98528137,8.48528137 L8.48428137,8.48428137 L8.48528137,2.98528137 L9.48528137,2.98528137 Z
+                        </Path.Data>
+                    </Path>
+                </Button>
+            </Grid>
+        </Border>
+        
+        
+    </Grid>
+</UserControl>

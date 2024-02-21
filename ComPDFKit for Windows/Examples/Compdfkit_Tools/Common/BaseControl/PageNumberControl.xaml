@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="Compdfkit_Tools.Common.PageNumberControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="250">
+    <Border Name="FloatPageTool" Background="#CC000000" CornerRadius="5" MinWidth="100" MaxWidth="160" Height="36" >
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!--上一页-->
+            <Border Background="Transparent" Width="20" Height="20" Margin="11,0,0,0" MouseLeftButtonDown="PrevPageBorder_MouseLeftButtonDown">
+                <Path Fill="White" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Path.Data>
+                        M7.70711 13.7071C8.06759 13.3466 8.09532 12.7794 7.7903 12.3871L7.70711 12.2929L2.415 7L7.70711 1.70711C8.06759 1.34662 
+                        8.09532 0.779392 7.7903 0.387101L7.70711 0.292894C7.34662 -0.0675898 6.77939 -0.0953197 6.3871 0.209705L6.29289 
+                        0.292894L0.292892 6.29289C-0.0675917 6.65338 -0.0953217 7.22061 0.209703 7.6129L0.292892 7.70711L6.29289 
+                        13.7071C6.68342 14.0976 7.31658 14.0976 7.70711 13.7071Z
+                    </Path.Data>
+                </Path>
+            </Border>
+
+            <!--页码范围-->
+            <TextBlock Name="PageRangeText" Grid.Column="1" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       MouseLeftButtonUp="PageRangeText_MouseLeftButtonUp">19999/99999</TextBlock>
+
+            <TextBox Name="PageInputText" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White" FontSize="12"
+                     LostFocus="PageInputText_LostFocus" KeyDown="PageInputText_KeyDown" Visibility="Collapsed" InputMethod.IsInputMethodEnabled="False"
+                     PreviewKeyDown="PageInputText_PreviewKeyDown" CaretBrush="White" CommandManager.PreviewCanExecute="PageInputText_CanExecute"
+                     HorizontalContentAlignment="Center"
+                      ></TextBox>
+            <!--下一页-->
+            <Border Width="20" Height="20" Background="Transparent" Grid.Column="2" Margin="0,0,11,0" MouseLeftButtonDown="NextPageBorder_MouseLeftButtonDown">
+                <Path Fill="White" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Path.Data>
+                        M0.292893 0.292893C-0.0675908 0.653377 -0.0953203 1.22061 0.209705 1.6129L0.292893 1.70711L5.585 7L0.292893 
+                                    12.2929C-0.0675908 12.6534 -0.0953203 13.2206 0.209705 13.6129L0.292893 13.7071C0.653377 14.0676 1.22061 14.0953 
+                                    1.6129 13.7903L1.70711 13.7071L7.70711 7.70711C8.06759 7.34662 8.09532 6.77939 7.7903 6.3871L7.70711 6.29289L1.70711 
+                                    0.292893C1.31658 -0.0976311 0.683418 -0.0976311 0.292893 0.292893Z
+                    </Path.Data>
+                </Path>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

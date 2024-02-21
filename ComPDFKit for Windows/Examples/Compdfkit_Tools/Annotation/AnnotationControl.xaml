@@ -1,0 +1,161 @@
+<UserControl x:Class="Compdfkit_Tools.PDFControl.AnnotationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             xmlns:cpdftools="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:cpdfcommon="clr-namespace:Compdfkit_Tools.Common"
+             Loaded="MainWindow_Loaded"
+             d:DesignHeight="720" d:DesignWidth="1080">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Name="BodyGrid" Grid.Row="1">
+                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions> 
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0"></ColumnDefinition>
+                    <ColumnDefinition Width="0"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="ToolBarContainer" Height="45" Visibility="Visible"  BorderThickness="1" BorderBrush="#1A000000" Background="#F2F3F5" Grid.ColumnSpan="4">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <cpdftools:CPDFAnnotationBarControl x:Name="AnnotationBarControl" Loaded="AnnotationBarControl_Loaded" Unloaded="AnnotationBarControl_Unloaded" Height="44"/>
+                        <Line Height="40" Stroke="#D5D6D8" StrokeThickness="2" X1="0" Y1="10" X2="0" Y2="30" Margin="8,0,8,0" /> 
+                        <Button Name="UndoBtn" Style="{StaticResource LightButtonStyle}" BorderThickness="0"  Width="40" Height="40" IsEnabled="{Binding CanUndo,Mode=OneWay}"  Click="UndoButton_Click"
+                                    Background="Transparent">
+                            <Path x:Name="UndoPath" IsEnabled="{Binding CanUndo,Mode=OneWay}">
+                                <Path.Style>
+                                    <Style TargetType="Path">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Fill" Value="LightGray"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="True">
+                                                <Setter Property="Fill" Value="#43474D"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Style>
+                                <Path.Data>
+                                    M1.03033 3.62131L0.5 4.15164L1.03033 4.68197L4.65164 8.30328L5.7123 7.24261L3.37132 4.90164H10.0607C11.5794 4.90164 12.8107 6.13285 12.8107 
+                                7.65164C12.8107 9.17042 11.5794 10.4016 10.0607 10.4016H2.56066V11.9016H10.0607C12.4079 11.9016 14.3107 9.99885 14.3107 7.65164C14.3107 
+                                5.30443 12.4079 3.40164 10.0607 3.40164H3.37132L5.7123 1.06066L4.65164 0L1.03033 3.62131Z
+                                </Path.Data>
+                            </Path>
+                            <Button.ToolTip>
+                                <ToolTip Content="Undo"></ToolTip>
+                            </Button.ToolTip>
+                        </Button> 
+                        <Button Style="{StaticResource LightButtonStyle}" BorderThickness="0" Width="40" Height="40" Margin="10,0,0,0"  IsEnabled="{Binding CanRedo,Mode=OneWay}" Click="RedoButton_Click"
+                                    Background="Transparent">
+                            <Path IsEnabled="{Binding CanRedo,Mode=OneWay}">
+                                <Path.Resources>
+                                    <Style TargetType="Path">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Fill" Value="LightGray"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="True">
+                                                <Setter Property="Fill" Value="#43474D"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Resources>
+                                <Path.Data>
+                                    M13.7802 3.62131L14.3105 4.15164L13.7802 4.68197L10.1589 8.30328L9.09825 7.24261L11.4392 4.90164H4.74989C3.2311 4.90164 1.99989 6.13285 
+                                1.99989 7.65164C1.99989 9.17042 3.2311 10.4016 4.74989 10.4016H12.2499V11.9016H4.74989C2.40268 11.9016 0.499887 9.99885 0.499887 
+                                7.65164C0.499887 5.30443 2.40268 3.40164 4.74989 3.40164H11.4392L9.09825 1.06066L10.1589 0L13.7802 3.62131Z
+                                </Path.Data>
+                            </Path>
+                            <Button.ToolTip>
+                                <ToolTip Content="Redo"></ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </StackPanel>
+                </Border>
+                   <Border Grid.Row="1" Visibility="Collapsed" Name="BotaContainer">
+                   </Border>
+                <GridSplitter  Grid.Row="1" Name="Splitter" Grid.Column="1" Width="15" ResizeBehavior="PreviousAndNext" Visibility="Collapsed">
+                    <GridSplitter.Template>
+                        <ControlTemplate TargetType="{x:Type GridSplitter}">
+                            <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                        Background="{TemplateBinding Panel.Background}" >
+                                <Path Fill="Gray" VerticalAlignment="Center">
+                                    <Path.Data>
+                                        M15 3.75H1V2.25H15V3.75ZM15 8.75H1V7.25H15V8.75ZM1 13.75H15V12.25H1V13.75Z
+                                    </Path.Data>
+                                </Path>
+                            </Border>
+                        </ControlTemplate>
+                    </GridSplitter.Template>
+                </GridSplitter>
+
+                <Grid  Grid.Row="1" Grid.Column="2" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions> 
+                        <Border x:Name="PDFGrid" Background="#CECECE"></Border> 
+                        <Border Grid.Column="1" Grid.RowSpan="2" Name="PropertyContainer" Visibility="Collapsed"></Border>
+                    </Grid>
+ 
+                    <cpdfcommon:PageNumberControl Grid.Row="1" x:Name="FloatPageTool" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20"></cpdfcommon:PageNumberControl>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <Border Name="PopupBorder" Background="#A0000000" Visibility="Collapsed">
+            <Grid> 
+                <Grid Name="FileInfoUI"  Width="422" Height="680" HorizontalAlignment="Center" VerticalAlignment="Center" Background="White" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Width="50" Height="20" FontSize="14" LineHeight="16" Margin="12,6,0,0" HorizontalAlignment="Left">FileInfo:</TextBlock>
+                    <Button Grid.Column="1" Width="16" Height="16" HorizontalAlignment="Right" Margin="0,8,8,0" BorderThickness="0" Click="FileInfoCloseBtn_Click">
+                        <Button.Content>
+                            <Path Fill="Black">
+                                <Path.Data>
+                                    M6.69495 6L11.5 1.19495L10.805 0.5L6 5.30505L1.19495 0.5L0.5 1.19495L5.30505 6L0.5 10.805L1.19495 11.5L6 6.69495L10.805 11.5L11.5 10.805L6.69495 6Z
+                                </Path.Data>
+                            </Path>
+                        </Button.Content>
+                    </Button>
+                    <cpdftools:CPDFInfoControl Grid.Row="1" Margin="25,10,25,0" Grid.ColumnSpan="2" x:Name="FileInfoControl"></cpdftools:CPDFInfoControl>
+                </Grid>
+ 
+                <cpdfcommon:PasswordDialog x:Name="PasswordUI" Visibility="Collapsed"></cpdfcommon:PasswordDialog>
+            </Grid>
+
+        </Border>
+    </Grid>
+</UserControl>

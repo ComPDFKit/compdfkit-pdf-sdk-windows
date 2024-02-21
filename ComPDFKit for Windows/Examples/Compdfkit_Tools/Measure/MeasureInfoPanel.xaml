@@ -1,0 +1,132 @@
+﻿<UserControl x:Class="Compdfkit_Tools.Measure.MeasureInfoPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.Measure"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="150">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <common:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border BorderBrush="LightGray" CornerRadius="4" Background="White">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="Black" Opacity="0.4"/>
+        </Border.Effect>
+        <Grid Margin="20,20,0,0" Width="300" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Path Name="MeasureIcon" Width="20" Height="20" Fill="#43474D" >
+                <Path.Data>
+                    M17.7782 5.75646L14.2427 2.22093L13.0052 3.45837L15.4802 5.93333L14.4195 6.99399L11.9446 4.51903L10.1768 
+6.28679L12.6518 8.76175L11.5911 9.82241L9.11615 7.34745L7.34838 9.11522L9.82334 11.5902L8.76268 12.6508L6.28772 
+10.1759L4.51996 11.9436L6.99492 14.4186L5.93426 15.4793L3.4593 13.0043L2.22186 14.2417L5.75739 17.7773L17.7782 
+5.75646ZM15.3033 1.16027L14.2427 0.0996094L13.182 1.16027L1.1612 13.1811L0.100539 14.2417L1.1612 15.3024L4.69673 
+18.8379L5.75739 19.8986L6.81805 18.8379L18.8389 6.81712L19.8995 5.75646L18.8389 4.6958L15.3033 1.16027Z
+                </Path.Data>
+            </Path>
+
+            <TextBlock Name="MeasureTitelText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+          FontSize="16">Distance Measurement</TextBlock>
+
+            <Grid Name="LinePanel" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Scale}"></TextBlock>
+                <TextBlock Name="ScaleText" Grid.Column="1" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="1" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Length}"></TextBlock>
+                <TextBlock Name="DistanceText" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="2"  Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Precision}"></TextBlock>
+                <TextBlock Name="PrecisionText" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="3" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Angle}"></TextBlock>
+                <TextBlock Name="AngleText" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="4" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_X}"></TextBlock>
+                <TextBlock Name="XText" Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="5" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Y}"></TextBlock>
+                <TextBlock Name="YText" Grid.Row="5" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+            </Grid>
+
+            <Grid Name="PolyLinePanel" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Scale}"></TextBlock>
+                <TextBlock Name="ScalePolyLineText" Grid.Column="1" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="1" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Length}"></TextBlock>
+                <TextBlock Name="DistancePolyLineText" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="2"  Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Precision}"></TextBlock>
+                <TextBlock Name="PrecisionPolyLineText" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="3" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Angle}"></TextBlock>
+                <TextBlock Name="AnglePolyLineText" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+            </Grid>
+
+            <Grid Name="PolygonPanel" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Scale}"></TextBlock>
+                <TextBlock Name="ScalePolygonText" Grid.Column="1" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="1" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Area}"></TextBlock>
+                <TextBlock Name="RoundPolygonText" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="2"  Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Precision}"></TextBlock>
+                <TextBlock Name="PrecisionPolygonText" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+                <TextBlock Grid.Row="3" Margin="0,10,0,0" FontSize="14" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Angle}"></TextBlock>
+                <TextBlock Name="AnglePolygonText" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" FontSize="14"></TextBlock>
+
+            </Grid>
+
+            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" 
+                       Margin="0,10,40,20" FontSize="14" Foreground="Blue" Cursor="Hand"
+                       MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter}, ConverterParameter=Board_Settings}"></TextBlock>
+
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,254 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.FillDigitalSignatureControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.PDFControl"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="530" d:DesignWidth="630" 
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <common:SigResourceConverter x:Key="SigResourceConverter"></common:SigResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Name="MainGrid" Background="White">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+
+            <Grid Grid.Row="0" Width="314" HorizontalAlignment="Center" Margin="0,20,0,1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="91"></ColumnDefinition>
+                    <ColumnDefinition Width="87"></ColumnDefinition>
+                    <ColumnDefinition Width="68"></ColumnDefinition>
+                    <ColumnDefinition Width="68"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Grid>
+                    <Border Name="KeyboardBorder" Background="White" Padding="0,0,0,5" BorderBrush="#4982E6" Width="75"
+                      MouseDown="Border_MouseDown" Tag="Keyboard">
+                        <TextBlock FontSize="16" HorizontalAlignment="Center" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Option_Keyboard}"></TextBlock>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Column="1">
+                    <Border Name="TrackpadBorder" Background="White" Padding="0,0,0,5" BorderBrush="#4982E6" Width="72"
+                      MouseDown="Border_MouseDown" Tag="Trackpad">
+                        <TextBlock FontSize="16" HorizontalAlignment="Center" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Option_Trackpad}"></TextBlock>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Column="2">
+                    <Border Name="ImageBorder" Background="White" Padding="0,0,0,5" BorderBrush="#4982E6" Width="52"
+                      MouseDown="Border_MouseDown" Tag="Image">
+                        <TextBlock FontSize="16" HorizontalAlignment="Center" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Option_Image}"></TextBlock>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Column="3">
+                    <Border Name="NoneBorder" Background="White" Padding="0,0,0,5" BorderBrush="#4982E6" Width="43"
+                      MouseDown="Border_MouseDown" Tag="None">
+                        <TextBlock FontSize="16" HorizontalAlignment="Center" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Option_None}"></TextBlock>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <Canvas Grid.Row="1" Width="580" Height="187" Background="#F4F7FF">
+                <Image Width="580" Height="187" x:Name="imageControl" />
+            </Canvas>
+
+            <StackPanel Grid.Row="2" Name="ImagePickPanel" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,6,30,0"
+                        Visibility="Hidden">
+                <TextBlock x:Name="BrowseTxt" Foreground="Blue" MouseLeftButtonDown="BrowseTxt_MouseLeftButtonDown" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Browse}"></TextBlock>
+                <TextBlock x:Name="ClearTxt" Margin="10,0,0,0" Foreground="Blue" MouseLeftButtonDown="ClearTxt_MouseLeftButtonDown" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Clear}"></TextBlock>
+            </StackPanel>
+
+            <Grid Grid.Row="3" Margin="25,0,25,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock FontSize="14" Margin="0,3,0,0" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Include}"></TextBlock>
+                <StackPanel Margin="00,0,20,0" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_TextAlignment}"></TextBlock>
+                    <ToggleButton Name="TextAlignLeftBtn" Style="{StaticResource ToggleButtonStyle}" BorderThickness="0" Width="73" Height="30" 
+                            IsChecked="True" Click="TextAlignBtn_Click">
+                        <Path Fill="Black">
+                            <Path.Data>
+                                M13 4V3H0V4H13ZM16 8V7H0V8H16ZM10 11V12H0V11H10Z
+                            </Path.Data>
+                        </Path>
+                    </ToggleButton>
+                    <ToggleButton Name="TextAlignRightBtn" Style="{StaticResource ToggleButtonStyle}" BorderThickness="0" Width="73" Height="30"
+                            Click="TextAlignBtn_Click">
+                        <Path Fill="Black">
+                            <Path.Data>
+                                M16 4V3H3.00079V4H16ZM16 8V7H0.000976562V8H16ZM16 11V12H6.00061V11H16Z
+                            </Path.Data>
+                        </Path>
+                    </ToggleButton>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="4" Margin="25,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                
+                <Grid HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32"></RowDefinition>
+                        <RowDefinition Height="32"></RowDefinition>
+                        <RowDefinition Height="32"></RowDefinition>
+                        <RowDefinition Height="32"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="50"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox x:Name="NameChk" FontSize="14" Click="NameChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Name}"></CheckBox>
+                    <CheckBox x:Name="DateChk" FontSize="14" Grid.Row="1" Click="DateChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Date}"></CheckBox>
+                    <CheckBox x:Name="LogoChk" FontSize="14" Grid.Row="2" Click="LogoChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Logo}"></CheckBox>
+                    <CheckBox x:Name="ReasonChk" FontSize="14" Grid.Row="3" Click="ReasonChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Reason}"></CheckBox>
+
+                    <CheckBox x:Name="DistinguishableNameChk" FontSize="14" Grid.Column="2" Click="DistinguishableNameChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_DN}"></CheckBox>
+                    <CheckBox x:Name="ComPDFKitVersionChk" FontSize="14" Grid.Column="2" Grid.Row="1" Click="ComPDFKitVersionChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Version}"></CheckBox>
+                    <CheckBox x:Name="PositionChk" FontSize="14" Grid.Column="2" Grid.Row="2" Click="PositionChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Position}"></CheckBox>
+                    <CheckBox x:Name="TabChk" FontSize="14" Grid.Column="2" Grid.Row="3" Click="TabChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Tab}"></CheckBox>
+
+                    <StackPanel x:Name="Reasonstp" Visibility="Collapsed" Orientation="Horizontal" Grid.Column="4" Margin="30,0,0,0" Grid.RowSpan="2" Height="30" Width="280">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Cmb_Reason}" VerticalAlignment="Center" Width="50"></TextBlock>
+                        <ComboBox x:Name="ReasonCmb"  SelectionChanged="ReasonCmb_SelectionChanged" Width="220" VerticalContentAlignment="Center">
+                            <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_None}"></ComboBoxItem>
+                            <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_Owner}" IsSelected="True"></ComboBoxItem>
+                            <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_Approving}"></ComboBoxItem>
+                            <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_Reviewed}"></ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel x:Name="PositionStp" Visibility="Collapsed" Orientation="Horizontal" Grid.Column="4" Grid.Row="1" Margin="30,10,0,0"  Grid.RowSpan="2" Height="30" Width="280">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Tip_Position}" VerticalAlignment="Center" Width="50"></TextBlock>
+                        <TextBox Width="220" x:Name="PositionTbx" TextChanged="PositionTbx_TextChanged"></TextBox>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Name="ReasonPanel" Grid.Column="1" Orientation="Horizontal" Margin="15,10,0,0" VerticalAlignment="Top"
+                            Visibility="Collapsed">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Reason</TextBlock> 
+                </StackPanel>
+
+            </Grid>
+
+            <Grid Grid.Row="5" Margin="25,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="CancelBtn" Grid.Column="3" Height="32" Width="82" Style="{StaticResource LightButtonStyle}"
+                        Background="#DFE9FF" BorderThickness="0" Click="CancelBtn_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Cancel}"></Button>
+                <Button x:Name="ContinueBtn" Grid.Column="4" Margin="10,0,25,0" Height="32" Width="97" Style="{StaticResource ButtonStyle}" Click="ContinueBtn_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Save}"></Button>
+            </Grid>
+        </Grid>
+        
+        <Border Name="KeyboardPopup" Background="#A0000000" Visibility="Visible">
+            <Grid Background="White" Width="528" Height="412">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                <Button HorizontalAlignment="Right" Margin="0,8,10,0" Style="{StaticResource LightButtonStyle}" BorderThickness="0"
+                        Background="White" Width="24" Height="24" Click="KeyboardPopupClose_Click">
+                    <Button.Content>
+                        <Path Fill="#43474D" Width="16" Height="16">
+                            <Path.Data>
+                                M12.6466 13.2531L13.0001 13.6066L13.7072 12.8995L13.3537 12.546L8.7072 7.8995L13.2532 3.35352L13.6067 2.99997L12.8996 
+                                2.29286L12.5461 2.64642L8.00009 7.19239L3.45418 2.64648L3.10063 2.29292L2.39352 3.00003L2.74708 3.35358L7.29299 
+                                7.8995L2.64657 12.5459L2.29302 12.8995L3.00013 13.6066L3.35368 13.253L8.0001 8.6066L12.6466 13.2531Z
+                            </Path.Data>
+                        </Path>
+                    </Button.Content>
+                </Button>
+                    <TextBox x:Name="KeyboardInPutTextBox" MaxLength="50" Grid.Row="1" BorderThickness="0" Background="#F2F3F5" Margin="10,0,10,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="45"/>
+                    <StackPanel Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Margin="0,10,20,10">
+                        <common:ColorPickerControl x:Name="TextColorPickerControl" Loaded="TextColorPickerControl_Loaded" ColorChanged="TextColorPickerControl_ColorChanged" TransparentBtnProperty="Collapsed"></common:ColorPickerControl>
+                    </StackPanel>
+                    <Grid Grid.Row="3" Margin="25,0,0,20" VerticalAlignment="Top">
+                        <Button Height="32" Width="82" Style="{StaticResource LightButtonStyle}" Background="#DFE9FF" 
+                                BorderThickness="0" HorizontalAlignment="Left" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Clear}" Click="KeyboardClear_Click"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Height="32" Width="82" Style="{StaticResource LightButtonStyle}" Background="#DFE9FF" 
+                                    BorderThickness="0" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Cancel}" Click="KeyboardCancel_Click"/>
+                            <Button x:Name="SaveBtn" Margin="10,0,25,0" Height="32" Width="97" Style="{StaticResource ButtonStyle}" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Save}" Click="KeyboardSave_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+        </Border>
+
+        <Border Name="CanvaDrawPopup" Background="#A0000000" Visibility="Collapsed">
+            <Grid Background="White" Width="528" Height="412">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Button HorizontalAlignment="Right" Margin="0,8,10,0" Style="{StaticResource LightButtonStyle}" BorderThickness="0"
+                        Background="White" Width="24" Height="24" Click="CanvasPopupClose_Click">
+                    <Button.Content>
+                        <Path Fill="#43474D" Width="16" Height="16">
+                            <Path.Data>
+                                M12.6466 13.2531L13.0001 13.6066L13.7072 12.8995L13.3537 12.546L8.7072 7.8995L13.2532 3.35352L13.6067 2.99997L12.8996 
+                                2.29286L12.5461 2.64642L8.00009 7.19239L3.45418 2.64648L3.10063 2.29292L2.39352 3.00003L2.74708 3.35358L7.29299 
+                                7.8995L2.64657 12.5459L2.29302 12.8995L3.00013 13.6066L3.35368 13.253L8.0001 8.6066L12.6466 13.2531Z
+                            </Path.Data>
+                        </Path>
+                    </Button.Content>
+                </Button>
+
+                <InkCanvas Name="DrawInkCanvas" Grid.Row="1" Width="580" Height="292" Background="#F2F3F5">
+
+                </InkCanvas>
+                <Grid Grid.Row="2" Margin="25,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Height="32" Width="82" Style="{StaticResource LightButtonStyle}" Background="#DFE9FF" 
+                            BorderThickness="0" Click="CanvasClearBtn_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Clear}"></Button>
+
+                    <Button Grid.Column="2" Height="32" Width="82" Style="{StaticResource LightButtonStyle}" Background="#DFE9FF" 
+                            BorderThickness="0" Click="CanvasPopupClose_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Cancel}"></Button>
+                    <Button Grid.Column="3" Click="CanvasPopupConfirm_Click" Margin="10,0,25,0" Height="32" Width="97" Style="{StaticResource ButtonStyle}" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Save}"></Button>
+
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

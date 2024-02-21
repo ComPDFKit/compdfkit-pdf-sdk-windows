@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Button_Create" xml:space="preserve">
+    <value>Create a New File</value>
+  </data>
+  <data name="Button_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Button_Open" xml:space="preserve">
+    <value>Open Document</value>
+  </data>
+  <data name="Button_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="FileMenu_Open" xml:space="preserve">
+    <value>Open Document</value>
+  </data>
+  <data name="FileMenu_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="FileMenu_SaveAs" xml:space="preserve">
+    <value>Save As</value>
+  </data>
+  <data name="FuncDetail_Annotations" xml:space="preserve">
+    <value>Annotate and markup PDFs with notes, links, free text, line, square, arrow, circle, highlight, underline, squiggly, strikeout, stamps, ink, signature, sound, etc. Allow to create, delete, edit, import, export, and flatten PDF annotations. </value>
+  </data>
+  <data name="FuncDetail_Compress" xml:space="preserve">
+    <value>Optimize your PDF file with compression, reducing PDF document size with no or minimum visual quality loss.</value>
+  </data>
+  <data name="FuncDetail_ContentEditor" xml:space="preserve">
+    <value>Edit the text and images with ComPDFKit Content Editor. Give you the freedom to adjust the size, position, style, font, etc.</value>
+  </data>
+  <data name="FuncDetail_Conversion" xml:space="preserve">
+    <value>Convert PDF to PDF/A. ComPDFKit also supports converting PDF to/from Word, Excel, PPT, PNG, JPG, HTML, TXT, CSV, RTF, etc.</value>
+  </data>
+  <data name="FuncDetail_DocCompare" xml:space="preserve">
+    <value>Allow to compare PDF files and design drawings with content comparison and overlay comparison - support setting file color to compare and choose how you want to show the differences.</value>
+  </data>
+  <data name="FuncDetail_DocEditor" xml:space="preserve">
+    <value>Process PDF pages and files. Add, insert, replace, extract, reverse, move, copy, paste, rotate, delete, crop, scale, etc.</value>
+  </data>
+  <data name="FuncDetail_Forms" xml:space="preserve">
+    <value>Create, delete, edit, fill, flatten, import, and export forms. Support a wide array of PDF form fields including text field, check box, radio button, list box, combo button, push button, and signatures.</value>
+  </data>
+  <data name="FuncDetail_Measurement" xml:space="preserve">
+    <value>Create and edit distance, perimeter, area, angle, diameter, radius, and volume measurement annotations. Support changing the scale and precision of measurement annotations.</value>
+  </data>
+  <data name="FuncDetail_Redaction" xml:space="preserve">
+    <value>Use redaction to remove sensitive images, text, and vector graphics, that can't be recovered after applying the redaction. Support customizing redaction appearance and choosing an area or searching for specific text to redact.</value>
+  </data>
+  <data name="FuncDetail_Security" xml:space="preserve">
+    <value>Secure your documents using AES-128, AES-256, or RC4 encryption. Allow to encrypt, decrypt, and customize permissions, edit headers &amp; footers, background, Bates numbers, etc.</value>
+  </data>
+  <data name="FuncDetail_Signatures" xml:space="preserve">
+    <value>Sign PDFs with digital signatures and electronic signatures. Choose the drawn, image, or typed signatures and sign files conveniently. Or sign with your digital ID securely.</value>
+  </data>
+  <data name="FuncDetail_Viewer" xml:space="preserve">
+    <value>View PDFs with tools like display modes, navigation, display themes, scrolling, zooming,  text searching, text reflow, split viewer, etc.</value>
+  </data>
+  <data name="FuncDetail_Watermark" xml:space="preserve">
+    <value>Create, insert, and remove text or image watermarks to brand your users' work and discourage its unauthorized use.</value>
+  </data>
+  <data name="Func_Annotations" xml:space="preserve">
+    <value>Annotations</value>
+  </data>
+  <data name="Func_Compress" xml:space="preserve">
+    <value>Compress</value>
+  </data>
+  <data name="Func_ContentEditor" xml:space="preserve">
+    <value>Content Editor</value>
+  </data>
+  <data name="Func_Conversion" xml:space="preserve">
+    <value>Conversion</value>
+  </data>
+  <data name="Func_DocCompare" xml:space="preserve">
+    <value>Compare Documents</value>
+  </data>
+  <data name="Func_DocEditor" xml:space="preserve">
+    <value>Document Editor</value>
+  </data>
+  <data name="Func_Forms" xml:space="preserve">
+    <value>Forms</value>
+  </data>
+  <data name="Func_Measurement" xml:space="preserve">
+    <value>Measurement</value>
+  </data>
+  <data name="Func_Redaction" xml:space="preserve">
+    <value>Redaction</value>
+  </data>
+  <data name="Func_Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Func_Signatures" xml:space="preserve">
+    <value>Signatures</value>
+  </data>
+  <data name="Func_Viewer" xml:space="preserve">
+    <value>Viewer</value>
+  </data>
+  <data name="Func_Watermark" xml:space="preserve">
+    <value>Watermark</value>
+  </data>
+  <data name="HelpMenu_About" xml:space="preserve">
+    <value>About ComPDFKit</value>
+  </data>
+  <data name="HelpMenu_Contact" xml:space="preserve">
+    <value>Contact Sales</value>
+  </data>
+  <data name="HelpMenu_DeviceID" xml:space="preserve">
+    <value>Check Your Developer Device ID</value>
+  </data>
+  <data name="HelpMenu_Privacy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="HelpMenu_Service" xml:space="preserve">
+    <value>Service Terms</value>
+  </data>
+  <data name="HelpMenu_Support" xml:space="preserve">
+    <value>Technical Support</value>
+  </data>
+  <data name="Menu_AutoSize" xml:space="preserve">
+    <value>Automatically Resize</value>
+  </data>
+  <data name="Menu_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Menu_Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="Menu_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Menu_DoubleContinuous" xml:space="preserve">
+    <value>Double Page Continuous</value>
+  </data>
+  <data name="Menu_DoublePage" xml:space="preserve">
+    <value>Double Page</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Menu_Highlight" xml:space="preserve">
+    <value>Highlight</value>
+  </data>
+  <data name="Menu_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Menu_RealSize" xml:space="preserve">
+    <value>Actual Size</value>
+  </data>
+  <data name="Menu_Sign" xml:space="preserve">
+    <value>Sign</value>
+  </data>
+  <data name="Menu_SingleContinuous" xml:space="preserve">
+    <value>Single Page Continuous</value>
+  </data>
+  <data name="Menu_SinglePage" xml:space="preserve">
+    <value>Single Page</value>
+  </data>
+  <data name="Menu_Squiggly" xml:space="preserve">
+    <value>Squiggly</value>
+  </data>
+  <data name="Menu_Strikeout" xml:space="preserve">
+    <value>Strikeout</value>
+  </data>
+  <data name="Menu_Underline" xml:space="preserve">
+    <value>Underline</value>
+  </data>
+  <data name="Menu_ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="Menu_ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="Option_A3" xml:space="preserve">
+    <value>A3(11.69"x 16.54")</value>
+  </data>
+  <data name="Option_A4" xml:space="preserve">
+    <value>A4(8.27”x 11.69")</value>
+  </data>
+  <data name="Option_A5" xml:space="preserve">
+    <value>A5(5.83"x 8.27")</value>
+  </data>
+  <data name="Option_Landscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Option_Portrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="Subtitle_Orientation" xml:space="preserve">
+    <value>Page Orientation</value>
+  </data>
+  <data name="Subtitle_PageSize" xml:space="preserve">
+    <value>Page Size</value>
+  </data>
+  <data name="Text_Page" xml:space="preserve">
+    <value>Page </value>
+  </data>
+  <data name="Tip_Encrypted" xml:space="preserve">
+    <value>is Encrypted!</value>
+  </data>
+  <data name="Tip_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Tip_WrongPassword" xml:space="preserve">
+    <value>Wrong Password</value>
+  </data>
+  <data name="Title_NewFile" xml:space="preserve">
+    <value>Create a New File</value>
+  </data>
+  <data name="Title_Password" xml:space="preserve">
+    <value>Please Enter the Password</value>
+  </data>
+  <data name="Title_QuickStart" xml:space="preserve">
+    <value>Click to Open &amp; Process</value>
+  </data>
+  <data name="Tooltip_Open" xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="Tooltip_Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="Tooltip_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Tooltip_Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Zoom_FitPage" xml:space="preserve">
+    <value>Fit Page</value>
+  </data>
+  <data name="Zoom_FitWidth" xml:space="preserve">
+    <value>Fit Width</value>
+  </data>
+  <data name="Zoom_Real" xml:space="preserve">
+    <value>Actual Size</value>
+  </data>
+  <data name="Tooltip_Panel" xml:space="preserve">
+    <value>Panel</value>
+  </data>
+  <data name="Tooltip_ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="Tooltip_ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="Tooltip_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Tooltip_Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Tooltip_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Tooltip_Display" xml:space="preserve">
+    <value>Page Display</value>
+  </data>
+  <data name="Tooltip_DocInfo" xml:space="preserve">
+    <value>Document Info</value>
+  </data>
+  <data name="Title_Display" xml:space="preserve">
+    <value>View Setting</value>
+  </data>
+  <data name="Title_DisplayMode" xml:space="preserve">
+    <value>Display Mode</value>
+  </data>
+  <data name="Tooltip_SinglePage" xml:space="preserve">
+    <value>Single Page</value>
+  </data>
+  <data name="Tooltip_DoublePage" xml:space="preserve">
+    <value>Double Page</value>
+  </data>
+  <data name="Tooltip_CoverMode" xml:space="preserve">
+    <value>Cover Mode</value>
+  </data>
+  <data name="Toggle_Continuous" xml:space="preserve">
+    <value>Continuous Scrolling</value>
+  </data>
+  <data name="Toggle_Crop" xml:space="preserve">
+    <value>Crop Mode</value>
+  </data>
+  <data name="Title_SplitView" xml:space="preserve">
+    <value>Split View</value>
+  </data>
+  <data name="Tooltip_Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Tooltip_Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="Title_Themes" xml:space="preserve">
+    <value>Themes</value>
+  </data>
+  <data name="Tooltip_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Tooltip_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Tooltip_Sepia" xml:space="preserve">
+    <value>Sepia</value>
+  </data>
+  <data name="Tooltip_Reseda" xml:space="preserve">
+    <value>Reseda</value>
+  </data>
+  <data name="temp" xml:space="preserve">
+    <value>Reseda</value>
+  </data>
+  <data name="Tooltip_Prop" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="Menu_Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="Menu_Reset" xml:space="preserve">
+    <value>Reset Forms</value>
+  </data>
+  <data name="Menu_MatchPaste" xml:space="preserve">
+    <value>Paste Without Style</value>
+  </data>
+  <data name="Menu_RotateLeft" xml:space="preserve">
+    <value>Rotate Left</value>
+  </data>
+  <data name="Menu_RotateRight" xml:space="preserve">
+    <value>Rotate Right</value>
+  </data>
+  <data name="Title_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Text_Tile" xml:space="preserve">
+    <value>Tile</value>
+  </data>
+  <data name="Option_AllPage" xml:space="preserve">
+    <value>All Pages</value>
+  </data>
+  <data name="Property_Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="Chk_Tile" xml:space="preserve">
+    <value>Tile</value>
+  </data>
+  <data name="Option_CustomPages" xml:space="preserve">
+    <value>Custom pages</value>
+  </data>
+  <data name="Option_EvenPages" xml:space="preserve">
+    <value>Even pages only</value>
+  </data>
+  <data name="Option_OddPages" xml:space="preserve">
+    <value>Odd pages only</value>
+  </data>
+  <data name="Caption_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Warn_Delete" xml:space="preserve">
+    <value>Are you sure to delete?</value>
+  </data>
+  <data name="Title_Features" xml:space="preserve">
+    <value>Features</value>
+  </data>
+  <data name="Warn_NotSave" xml:space="preserve">
+    <value>is changed. Do you want to save the changes?</value>
+  </data>
+  <data name="Tip_Permission" xml:space="preserve">
+    <value>is with permission restrictions.</value>
+  </data>
+  <data name="Text_ImageCorrupted" xml:space="preserve">
+    <value>Load image failed. Please check if the image is corrupted.</value>
+  </data>
+  <data name="Menu_Replace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="Menu_Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Menu_Opacity" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+  <data name="Menu_HFlip" xml:space="preserve">
+    <value>Flip horizontal</value>
+  </data>
+  <data name="Menu_VFlip" xml:space="preserve">
+    <value>Flip vertical</value>
+  </data>
+  <data name="Menu_Crop" xml:space="preserve">
+    <value>Crop</value>
+  </data>
+  <data name="FileMenu_Flatten" xml:space="preserve">
+    <value>Save as Flattened PDF</value>
+  </data>
+</root>

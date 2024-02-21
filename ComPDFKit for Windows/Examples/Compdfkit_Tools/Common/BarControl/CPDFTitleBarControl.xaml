@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="Compdfkit_Tools.PDFControl.CPDFTitleBarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:Compdfkit_Tools.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Asset/Styles/MenuItemStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <common:CommonResourceConverter x:Key="CommonResourceConverter"></common:CommonResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid x:Name="TitleBarGrid" Background="#FFFFFF" HorizontalAlignment="Stretch">
+        <Grid Height="40" Width="auto" HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal">
+                <Menu 
+                  Width="auto" 
+                  Background="Transparent"
+                  VerticalAlignment="Top"
+                  HorizontalAlignment="Left">
+                    
+                    <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Menu_File}" Style="{StaticResource Dropdown_MenuItem}">
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=FileMenu_Open}" Name="OpenFileItem" Style="{StaticResource Sub_MenuItem}" Click="OpenFileItem_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=FileMenu_Save}" Style="{StaticResource Sub_MenuItem}"  Click="SaveFileItem_Click" IsEnabled="{Binding CanSave, RelativeSource={RelativeSource AncestorType=UserControl}}"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=FileMenu_SaveAs}" Style="{StaticResource Sub_MenuItem}"  Click="SaveAsItem_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=FileMenu_Flatten}" Style="{StaticResource Sub_MenuItem}"  Click="FlattenItem_Click"></MenuItem>
+                    </MenuItem>
+                    
+                    <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Menu_Help}" Style="{StaticResource Dropdown_MenuItem}">
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_About}" Style="{StaticResource Sub_MenuItem}" Click="AboutUsItem_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_Contact}" Style="{StaticResource Sub_MenuItem}" Click="ContactUs_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_Support}" Style="{StaticResource Sub_MenuItem}" Click="TechnicalSupport_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_Privacy}" Style="{StaticResource Sub_MenuItem}" Click="PrivacyAgreement_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_Service}" Style="{StaticResource Sub_MenuItem}" Click="ServiceTerms_Click"></MenuItem>
+                        <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_DeviceID}" Style="{StaticResource Sub_MenuItem}" Click="DeviceSerial_Click"></MenuItem>
+                    </MenuItem>
+                </Menu>
+
+                <Menu 
+                  Width="auto" 
+                  Background="Transparent"
+                  VerticalAlignment="Top"
+                  HorizontalAlignment="Left" Visibility="Collapsed">
+                    <MenuItem Header="Settings" Style="{StaticResource Dropdown_MenuItem}">
+                        <MenuItem Header="Theme" Width="100" Style="{StaticResource Sub_Dropdown_MenuItem}">
+                            <MenuItem Header="Light" Style="{StaticResource Dropdown_Sub_MenuItem}"></MenuItem>
+                            <MenuItem Header="Dark" Style="{StaticResource Dropdown_Sub_MenuItem}"></MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Mode" Style="{StaticResource Sub_Dropdown_MenuItem}">
+                            <MenuItem Header="View" Style="{StaticResource Dropdown_Sub_MenuItem}"></MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Cutting" Style="{StaticResource Sub_MenuItem}"></MenuItem>
+                    </MenuItem>
+                </Menu>
+
+                <Menu
+                  Width="auto" 
+                  Background="Transparent"
+                  VerticalAlignment="Top"
+                  HorizontalAlignment="Left" Visibility="Collapsed">
+                    <MenuItem Header="Help" Style="{StaticResource Dropdown_MenuItem}">
+                        <MenuItem Header="Guide" Style="{StaticResource Sub_MenuItem }"></MenuItem>
+                        <MenuItem Header="Api Reference" Style="{StaticResource Sub_MenuItem }"></MenuItem>
+                        <MenuItem Header="Contact us" Style="{StaticResource Sub_MenuItem }"></MenuItem>
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

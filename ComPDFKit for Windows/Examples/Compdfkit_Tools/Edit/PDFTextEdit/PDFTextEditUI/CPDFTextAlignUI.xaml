@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="Compdfkit_Tools.Edit.CPDFTextAlignUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compdfkit_Tools.Edit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../../Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border  BorderBrush="#E2E3E6" BorderThickness="1">
+
+        <StackPanel Name="AlignPanel" Orientation="Horizontal">
+            <ToggleButton Name="AlignLeftBtn" Width="50" Height="30" BorderThickness="0" Tag="AlignLeft" Style="{StaticResource ToggleButtonStyle}" Click="TextAlignBtn_Click"
+                          Background="White">
+                <ToggleButton.Content>
+                    <Path Name="AlignLeftPath" Fill="Black">
+                        <Path.Data>
+                            M13 4V3H0V4H13ZM16 8V7H0V8H16ZM10 11V12H0V11H10Z
+                        </Path.Data>
+                    </Path>
+                </ToggleButton.Content>
+            </ToggleButton>
+
+            <Line X1="0" Y1="8" X2="0" Y2="22" Stroke="#E2E3E6" StrokeThickness="1"></Line>
+
+            <ToggleButton Name="AlignCenterBtn" Width="50" Height="30" BorderThickness="0" Tag="AlignCenter" Style="{StaticResource ToggleButtonStyle}" Click="TextAlignBtn_Click"
+                          Background="White">
+                <ToggleButton.Content>
+                    <Path Name="AlignCenterPath" Fill="Black">
+                        <Path.Data>
+                            M16.6665 4V3H0.666504V4H16.6665ZM16.6665 12V11H0.666504V12H16.6665ZM13.6665 7V8H3.6665V7H13.6665Z
+                        </Path.Data>
+                    </Path>
+                </ToggleButton.Content>
+            </ToggleButton>
+            
+            <Line X1="0" Y1="8" X2="0" Y2="22" Stroke="#E2E3E6" StrokeThickness="1"></Line>
+            
+            <ToggleButton Name="AlignRightBtn" Width="50" Height="30" BorderThickness="0" Tag="AlignRight" Style="{StaticResource ToggleButtonStyle}" Click="TextAlignBtn_Click"
+                          Background="White">
+                <ToggleButton.Content>
+                    <Path Name="AlignRightPath" Fill="Black">
+                        <Path.Data>
+                            M16.3335 4V3H3.33429V4H16.3335ZM16.3335 8V7H0.334473V8H16.3335ZM16.3335 11V12H6.33411V11H16.3335Z
+                        </Path.Data>
+                    </Path>
+                </ToggleButton.Content>
+            </ToggleButton>
+            
+        </StackPanel>
+        
+    </Border>
+</UserControl>
