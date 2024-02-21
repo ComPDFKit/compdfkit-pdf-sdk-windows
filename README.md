@@ -1,9 +1,7 @@
 # Introduction
 [ComPDFKit PDF SDK](https://www.compdf.com) is a robust PDF library, which offers comprehensive functions for quickly viewing, annotating, editing, and signing PDFs. It is feature-rich and battle-tested, making PDF files process and manipulation easier and faster.
 
-[ComPDFKit PDF SDK for Windows](https://www.compdf.com/windows) offers powerful [.Net APIs](https://github.com/ComPDFKit/compdfkit-api-.net), allowing you to quickly add PDF functions to any Windows application and ensure seamless and efficient development.
-
-[ComPDFKit API](https://api.compdf.com/api/pricing) allows you to get 1000 files processing monthly now! Just [sign up](https://api.compdf.com/signup) for a free trial and enjoy comprehensive PDF functions.
+[ComPDFKit for Windows](https://www.compdf.com/windows) allows you to quickly add PDF functions to any Windows application, elevating your Window programs to ensure efficient development. It is available at [nuget](https://www.nuget.org/packages/ComPDFKit.NetFramework) and [github.com](https://github.com/ComPDFKit/compdfkit-pdf-sdk-windows).
 
 # Related
 
@@ -28,7 +26,7 @@ It is easy to embed ComPDFKit PDF SDK in your Windows application with a few lin
 
 In this guide, we take ***"PDFViewer"*** as an example to show how to run it in Visual Studio 2022.
 
-1. Copy your ***"license_key_windows.txt"*** to the ***"Examples"*** folder (The file is the license to make your project run).
+1. Copy your ***"license_key_windows.xml"*** to the ***"Examples"*** folder (The file is the license to make your project run).
 
 2. Find ***"Examples.sln"*** in the ***"Examples"*** folder and open it in Visual Studio 2022.
 
@@ -127,7 +125,48 @@ Rather than targeting a package held at Nuget, you may set up a configuration to
 
 ### Apply the License Key
 
-You can [contact ComPDFKit team](https://www.compdf.com/contact-us) to get a trial license. Before using any ComPDFKit PDF SDK classes, a required operation is to set the license key. Add the following method - `LicenseVerify()` to ***"MainWindow.xaml.cs"***.
+You can [contact the ComPDFKit team](https://www.compdf.com/contact-us) to obtain a trial license. Before using any classes from the ComPDFKit PDF SDK, you need to choose the corresponding scheme from the following two options based on the license type and apply the license to your application.
+
+**Online Authentication**
+
+You can perform online authentication using the following approach:
+
+```c#
+public static async Task<bool> LicenseVerify()
+{
+    if (!CPDFSDKVerifier.LoadNativeLibrary())
+    { 
+        return false;
+    }
+    LicenseErrorCode status = await CPDFSDKVerifier.OnlineLicenseVerify("Input your license here.");
+    return status == LicenseErrorCode.E_LICENSE_SUCCESS;
+}
+
+```
+
+Additionally, if you need to confirm the communication status with the server during online authentication, you can implement the `CPDFSDKVerifier.LicenseRefreshed` callback:
+
+```C#
+CPDFSDKVerifier.LicenseRefreshed += CPDFSDKVerifier_LicenseRefreshed;
+
+private void CPDFSDKVerifier_LicenseRefreshed(object sender, ResponseModel e)
+{
+    if(e != null)
+    {
+        string message = string.Format("{0} {1}", e.Code, e.Message);
+        Trace.WriteLine(message);
+    }
+    else
+    {
+        Trace.WriteLine("Network not connected."); 
+    } 
+}
+
+```
+
+**Offline Authentication** 
+
+The following is the `LicenseVerify()` method for implementing offline authentication:
 
 ```c#
 bool LicenseVerify()
@@ -135,12 +174,10 @@ bool LicenseVerify()
     if (!CPDFSDKVerifier.LoadNativeLibrary())
         return false;
 
-    LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify("license_key_windows.txt", true);
+    LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify("Input your license here.", false);
     return (verifyResult == LicenseErrorCode.E_LICENSE_SUCCESS);
 }
 ```
-
-
 
 ### Display a PDF Document
 
