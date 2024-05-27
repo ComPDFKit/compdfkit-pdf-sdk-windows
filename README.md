@@ -30,11 +30,11 @@ In this guide, we take ***"PDFViewer"*** as an example to show how to run it in 
 
 2. Find ***"Examples.sln"*** in the ***"Examples"*** folder and open it in Visual Studio 2022.
 
-   <img src="images-windows/image.png" alt="2.4" width="50%" height="50%"/>
+   <img src="images-windows/imagev2.png" alt="2.4" width="50%" height="50%"/>
 
 3. Select ***"PDFViewer"*** and right-click to set it as a startup project.
 
-   <img src="images-windows/image-2.png" alt="2.4" width="50%" height="50%"/>
+   <img src="images-windows/image-2v2.png" alt="2.4" width="50%" height="50%"/>
 
 4. Run the project and then you can open the multifunctional ***"PDFViewer"*** demo.
 
@@ -76,7 +76,7 @@ There are two ways to add ComPDFKit to your Project: [Nuget Repository](https://
 
 2. Go to [ComPDFKit.NetFramework](https://www.nuget.org/packages/ComPDFKit.NetFramework) in Nuget, and click on the **Install** button to install the package.
 
-   <img src="images-windows/2.4.2.3.png" alt="2.4" width="65%" height="65%"/>
+   <img src="images-windows/2.4.2.3v2.png" alt="2.4" width="65%" height="65%"/>
 
 3. Once that is complete, you'll see a reference to the package in the Solution Explorer under **References**.
 
@@ -117,7 +117,7 @@ Rather than targeting a package held at Nuget, you may set up a configuration to
 
 5. On the right side, in the panel describing the package, click on the **Install** button to install the package.
 
-   <img src="images-windows/2.4.2.8.png" alt="2.4" width="50%" height="50%"/>
+   <img src="images-windows/2.4.2.8v2.png" alt="2.4" width="50%" height="50%"/>
 
 6. Once that's complete, you'll see a reference to the package in the Solution Explorer under **References**.
 
@@ -132,16 +132,15 @@ You can [contact the ComPDFKit team](https://www.compdf.com/contact-us) to obtai
 You can perform online authentication using the following approach:
 
 ```c#
-public static async Task<bool> LicenseVerify()
+public static bool LicenseVerify()
 {
-    if (!CPDFSDKVerifier.LoadNativeLibrary())
-    { 
-        return false;
-    }
-    LicenseErrorCode status = await CPDFSDKVerifier.OnlineLicenseVerify("Input your license here.");
-    return status == LicenseErrorCode.E_LICENSE_SUCCESS;
+	if (!CPDFSDKVerifier.LoadNativeLibrary())
+	{ 
+		return false;
+	}
+	LicenseErrorCode status = CPDFSDKVerifier.OnlineLicenseVerify("Input your license here.");
+	return status == LicenseErrorCode.E_LICENSE_SUCCESS;
 }
-
 ```
 
 Additionally, if you need to confirm the communication status with the server during online authentication, you can implement the `CPDFSDKVerifier.LicenseRefreshed` callback:
@@ -194,14 +193,20 @@ We have finished all prepare steps. Let's display a PDF file.
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ComPDFKit_Demo"
+        xmlns:compdfkitviewer="clr-namespace:ComPDFKitViewer;assembly=ComPDFKit.Viewer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" UseLayoutRounding="True">
+        Focusable="True"
+        Title="MainWindow" Height="600" Width="800" UseLayoutRounding="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="52"/>
         </Grid.RowDefinitions>
-        <Grid Name="PDFGrid" Grid.Row="0" />
+        <Grid Name="PDFGrid" Grid.Row="0">
+            <ScrollViewer Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <compdfkitviewer:CPDFViewer x:Name="PDFViewer"/>
+            </ScrollViewer>
+        </Grid>
         <Button Content="Open PDF" Grid.Row="1" HorizontalAlignment="Left" Margin="10" Click="OpenPDF_Click"/>
     </Grid>
 </Window>
@@ -212,27 +217,27 @@ We have finished all prepare steps. Let's display a PDF file.
 ```c#
 using ComPDFKit.NativeMethod;
 using ComPDFKit.PDFDocument;
-using ComPDFKitViewer.PdfViewer;
 using Microsoft.Win32;
 using System.Windows;
 
 namespace ComPDFKit_Demo
 {
-	public partial class MainWindow : Window
+    public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
             LicenseVerify();
         }
-        
+
         bool LicenseVerify()
         {
             if (!CPDFSDKVerifier.LoadNativeLibrary())
-        		return false;
+                return false;
 
-    		LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify("license_key_windows.txt", true);
-    		return (verifyResult == LicenseErrorCode.E_LICENSE_SUCCESS);
+            // Input your license.
+            LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify("Input your license here.");
+            return (verifyResult == LicenseErrorCode.E_LICENSE_SUCCESS);
         }
 
         private void OpenPDF_Click(object sender, RoutedEventArgs e)
@@ -243,14 +248,9 @@ namespace ComPDFKit_Demo
             if (dlg.ShowDialog() == true)
             {
                 // Use the PDF file path to open the document in CPDFViewer.
-                CPDFViewer pdfViewer = new CPDFViewer();
-                pdfViewer.InitDocument(dlg.FileName);
-                if (pdfViewer.Document != null &&
-                    pdfViewer.Document.ErrorType == CPDFDocumentError.CPDFDocumentErrorSuccess)
-                {
-                    pdfViewer.Load();
-                    PDFGrid.Children.Add(pdfViewer);
-                }
+                CPDFDocument doc = CPDFDocument.InitWithFilePath(dlg.FileName);
+                if (doc != null && doc.ErrorType == CPDFDocumentError.CPDFDocumentErrorSuccess)
+                    PDFViewer.InitDoc(doc);
             }
         }
     }
