@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ComPDFKit.Controls.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="CustomStampList" Type="ComPDFKit.Controls.Data.CustomStampList" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SignatureList" Type="ComPDFKit.Controls.Data.SignatureList" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

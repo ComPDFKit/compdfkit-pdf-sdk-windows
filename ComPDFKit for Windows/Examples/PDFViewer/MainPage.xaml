@@ -3,17 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:cpdftools="clr-namespace:Compdfkit_Tools.PDFControl;assembly=Compdfkit_Tools"
-             xmlns:cpdfcommon="clr-namespace:Compdfkit_Tools.Common;assembly=Compdfkit_Tools"
+             xmlns:cpdftools="clr-namespace:ComPDFKit.Controls.PDFControl;assembly=ComPDFKit.Controls"
+             xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common;assembly=ComPDFKit.Controls"
              mc:Ignorable="d" 
              Loaded="MainPage_Loaded"
              d:DesignHeight="720" d:DesignWidth="1080">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <cpdfcommon:DocInfoResourceConverter x:Key="DocInfoResourceConverter"/>
             <cpdfcommon:CommonResourceConverter x:Key="CommonResourceConverter"></cpdfcommon:CommonResourceConverter>

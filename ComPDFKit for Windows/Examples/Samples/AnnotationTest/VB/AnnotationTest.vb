@@ -77,8 +77,6 @@ Module AnnotationTest
     })
 
         ink.SetInkPath(points)
-        ink.SetInkRect(New CRect(10, 10, 200, 200))
-
         ink.UpdateAp()
     End Sub
 
@@ -100,7 +98,7 @@ Module AnnotationTest
 
         ' Circle
         Dim circle As CPDFCircleAnnotation = TryCast(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE), CPDFCircleAnnotation)
-        circle.SetRect(New CRect(10, 300, 110, 410))
+        circle.SetRect(New CRect(10, 410, 110, 300))
         circle.SetLineColor(lineColor)
         circle.SetBgColor(bgColor)
         circle.SetTransparency(120)
@@ -125,20 +123,22 @@ Module AnnotationTest
         textAnnotation.SetColor(New Byte() {255, 0, 0})
         textAnnotation.SetTransparency(255)
         textAnnotation.SetContent("ComPDFKit")
-        textAnnotation.SetRect(New CRect(300, 600, 350, 650))
+        textAnnotation.SetRect(New CRect(300, 650, 350, 600))
         textAnnotation.UpdateAp()
     End Sub
+
     Private Sub CreateSoundAnnotation(document As CPDFDocument)
         Dim page As CPDFPage = document.PageAtIndex(0)
         Dim sound As CPDFSoundAnnotation = TryCast(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_SOUND), CPDFSoundAnnotation)
-        sound.SetRect(New CRect(400, 700, 450, 750))
-        sound.SetSoundPath("Bird.wav")
+        sound.SetRect(New CRect(400, 750, 450, 700))
+        Dim bitmap As New Bitmap("SoundAnnot.png")
+        sound.SetSoundPath(BitmapToByteArray(bitmap), bitmap.Width, bitmap.Height, "Bird.wav")
         sound.UpdateAp()
     End Sub
 
     Private Sub CreateMarkupAnnotation(document As CPDFDocument)
         Dim cRectList As New List(Of CRect)()
-        Dim rect As New CRect(300, 240, 400, 300)
+        Dim rect As New CRect(300, 300, 400, 240)
         cRectList.Add(rect)
         Dim color As Byte() = {255, 0, 0}
 
@@ -200,20 +200,20 @@ Module AnnotationTest
         ' Standard
         Dim standard As CPDFStampAnnotation = TryCast(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP), CPDFStampAnnotation)
         standard.SetStandardStamp("Approved")
-        standard.SetRect(New CRect(300, 100, 450, 160))
+        standard.SetRect(New CRect(300, 160, 450, 100))
         standard.UpdateAp()
 
         ' Text
         Dim text As CPDFStampAnnotation = TryCast(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP), CPDFStampAnnotation)
         text.SetTextStamp("test", "detail text", C_TEXTSTAMP_SHAPE.TEXTSTAMP_LEFT_TRIANGLE, C_TEXTSTAMP_COLOR.TEXTSTAMP_RED)
-        text.SetRect(New CRect(300, 220, 450, 300))
+        text.SetRect(New CRect(300, 300, 450, 220))
         text.UpdateAp()
 
         ' Image
         Dim bitmap As New Bitmap("logo.png")
         Dim image As CPDFStampAnnotation = TryCast(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP), CPDFStampAnnotation)
         image.SetImageStamp(BitmapToByteArray(bitmap), bitmap.Width, bitmap.Height)
-        image.SetRect(New CRect(300, 320, 380, 400))
+        image.SetRect(New CRect(300, 400, 380, 320))
         image.SetTransparency(255)
         image.UpdateAp()
     End Sub

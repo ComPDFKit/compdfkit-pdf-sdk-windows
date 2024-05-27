@@ -1,0 +1,158 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ComPDFKit.Controls.Asset.Styles">
+    <Style x:Key="TCIRadioButtonStyle" TargetType="RadioButton">
+        <Setter Property="Background" Value="Red"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TCIRadioButton}">
+                    <Grid HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.RowSpan="2">
+                            <Ellipse x:Name="RadioEllipse"
+                                         Width="20"
+                                         Height="20"
+                                         Fill="White"
+                                         Stroke="{TemplateBinding BorderBrush}"
+                                         StrokeThickness="1"/>
+                            <Ellipse x:Name="InnerEllipse"
+                                         Width="15"
+                                         Height="15"
+                                         Fill="Black"
+                                         Opacity="0"/>
+                        </Grid>
+                        <Border x:Name="Border" BorderBrush="#1A000000" BorderThickness="1" Grid.Column="1" CornerRadius="1" Padding="10" HorizontalAlignment="Stretch" Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <!-- 这里是 ContentPresenter -->
+                                <Grid x:Name="PART_IconGrid" Width="32" Margin="0,0,10,0">
+                                    <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                </Grid>
+
+                                <Grid Name="TextGd" Grid.Column="1"  Width="{TemplateBinding TextWidth}" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="25"></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{TemplateBinding Title}" TextWrapping="Wrap" FontSize="14" FontWeight="Bold" FontFamily="Microsoft YaHei"></TextBlock>
+                                    <TextBlock Grid.Row="1" Text="{TemplateBinding Description}" TextWrapping="Wrap" FontSize="12" FontWeight="Normal" FontFamily="Microsoft YaHei"></TextBlock>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="InnerEllipse" Property="Opacity" Value="1"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RadioEllipse" Property="Stroke" Value="DodgerBlue"/>
+                            <Setter TargetName="InnerEllipse" Property="Stroke" Value="DodgerBlue"/>
+                            <Setter TargetName="Border" Property="Background" Value="AliceBlue"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="{x:Type RadioButton}" TargetType="{x:Type RadioButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="32"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid>
+                            <Ellipse x:Name="radioEllipse"
+                             Width="16"
+                             Height="16"
+                             Fill="White"
+                             Stroke="{TemplateBinding BorderBrush}"
+                             StrokeThickness="1"/>
+                            <Ellipse x:Name="innerEllipse"
+                             Width="11"
+                             Height="11"
+                             Fill="Black"
+                             Opacity="0"/>
+                        </Grid>
+                        <Grid x:Name="textGd"  Grid.Column="1" VerticalAlignment="Center">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <ContentPresenter.Style>
+                                    <Style TargetType="ContentPresenter">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource TemplatedParent}}" Value="False">
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentPresenter.Style>
+                            </ContentPresenter>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="innerEllipse" Property="Opacity" Value="1"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="radioEllipse" Property="Stroke" Value="DodgerBlue"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="radioEllipse" Property="Fill" Value="#1A000000"></Setter>
+                            <Setter TargetName="radioEllipse" Property="Stroke" Value="#5A000000"></Setter>
+                            <Setter TargetName="innerEllipse" Property="Fill" Value="#1A000000"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MatrixRadioButton" TargetType="{x:Type RadioButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid>
+                        <Grid>
+                            <Rectangle x:Name="radioRectangle"
+                          Width="28"
+                          Height="28"
+                          Fill="#DDE9FF"/>
+                        </Grid>
+                        <Grid x:Name="textGd"  Grid.Column="1" VerticalAlignment="Center">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <ContentPresenter.Style>
+                                    <Style TargetType="ContentPresenter">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource TemplatedParent}}" Value="False">
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentPresenter.Style>
+                            </ContentPresenter>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="radioRectangle" Property="Fill" Value="#4982E6"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="radioRectangle" Property="Fill" Value="#93B6F3"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="radioRectangle" Property="Fill" Value="#3953A4"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

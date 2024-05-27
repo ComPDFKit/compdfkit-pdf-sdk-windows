@@ -1,21 +1,27 @@
-﻿using System;
+﻿using ComPDFKit.PDFAnnotation;
+using ComPDFKit.PDFAnnotation.Form;
+using ComPDFKit.PDFDocument;
+using ComPDFKit.Tool;
+using ComPDFKit.Tool.Help;
+using ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI;
+using ComPDFKit.Controls.Helper;
+using ComPDFKit.Controls.Measure;
+using ComPDFKit.Controls.PDFControl;
+using ComPDFKit.Controls.PDFView;
+using ComPDFKitViewer;
+using ComPDFKitViewer.Widget;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Compdfkit_Tools.Helper;
-using Compdfkit_Tools.PDFControl;
-using Compdfkit_Tools.PDFView;
-using ComPDFKit.PDFDocument;
-using ComPDFKit.PDFPage;
-using ComPDFKitViewer;
-using ComPDFKitViewer.PdfViewer;
-using Microsoft.Win32;
 using System.Windows.Input;
-using ComPDFKitViewer.AnnotEvent;
-using Compdfkit_Tools.Measure;
+using ComPDFKit.Controls.PDFControlUI;
+using static ComPDFKit.Tool.CPDFToolManager;
 
 namespace PDFViewer
 {
@@ -26,7 +32,7 @@ namespace PDFViewer
         private string currentMode = "Viewer";
         private double[] zoomLevelList = { 1f, 8f, 12f, 25, 33f, 50, 66f, 75, 100, 125, 150, 200, 300, 400, 600, 800, 1000 };
 
-        public PDFViewControl pdfViewer;
+        private PDFViewControl viewControl;
         private PDFViewControl passwordViewer;
         private RegularViewerControl regularViewerControl = new RegularViewerControl();
         private AnnotationControl annotationControl = new AnnotationControl();
@@ -58,6 +64,11 @@ namespace PDFViewer
                 _canSave = value;
                 OnPropertyChanged();
             }
+        }
+
+        public PDFViewControl GetPDFViewControl()
+        {
+            return viewControl;
         }
 
         /// <summary>
@@ -132,14 +143,14 @@ namespace PDFViewer
         /// <param name="filePath"></param>
         public void InitWithFilePath(string filePath)
         {
-            pdfViewer = new PDFViewControl();
-            pdfViewer.PDFView.InitDocument(filePath);
+            viewControl = new PDFViewControl();
+            viewControl.InitDocument(filePath);
         }
 
         public void InitWithDocument(CPDFDocument document)
         {
-            pdfViewer = new PDFViewControl();
-            pdfViewer.PDFView.InitDocument(document);
+            viewControl = new PDFViewControl();
+            viewControl.GetCPDFViewer().InitDoc(document);
         }
 
         /// <summary>
@@ -147,47 +158,101 @@ namespace PDFViewer
         /// </summary>
         private void LoadDocument()
         {
-            if (pdfViewer.PDFView.Document == null)
+            if (viewControl != null && viewControl.PDFViewTool != null)
             {
-                return;
+                CPDFViewer pdfviewer = viewControl.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = pdfviewer?.GetDocument();
+                if (pdfDoc == null)
+                {
+                    return;
+                }
+
+                SizeChanged -= MainPage_SizeChanged;
+                SizeChanged += MainPage_SizeChanged;
+
+                PasswordUI.Closed -= PasswordUI_Closed;
+                PasswordUI.Canceled -= PasswordUI_Canceled;
+                PasswordUI.Confirmed -= PasswordUI_Confirmed;
+                PasswordUI.Closed += PasswordUI_Closed;
+                PasswordUI.Canceled += PasswordUI_Canceled;
+                PasswordUI.Confirmed += PasswordUI_Confirmed;
+
+                CPDFSaclingControl.InitWithPDFViewer(viewControl);
+                ModeComboBox.SelectedIndex = 0;
+
+                CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfviewer.GetZoom() * 100)));
+
+                botaBarControl.AddBOTAContent(new[] { BOTATools.Thumbnail, BOTATools.Outline, BOTATools.Bookmark, BOTATools.Annotation, BOTATools.Search });
+                botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
+                ViewSettingBtn.IsChecked = false;
+                botaBarControl.InitWithPDFViewer(viewControl);
+                botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
+                displaySettingsControl.InitWithPDFViewer(viewControl);
+                LoadCustomControl();
+                panelState.PropertyChanged -= PanelState_PropertyChanged;
+                panelState.PropertyChanged += PanelState_PropertyChanged;
+                displaySettingsControl.SplitModeChanged -= DisplaySettingsControl_SplitModeChanged;
+                displaySettingsControl.SplitModeChanged += DisplaySettingsControl_SplitModeChanged;
+
+                viewControl.PDFToolManager.MouseLeftButtonDownHandler -= PDFToolManager_MouseLeftButtonDownHandler;
+                viewControl.PDFToolManager.MouseLeftButtonDownHandler += PDFToolManager_MouseLeftButtonDownHandler;
+
+                pdfviewer.SetLinkHighlight(Properties.Settings.Default.IsHighlightLinkArea);
+                pdfviewer.SetFormFieldHighlight(Properties.Settings.Default.IsHighlightFormArea);
+                pdfviewer.ScrollStride = Properties.Settings.Default.Divisor;
             }
-            pdfViewer.PDFView.Load();
-            pdfViewer.PDFView.SetShowLink(true);
-            pdfViewer.PDFView.InfoChanged -= PdfViewer_InfoChanged;
-            pdfViewer.PDFView.InfoChanged += PdfViewer_InfoChanged;
+        }
 
-            pdfViewer.PDFView.SetFormFieldHighlight(true);
-            PasswordUI.Closed -= PasswordUI_Closed;
-            PasswordUI.Canceled -= PasswordUI_Canceled;
-            PasswordUI.Confirmed -= PasswordUI_Confirmed;
-            PasswordUI.Closed += PasswordUI_Closed;
-            PasswordUI.Canceled += PasswordUI_Canceled;
-            PasswordUI.Confirmed += PasswordUI_Confirmed;
+        private void PDFToolManager_MouseLeftButtonDownHandler(object sender, MouseEventObject e)
+        {
+            if (e.annotType == C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET)
+            {
+                BaseWidget baseWidget = viewControl.GetCacheHitTestWidget();
+                if (baseWidget != null)
+                {
+                    AnnotParam annotParam = ParamConverter.CPDFDataConverterToAnnotParam(
+                    viewControl.PDFViewTool.GetCPDFViewer().GetDocument(),
+                    baseWidget.GetAnnotData().PageIndex,
+                    baseWidget.GetAnnotData().Annot);
+                    if ((annotParam as WidgetParm).WidgetType == C_WIDGET_TYPE.WIDGET_SIGNATUREFIELDS)
+                    {
+                        var sigWidget = baseWidget.GetAnnotData().Annot as CPDFSignatureWidget;
+                        if(sigWidget == null)
+                        {
+                            return;
+                        }
+                        var sig = sigWidget.GetSignature(viewControl.GetCPDFViewer().GetDocument());
+                        if (sigWidget.IsSigned() && sig != null && sig.SignerList.Count > 0)
+                        {
+                            return;
+                        }
+                        if (currentMode == "Annotation")
+                        {
+                            CPDFSignatureUI signatureProperty = new CPDFSignatureUI();
+                            signatureProperty.SetFormProperty(annotParam, viewControl, baseWidget.GetAnnotData().Annot);
+                            panelState.RightPanel = PanelState.RightPanelState.PropertyPanel;
+                            annotationControl.SetPropertyContainer(signatureProperty);
+                        }
+                        else if (currentMode == "Viewer")
+                        {
+                            CPDFSignatureUI signatureProperty = new CPDFSignatureUI();
+                            signatureProperty.SetFormProperty(annotParam, viewControl, baseWidget.GetAnnotData().Annot);
+                            panelState.RightPanel = PanelState.RightPanelState.PropertyPanel;
+                            regularViewerControl.SetPropertyContainer(signatureProperty);
+                        }
+                    }
+                }
+            }
+        }
 
-            pdfViewer.PDFView.ChangeFitMode(FitMode.FitWidth);
-            CPDFSaclingControl.InitWithPDFViewer(pdfViewer.PDFView);
-            CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfViewer.PDFView.ZoomFactor * 100)));
+        private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            viewControl.WindowSizeChange();
+        }
 
-            ViewSettingBtn.IsChecked = false;
-            botaBarControl.InitWithPDFViewer(pdfViewer.PDFView);
-            ModeComboBox.SelectedIndex = 0;
-            botaBarControl.AddBOTAContent(new[] { BOTATools.Thumbnail, BOTATools.Outline, BOTATools.Bookmark, BOTATools.Annotation, BOTATools.Search });
-            botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
-            botaBarControl.DeleteSignatureEvent -= BotaControlOnDeleteSignatureEvent;
-            botaBarControl.DeleteSignatureEvent += BotaControlOnDeleteSignatureEvent;
-            botaBarControl.ViewCertificateEvent -= digitalSignatureControl.ViewCertificateEvent;
-            botaBarControl.ViewCertificateEvent += digitalSignatureControl.ViewCertificateEvent;
-            botaBarControl.ViewSignatureEvent -= digitalSignatureControl.ViewSignatureEvent;
-            botaBarControl.ViewSignatureEvent += digitalSignatureControl.ViewSignatureEvent;
-
-            displaySettingsControl.InitWithPDFViewer(pdfViewer.PDFView);
-            LoadCustomControl();
-            panelState.PropertyChanged -= PanelState_PropertyChanged;
-            panelState.PropertyChanged += PanelState_PropertyChanged;
-
-            pdfViewer.PDFView.SetShowLink(Properties.Settings.Default.IsHighlightLinkArea);
-            pdfViewer.PDFView.SetFormFieldHighlight(Properties.Settings.Default.IsHighlightFormArea);
-            pdfViewer.PDFView.SetScrollStepDivisor(Properties.Settings.Default.Divisor / 100.0);
+        private void DisplaySettingsControl_SplitModeChanged(object sender, ComPDFKit.Controls.PDFControlUI.CPDFViewModeUI.SplitMode e)
+        {
+            viewControl.SetSplitViewMode(e);
         }
 
         /// <summary>
@@ -242,7 +307,7 @@ namespace PDFViewer
         {
             if (newPdfViewer != null)
             {
-                pdfViewer = newPdfViewer;
+                viewControl = newPdfViewer;
             }
         }
 
@@ -257,17 +322,25 @@ namespace PDFViewer
         /// <param name="e"></param>
         private void PasswordUI_Confirmed(object sender, string e)
         {
-            if (passwordViewer != null && passwordViewer.PDFView != null && passwordViewer.PDFView.Document != null)
+            if (passwordViewer != null && passwordViewer.PDFViewTool != null)
             {
-                passwordViewer.PDFView.Document.UnlockWithPassword(e);
-                if (passwordViewer.PDFView.Document.IsLocked == false)
+                CPDFViewer pdfviewer = passwordViewer.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = pdfviewer?.GetDocument();
+                if (pdfDoc == null)
+                {
+                    return;
+                }
+
+                pdfDoc.UnlockWithPassword(e);
+                if (pdfDoc.IsLocked == false)
                 {
                     PasswordUI.SetShowError("", Visibility.Collapsed);
                     PasswordUI.ClearPassword();
                     PasswordUI.Visibility = Visibility.Collapsed;
                     PopupBorder.Visibility = Visibility.Collapsed;
-                    pdfViewer = passwordViewer;
+                    viewControl = passwordViewer;
                     LoadDocument();
+                    viewControl.PDFViewTool.GetCPDFViewer().UpdateVirtualNodes();
                     FileChangeEvent?.Invoke(null, EventArgs.Empty);
                 }
                 else
@@ -308,20 +381,23 @@ namespace PDFViewer
         /// </summary>
         private void LoadCustomControl()
         {
-            regularViewerControl.PdfViewControl = pdfViewer;
+            regularViewerControl.PdfViewControl = viewControl;
             regularViewerControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
             regularViewerControl.OnCanSaveChanged += ControlOnCanSaveChanged;
-            regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
-            regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
+            regularViewerControl.InitWithPDFViewer(viewControl);
+            //regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
             regularViewerControl.SetBOTAContainer(null);
             regularViewerControl.SetBOTAContainer(botaBarControl);
             regularViewerControl.SetDisplaySettingsControl(displaySettingsControl);
             PDFGrid.Child = regularViewerControl;
 
-            SignatureHelper.InitEffectiveSignatureList(pdfViewer.PDFView.Document);
-            SignatureHelper.VerifySignatureList(pdfViewer.PDFView.Document);
-            digitalSignatureControl.LoadUndoManagerEvent(pdfViewer.PDFView);
+            SignatureHelper.InitEffectiveSignatureList(viewControl.GetCPDFViewer().GetDocument());
+            SignatureHelper.VerifySignatureList(viewControl.GetCPDFViewer().GetDocument());
             signatureStatusBarControl.SetStatus(SignatureHelper.SignatureList);
+            viewControl.PDFToolManager.SetToolType(ToolType.Viewer);
+            
+            viewControl.PDFViewTool.DocumentModifiedChanged -= PDFViewTool_DocumentModifiedChanged;
+            viewControl.PDFViewTool.DocumentModifiedChanged += PDFViewTool_DocumentModifiedChanged;
         }
 
         /// <summary>
@@ -362,7 +438,6 @@ namespace PDFViewer
         /// <param name="e"></param>
         private void BotaControlOnDeleteSignatureEvent(object sender, EventArgs e)
         {
-            pdfViewer.PDFView.UndoManager.CanSave = true;
             DigitalSignatureControl_OnSignatureStatusChanged(sender, e);
         }
 
@@ -373,8 +448,8 @@ namespace PDFViewer
         /// <param name="e"></param>
         private void DigitalSignatureControl_OnSignatureStatusChanged(object sender, EventArgs e)
         {
-            SignatureHelper.InitEffectiveSignatureList(pdfViewer.PDFView.Document);
-            SignatureHelper.VerifySignatureList(pdfViewer.PDFView.Document);
+            SignatureHelper.InitEffectiveSignatureList(viewControl.GetCPDFViewer().GetDocument());
+            SignatureHelper.VerifySignatureList(viewControl.GetCPDFViewer().GetDocument());
             signatureStatusBarControl.SetStatus(SignatureHelper.SignatureList);
             botaBarControl.LoadSignatureList();
         }
@@ -421,7 +496,7 @@ namespace PDFViewer
             if (RightPanelButton != null)
                 RightPanelButton.IsChecked = false;
 
-            if (pdfViewer != null && pdfViewer.PDFView != null)
+            if (viewControl != null && viewControl.GetCPDFViewer() != null)
             {
                 // pdfViewer.PDFView.ToolManager.EnableClickCreate = false;
             }
@@ -434,14 +509,20 @@ namespace PDFViewer
             {
                 annotationControl.UnloadEvent();
                 annotationControl.ClearViewerControl();
+                annotationControl.PDFAnnotationControl.AnnotationCancel();
+                viewControl.SetIsShowStampMouse(false); 
             }
             else if (currentMode == "Form")
             {
                 formControl.UnloadEvent();
                 formControl.ClearViewerControl();
+                viewControl.SetIsShowStampMouse(false);
+                viewControl.GetCPDFViewer().SetFormFieldHighlight(Properties.Settings.Default.IsHighlightFormArea);
             }
             else if (currentMode == "Content Editor")
             {
+                botaBarControl.ReplaceFunctionEnabled = false;
+                displaySettingsControl.SetVisibilityWhenContentEdit(Visibility.Visible);
                 contentEditControl.ClearViewerControl();
                 contentEditControl.ClearPDFEditState();
             }
@@ -449,29 +530,32 @@ namespace PDFViewer
             {
                 pageEditControl.ExitPageEdit -= PageEditControl_ExitPageEdit;
                 NotDocsEditorVisible = Visibility.Visible;
+                botaBarControl.LoadThumbnail();
             }
             else if (currentMode == "Digital Signature")
             {
                 RightPanelButton.Visibility = Visibility.Visible;
-                digitalSignatureControl.UnloadEvent();
                 digitalSignatureControl.ClearViewerControl();
                 botaBarControl.RemoveBOTAContent(BOTATools.Signature);
+                digitalSignatureControl.UnloadEvent();
             }
             else if (currentMode == "Measurement")
             {
                 RightPanelButton.Visibility = Visibility.Visible;
+                GetPDFViewControl().PDFViewTool.GetDefaultSettingParam().IsOpenMeasure = false;
                 measureControl.ClearAllToolState();
                 measureControl.ClearViewerControl();
+                measureControl.UnloadEvent();
             }
 
             if (item.Tag as string == "Viewer")
             {
-                if (regularViewerControl.PdfViewControl != null && regularViewerControl.PdfViewControl.PDFView != null)
+                regularViewerControl.PdfViewControl = viewControl;
+                regularViewerControl.InitWithPDFViewer(viewControl);
+                if (regularViewerControl.PdfViewControl != null)
                 {
                     PDFGrid.Child = regularViewerControl;
-                    pdfViewer.PDFView.SetMouseMode(MouseModes.Viewer);
-                    regularViewerControl.PdfViewControl = pdfViewer;
-                    regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    viewControl.SetToolType(ToolType.Viewer);
                     regularViewerControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
                     regularViewerControl.OnCanSaveChanged += ControlOnCanSaveChanged;
                     regularViewerControl.SetBOTAContainer(botaBarControl);
@@ -481,17 +565,19 @@ namespace PDFViewer
             else if (item.Tag as string == "Annotation")
             {
                 annotationControl.SetToolBarContainerVisibility(Visibility.Visible);
-                if (annotationControl.PDFViewControl != null && annotationControl.PDFViewControl.PDFView != null)
+                PDFGrid.Child = annotationControl;
+
+                viewControl.SetToolType(ToolType.Pan);
+                annotationControl.PDFViewControl = viewControl;
+                annotationControl.InitWithPDFViewer(viewControl);
+                if (annotationControl.PDFViewControl != null)
                 {
-                    PDFGrid.Child = annotationControl;
-                    pdfViewer.PDFView.SetMouseMode(MouseModes.AnnotCreate);
-                    annotationControl.PDFViewControl.PDFView.SetToolParam(new AnnotHandlerEventArgs());
-                    annotationControl.PDFViewControl = pdfViewer;
-                    annotationControl.InitWithPDFViewer(pdfViewer.PDFView);
                     annotationControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
                     annotationControl.OnCanSaveChanged += ControlOnCanSaveChanged;
+
                     annotationControl.OnAnnotEditHandler -= PdfFormControlRefreshAnnotList;
                     annotationControl.OnAnnotEditHandler += PdfFormControlRefreshAnnotList;
+                    
                     annotationControl.InitialPDFViewControl(annotationControl.PDFViewControl);
                     annotationControl.SetBOTAContainer(botaBarControl);
                     annotationControl.SetDisplaySettingsControl(displaySettingsControl);
@@ -500,12 +586,12 @@ namespace PDFViewer
             else if (item.Tag as string == "Form")
             {
                 formControl.SetToolBarContainerVisibility(Visibility.Visible);
-                if (formControl.PdfViewControl != null && formControl.PdfViewControl.PDFView != null)
+                formControl.PdfViewControl = viewControl;
+                formControl.InitWithPDFViewer(viewControl);
+                if (formControl.PdfViewControl != null)
                 {
                     PDFGrid.Child = formControl;
-                    pdfViewer.PDFView.SetMouseMode(MouseModes.FormEditTool);
-                    formControl.PdfViewControl = pdfViewer;
-                    formControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    viewControl.SetToolType(ToolType.WidgetEdit);
                     formControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
                     formControl.OnCanSaveChanged += ControlOnCanSaveChanged;
                     formControl.OnAnnotEditHandler -= PdfFormControlRefreshAnnotList;
@@ -513,46 +599,44 @@ namespace PDFViewer
                     formControl.SetBOTAContainer(botaBarControl);
                     formControl.InitialPDFViewControl(formControl.PdfViewControl);
                     formControl.SetDisplaySettingsControl(displaySettingsControl);
+                    viewControl.GetCPDFViewer().SetFormFieldHighlight(true);
                 }
             }
             else if (item.Tag as string == "Content Editor")
             {
-                if (contentEditControl.pdfContentEditControl != null && contentEditControl.PdfViewControl.PDFView != null)
-                {
-                    pdfViewer.PDFView?.SetPDFEditType(CPDFEditType.EditText | CPDFEditType.EditImage);
-                    pdfViewer.PDFView?.SetPDFEditCreateType(CPDFEditType.None);
-                    pdfViewer.PDFView?.SetMouseMode(MouseModes.PDFEdit);
-                    pdfViewer.PDFView?.ReloadDocument();
-
-                    pdfViewer.PDFView?.SetSplitMode(SplitMode.None);
-
+                contentEditControl.PdfViewControl = viewControl;
+                contentEditControl.InitWithPDFViewer(viewControl);
+                displaySettingsControl.SetVisibilityWhenContentEdit(Visibility.Collapsed);
+                if (contentEditControl.pdfContentEditControl != null && contentEditControl.PdfViewControl != null)
+                { 
                     PDFGrid.Child = contentEditControl;
-                    pdfViewer.PDFView.SetMouseMode(MouseModes.PDFEdit);
-                    contentEditControl.PdfViewControl = pdfViewer;
-                    contentEditControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    viewControl.SetToolType(ToolType.ContentEdit);
                     contentEditControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
                     contentEditControl.OnCanSaveChanged += ControlOnCanSaveChanged;
                     contentEditControl.SetBOTAContainer(botaBarControl);
                     contentEditControl.SetDisplaySettingsControl(displaySettingsControl);
+                    contentEditControl.PdfViewControl.SetSplitViewMode(CPDFViewModeUI.SplitMode.None);
                 }
             }
             else if (item.Tag as string == "Document Editor")
             {
-                pageEditControl.PDFViewControl = pdfViewer;
+                pageEditControl.PDFViewControl = viewControl;
                 pageEditControl.ExitPageEdit += PageEditControl_ExitPageEdit;
+                pageEditControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
+                pageEditControl.OnCanSaveChanged += ControlOnCanSaveChanged;
                 PDFGrid.Child = pageEditControl;
                 NotDocsEditorVisible = Visibility.Collapsed;
             }
             else if (item.Tag as string == "Digital Signature")
             {
-                if (contentEditControl.pdfContentEditControl != null && contentEditControl.PdfViewControl.PDFView != null)
+                if (digitalSignatureControl.PDFViewControl != null)
                 {
                     RightPanelButton.Visibility = Visibility.Collapsed;
                     PDFGrid.Child = digitalSignatureControl;
-                    digitalSignatureControl.PDFViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
-                    digitalSignatureControl.PDFViewControl = pdfViewer;
+                    viewControl.PDFToolManager.SetToolType(ToolType.Viewer);
+                    digitalSignatureControl.PDFViewControl = viewControl;
                     botaBarControl.AddBOTAContent(BOTATools.Signature);
-                    digitalSignatureControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    digitalSignatureControl.InitWithPDFViewer(viewControl);
                     digitalSignatureControl.SetBOTAContainer(botaBarControl);
                     digitalSignatureControl.SetDisplaySettingsControl(displaySettingsControl);
                     digitalSignatureControl.SetSignatureStatusBarControl(signatureStatusBarControl);
@@ -568,12 +652,19 @@ namespace PDFViewer
             }
             else if (item.Tag as string == "Measurement")
             {
-                if (contentEditControl.pdfContentEditControl != null && contentEditControl.PdfViewControl.PDFView != null)
+                if (contentEditControl.pdfContentEditControl != null && viewControl != null)
                 {
                     RightPanelButton.Visibility = Visibility.Visible;
-                    PDFGrid.Child = measureControl;
-                    pdfViewer.PDFView.SetMouseMode(MouseModes.PanTool);
-                    measureControl.InitWithPDFViewer(pdfViewer, pdfViewer.PDFView);
+                    PDFGrid.Child = measureControl; 
+                    viewControl.PDFToolManager.SetToolType(ToolType.Pan);
+                    viewControl.SetToolType(ToolType.Pan); 
+                    measureControl.InitWithPDFViewer(viewControl);
+                    measureControl.SetBOTAContainer(botaBarControl);
+                    measureControl.ClearAllToolState();
+                    measureControl.SetSettingsControl(displaySettingsControl);
+                    GetPDFViewControl().PDFViewTool.GetDefaultSettingParam().IsOpenMeasure = true;
+                    measureControl.OnAnnotEditHandler -= PdfFormControlRefreshAnnotList;
+                    measureControl.OnAnnotEditHandler += PdfFormControlRefreshAnnotList;
                 }
             }
             currentMode = item.Tag as string;
@@ -600,7 +691,7 @@ namespace PDFViewer
         {
             PasswordUI.Visibility = Visibility.Collapsed;
             FileInfoUI.Visibility = Visibility.Visible;
-            FileInfoControl.InitWithPDFViewer(pdfViewer.PDFView);
+            FileInfoControl.InitWithPDFViewer(viewControl);
             PopupBorder.Visibility = Visibility.Visible;
         }
 
@@ -641,17 +732,18 @@ namespace PDFViewer
 
         private void CPDFTitleBarControl_FlattenEvent(object sender, EventArgs e)
         {
-            if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+            if (viewControl != null && viewControl.GetCPDFViewer() != null && viewControl.GetCPDFViewer().GetDocument() != null)
             {
-                string savePath = CommonHelper.GetGeneratePathOrEmpty("PDF files (*.pdf)|*.pdf", pdfViewer.PDFView.Document.FileName + "_Flattened.pdf");
+                string savePath = ComPDFKit.Controls.Helper.CommonHelper.GetGeneratePathOrEmpty("PDF files (*.pdf)|*.pdf", viewControl.GetCPDFViewer().GetDocument().FileName + "_Flattened.pdf");
                 if (!string.IsNullOrEmpty(savePath))
                 {
                     if (CanSave)
                     {
                         SaveFile();
-                        pdfViewer.PDFView.UndoManager.CanSave = false;
+
+                        viewControl.PDFViewTool.IsDocumentModified = false;
                     }
-                    CPDFDocument document = CPDFDocument.InitWithFilePath(pdfViewer.PDFView.Document.FilePath);
+                    CPDFDocument document = CPDFDocument.InitWithFilePath(viewControl.GetCPDFViewer().GetDocument().FilePath);
                     if (document?.WriteFlattenToFilePath(savePath) == true)
                     {
                         System.Diagnostics.Process.Start("Explorer.exe", "/select," + savePath);
@@ -701,6 +793,11 @@ namespace PDFViewer
             this.CanSave = e;
         }
 
+        private void PDFViewTool_DocumentModifiedChanged(object sender, EventArgs e)
+        {
+            CanSave = viewControl.PDFViewTool.IsDocumentModified;
+        }
+        
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -713,53 +810,61 @@ namespace PDFViewer
         private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            pdfViewer.PDFView.UndoManager.CanSave = false;
+            CanSave = false;
         }
 
         private void OpenFile(string filePath = "")
         {
-            if (string.IsNullOrEmpty(filePath))
+            if (viewControl != null && viewControl.PDFViewTool != null)
             {
-                filePath = CommonHelper.GetExistedPathOrEmpty();
-            }
-            string oldFilePath = pdfViewer.PDFView.Document.FilePath;
+                CPDFViewer pdfviewer = viewControl.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = pdfviewer?.GetDocument();
+                if (pdfDoc == null)
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    filePath = ComPDFKit.Controls.Helper.CommonHelper.GetExistedPathOrEmpty();
+                }
+                string oldFilePath = pdfDoc.FilePath;
 
-            if (!string.IsNullOrEmpty(filePath) && regularViewerControl.PdfViewControl != null)
-            {
-                if (pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (!string.IsNullOrEmpty(filePath) && regularViewerControl.PdfViewControl != null)
                 {
                     if (oldFilePath.ToLower() == filePath.ToLower())
                     {
                         return;
                     }
-                }
 
-                if ((bool)CheckExistBeforeOpenFileEvent?.Invoke(new string[] { filePath, oldFilePath }))
-                {
-                    return;
-                }
+                    if ((bool)CheckExistBeforeOpenFileEvent?.Invoke(new string[] { filePath, oldFilePath }))
+                    {
+                        return;
+                    }
 
-                passwordViewer = new PDFViewControl();
-                passwordViewer.PDFView.InitDocument(filePath);
-                if (passwordViewer.PDFView.Document == null)
-                {
-                    MessageBox.Show("Open File Failed");
-                    return;
-                }
+                    passwordViewer = new PDFViewControl();
+                    passwordViewer.InitDocument(filePath);
+                    CPDFViewer tempViewer = passwordViewer.PDFViewTool?.GetCPDFViewer();
+                    CPDFDocument tempDoc = tempViewer?.GetDocument();
+                    if (tempDoc == null)
+                    {
+                        MessageBox.Show("Open File Failed");
+                        return;
+                    }
 
-                if (passwordViewer.PDFView.Document.IsLocked)
-                {
-                    PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
-                    PasswordUI.ClearPassword();
-                    PopupBorder.Visibility = Visibility.Visible;
-                    PasswordUI.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    pdfViewer.PDFView.Document.Release();
-                    pdfViewer = passwordViewer;
-                    LoadDocument();
-                    FileChangeEvent?.Invoke(null, EventArgs.Empty);
+                    if (passwordViewer.GetCPDFViewer().GetDocument().IsLocked)
+                    {
+                        PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
+                        PasswordUI.ClearPassword();
+                        PopupBorder.Visibility = Visibility.Visible;
+                        PasswordUI.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        pdfDoc.Release();
+                        viewControl = passwordViewer;
+                        LoadDocument();
+                        FileChangeEvent?.Invoke(null, EventArgs.Empty);
+                    }
                 }
             }
         }
@@ -774,24 +879,23 @@ namespace PDFViewer
         /// </summary>
         public void SaveAsFile()
         {
+            if (viewControl != null && viewControl.PDFViewTool != null)
             {
-                if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                CPDFViewer pdfviewer = viewControl.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = pdfviewer?.GetDocument();
+                if (pdfDoc == null)
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
-                    SaveFileDialog saveDialog = new SaveFileDialog
-                    {
-                        Filter = "(*.pdf)|*.pdf",
-                        DefaultExt = ".pdf",
-                        OverwritePrompt = true
-                    };
+                    return;
+                }
 
-                    if (saveDialog.ShowDialog() == true)
-                    {
-                        if (pdfDoc.WriteToFilePath(saveDialog.FileName))
-                        {
-                            AfterSaveAsFileEvent?.Invoke(this, saveDialog.FileName);
-                        }
-                    }
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "(*.pdf)|*.pdf";
+                saveDialog.DefaultExt = ".pdf";
+                saveDialog.OverwritePrompt = true;
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    pdfDoc.WriteToFilePath(saveDialog.FileName);
                 }
             }
         }
@@ -801,11 +905,16 @@ namespace PDFViewer
         /// </summary>
         public void SaveFile()
         {
-            if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+            if (viewControl != null && viewControl.PDFViewTool != null)
             {
+                CPDFViewer pdfviewer = viewControl.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = pdfviewer?.GetDocument();
+                if (pdfDoc == null)
+                {
+                    return;
+                }
                 try
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
                     if (!string.IsNullOrEmpty(pdfDoc.FilePath))
                     {
                         if (pdfDoc.WriteToLoadedPath())
@@ -934,14 +1043,28 @@ namespace PDFViewer
 
         private void CommandBinding_Executed_ScaleAdd(object sender, ExecutedRoutedEventArgs e)
         {
-            double newZoom = CheckZoomLevel(pdfViewer.PDFView.ZoomFactor + 0.01, true);
-            pdfViewer.PDFView?.Zoom(newZoom);
+            if (viewControl != null && viewControl.PDFViewTool != null)
+            {
+                CPDFViewer pdfViewer = viewControl.PDFViewTool.GetCPDFViewer();
+                if (pdfViewer != null)
+                {
+                    double newZoom = CheckZoomLevel(pdfViewer.GetZoom() + 0.01, true);
+                    pdfViewer.SetZoom(newZoom);
+                }
+            }
         }
 
         private void CommandBinding_Executed_ScaleSubtract(object sender, ExecutedRoutedEventArgs e)
         {
-            double newZoom = CheckZoomLevel(pdfViewer.PDFView.ZoomFactor - 0.01, false);
-            pdfViewer.PDFView?.Zoom(newZoom);
+            if (viewControl != null && viewControl.PDFViewTool != null)
+            {
+                CPDFViewer pdfViewer = viewControl.PDFViewTool.GetCPDFViewer();
+                if (pdfViewer != null)
+                {
+                    double newZoom = CheckZoomLevel(pdfViewer.GetZoom() - 0.01, false);
+                    pdfViewer.SetZoom(newZoom);
+                }
+            }
         }
 
         private void CommandBinding_Executed_DisplaySettings(object sender, ExecutedRoutedEventArgs e)
@@ -955,7 +1078,7 @@ namespace PDFViewer
             {
                 PasswordUI.Visibility = Visibility.Collapsed;
                 FileInfoControl.Visibility = Visibility.Visible;
-                FileInfoControl.InitWithPDFViewer(pdfViewer.PDFView);
+                FileInfoControl.InitWithPDFViewer(viewControl);
                 FileInfoControl.CloseInfoEvent -= CPDFInfoControl_CloseInfoEvent;
                 FileInfoControl.CloseInfoEvent += CPDFInfoControl_CloseInfoEvent;
                 PopupBorder.Visibility = Visibility.Visible;

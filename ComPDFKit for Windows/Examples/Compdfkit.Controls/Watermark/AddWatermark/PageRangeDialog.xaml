@@ -1,0 +1,75 @@
+﻿<Window x:Class="ComPDFKit.Controls.PDFControl.PageRangeDialog" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+         xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common"
+        mc:Ignorable="d"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Title="Settings" Height="580" Width="704" Loaded="Window_Loaded">
+    <Window.Resources>
+        <ResourceDictionary>
+            <cpdfcommon:SecurityResourceConverter x:Key="SecurityResourceConverter"/> 
+            <cpdfcommon:TextLengthToVisibilityConverter x:Key="TextLengthToVisibilityConverter"></cpdfcommon:TextLengthToVisibilityConverter>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Asset/Styles/RadioButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="248"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <local:PreviewControl x:Name="PreviewControl"></local:PreviewControl>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Border BorderThickness="1" BorderBrush="#33000000" Margin="10,10,0,0" Height="190" VerticalAlignment="Top">
+                <Grid Margin="10,20,10,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <RadioButton x:Name="AllRangeRdo" Tag="All" Margin="0,0,0,8" IsChecked="True" Checked="RangeRdo_Checked">
+                        <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Rdo_AllPages}" VerticalAlignment="Center" FontSize="14" FontFamily="Microsoft YaHei"></TextBlock>
+                    </RadioButton>
+                    <RadioButton  x:Name="OddRangeRdo" Tag="Odd" Grid.Row="1" Margin="0,0,0,8" Checked="RangeRdo_Checked">
+                        <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Rdo_OddPages}" VerticalAlignment="Center" FontSize="14" FontFamily="Microsoft YaHei"></TextBlock>
+                    </RadioButton>
+                    <RadioButton x:Name="EvenRangeRdo" Tag="Even" IsEnabled="{Binding IsEvenEnable}" Grid.Row="2" Margin="0,0,0,8" Checked="RangeRdo_Checked">
+                        <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Rdo_EvenPages}" VerticalAlignment="Center" FontSize="14" FontFamily="Microsoft YaHei"></TextBlock>
+                    </RadioButton>
+                    <RadioButton x:Name="CustomRangeRdo" Tag="Custom" Grid.Row="3" Margin="0,0,0,8" Checked="RangeRdo_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Rdo_CustomPages}" VerticalAlignment="Center" FontSize="14" FontFamily="Microsoft YaHei"></TextBlock>
+                            <Grid>
+                                <TextBox x:Name="RangeTbx" Margin="12,0,0,0" Text="{Binding PageRange, UpdateSourceTrigger=PropertyChanged}" Height="28" Width="150" IsEnabled="{Binding ElementName=CustomRangeRdo, Path=IsChecked}" VerticalContentAlignment="Center"></TextBox>
+                                <TextBlock Text="1,3,5-10" VerticalAlignment="Center" Margin="15,0,0,0"  Visibility="{Binding ElementName=RangeTbx, Path=Text, Converter={StaticResource TextLengthToVisibilityConverter}}" IsHitTestVisible="False"  Foreground="#BBB"></TextBlock>
+                            </Grid>
+                        </StackPanel>
+                    </RadioButton>
+                </Grid>
+            </Border>
+            <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Text_PageRange}" Margin="20,3,0,0" Background="#fff" Height="20"  HorizontalAlignment="Left" VerticalAlignment="Top" TextAlignment="Center" FontWeight="DemiBold" FontFamily="Microsoft YaHei"></TextBlock>
+        </Grid>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,12,0,12">
+                <Button x:Name="ConfirmBtn" Height="32" Width="112" Margin="0,0,12,0" Click="ConfirmBtn_Click">
+                    <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Button_OK}"></TextBlock>
+                </Button>
+                <Button x:Name="CancelBtn" Height="32" Width="112" Margin="0,0,24,0" Click="CancelBtn_Click">
+                    <TextBlock Text="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Button_Cancel}"></TextBlock>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

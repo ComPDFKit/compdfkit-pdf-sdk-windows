@@ -123,7 +123,7 @@ namespace BookmarkTest
                 return false;
             }
             Console.WriteLine("Add bookmark in page {0}. ", bookmark.PageIndex + 1);
-            string addBookmarkPath = outputPath + "//AddBookmarkTest.pdf";
+            string addBookmarkPath = Path.Combine(outputPath, "AddBookmarkTest.pdf");
             if (document.WriteToFilePath(addBookmarkPath))
             {
                 Console.WriteLine("Browse the changed file in " + addBookmarkPath);
@@ -146,7 +146,7 @@ namespace BookmarkTest
             {
                 return false;
             }
-            string removeBookmarkPath = outputPath + "//RemoveBookmarkTest.pdf";
+            string removeBookmarkPath = Path.Combine(outputPath, "RemoveBookmarkTest.pdf");
             if (document.WriteToFilePath(removeBookmarkPath))
             {
                 Console.WriteLine("Browse the changed file in " + removeBookmarkPath);

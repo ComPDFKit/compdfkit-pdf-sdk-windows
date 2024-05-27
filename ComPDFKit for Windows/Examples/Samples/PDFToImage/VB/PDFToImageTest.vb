@@ -7,6 +7,7 @@ Imports System.IO
 Imports System.Windows
 Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
+Imports ComPDFKit.Import
 
 Module PDFToImageTest
     Private parentPath As String =
@@ -44,8 +45,9 @@ Module PDFToImageTest
     Private Function PDFPageToImage(document As CPDFDocument) As Boolean
         For i As Integer = 0 To document.PageCount - 1
             Dim pdfPage As CPDFPage = document.PageAtIndex(i, True)
-            Dim pageSize As Windows.Size = document.GetPageSize(0)
-            Dim pageRect As New Rect(0, 0, CInt(pageSize.Width / 72.0 * 96), CInt(pageSize.Height / 72.0 * 96))
+            Dim cSize As CSize = document.GetPageSize(0)
+            Dim pageSize As Windows.Size = New Windows.Size(cSize.Width, cSize.Height)
+            Dim pageRect As New CRect(0, CInt(pageSize.Height / 72.0 * 96), CInt(pageSize.Width / 72.0 * 96), 0)
             Dim bmpData As Byte() = New Byte(CInt(pageRect.Width * pageRect.Height * (96 / 72.0) * (96 / 72.0) * 4) - 1) {}
             pdfPage.RenderPageBitmapWithMatrix(CSng(96 / 72.0), pageRect, Convert.ToUInt32(&HFFFFFFF), bmpData, 0, True)
 

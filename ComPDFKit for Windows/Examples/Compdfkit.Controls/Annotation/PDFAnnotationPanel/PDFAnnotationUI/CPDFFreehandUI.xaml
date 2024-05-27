@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControlUI.CPDFFreehandUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControlUI"
+             xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common"
+             xmlns:cpdftools="clr-namespace:ComPDFKit.Controls.PDFControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../../Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <cpdfcommon:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></cpdfcommon:PropertyPanelResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto"> 
+        <Grid Background="#FAFCFF">
+        <StackPanel Orientation="Vertical">
+            <Border BorderThickness="1" BorderBrush="#1A000000">
+                <Grid  Height="40" Background="White" >
+                    <TextBlock x:Name="TitleTextBlock" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Ink}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontFamily="Microsoft YaHei"></TextBlock>
+                </Grid>
+            </Border>
+            <StackPanel Orientation="Vertical" Height="130">
+                <cpdftools:CPDFAnnotationPreviewerControl x:Name="CPDFAnnotationPreviewerControl" Height="100" Margin="16"></cpdftools:CPDFAnnotationPreviewerControl>
+
+                <Border BorderBrush="#E2E3E6" BorderThickness="1" Background="White" Height="100" Margin="16" Name="EraseCirclePanel" Visibility="Collapsed">
+                    <Ellipse Name="EraseCircle" Fill="#1A000000" Width="6" Height="6"></Ellipse>
+                </Border>
+            </StackPanel>
+           
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <ToggleButton Name="FreehandBtn" Style="{StaticResource ToggleButtonStyle}" Width="50" Height="32" BorderThickness="0" IsChecked="True" Click="FreehandBtn_Click">
+                    <Path Fill="#43474D">
+                        <Path.Data>
+                            M13.4957 3.18186L11.0208 0.706987C10.6303 0.316463 9.99531 0.318287 9.60254 0.711062L1.96623 8.34737L0.944556 13.2581L5.85532 12.2365L13.4916 4.60015C13.8844 
+                            4.20737 13.8862 3.57239 13.4957 3.18186ZM10.3096 1.41807L12.7844 3.89295L11.9714 4.70585L9.49654 2.23098L10.3096 1.41807ZM8.78532 2.94212L11.2602 
+                            5.41699L5.73071 10.9458C5.45073 10.4059 5.10425 9.92877 4.69144 9.51596C4.27669 9.10121 3.79698 8.75341 3.25399 8.47274L8.78532 2.94212ZM2.77914 
+                            9.35888L2.23707 11.9659L4.84581 11.423C4.61097 10.9675 4.32252 10.5694 3.98026 10.2271C3.63668 9.88356 3.23687 9.59421 2.77914 9.35888ZM0 
+                            14.4304L0.298624 15.3876L0.656222 15.2705L1.68417 14.9418L2.94848 14.5558L3.8155 14.3054L4.61161 14.0883L5.10238 13.9621L5.56077 13.8507L5.98643 
+                            13.7539L6.37902 13.6719L6.73819 13.6044L7.0636 13.5517L7.3549 13.5134L7.61175 13.4898L7.83379 13.4806C8.07241 13.4784 8.23927 13.5058 8.33191 
+                            13.5625C8.43207 13.6238 8.48301 13.6728 8.50056 13.7044C8.50387 13.7104 8.50393 13.7227 8.49505 13.7506L8.4637 13.8302L8.33958 14.0913C8.08229 
+                            14.648 8.07242 14.9824 8.56388 15.3249C8.84678 15.522 9.35935 15.5515 10.1477 15.419L10.5026 15.3523C10.5646 15.3395 10.628 15.3259 10.6929 15.3115L11.1 
+                            15.2152L11.5428 15.0994L12.0222 14.9641L12.539 14.8094L13.0941 14.6354L14 14.3385L13.6967 13.3828L13.4116 13.4775L12.8423 13.6615L12.3086 13.8273L11.5772 
+                            14.0423L11.1372 14.1632L10.7367 14.2664L10.3766 14.352C10.3201 14.3648 10.2653 14.3769 10.2122 14.3882L9.91502 14.4477L9.66114 14.4899L9.45163 14.5149C9.35815 
+                            14.5232 9.28172 14.5251 9.22297 14.5207L9.33769 14.2824C9.52162 13.8723 9.55522 13.5757 9.35089 13.2071C9.2415 13.0097 9.06827 12.8431 8.83274 
+                            12.699C8.60834 12.5616 8.26493 12.4956 7.79583 12.5001L7.49924 12.5113C7.39531 12.5178 7.2863 12.5272 7.17215 12.5394L6.81426 12.5844C6.75203 
+                            12.5933 6.6885 12.6029 6.62366 12.6132L6.21896 12.6835L5.78265 12.7706L5.31442 12.8744L4.81393 12.9951L4.28087 13.1324L3.41952 13.3696L2.80364 
+                            13.5486L2.15407 13.7442L1.11584 14.0687L0 14.4304Z
+                        </Path.Data>
+                    </Path>
+                </ToggleButton>
+                <ToggleButton Name="EraseBtn" Style="{StaticResource ToggleButtonStyle}" Width="50" Height="32" BorderThickness="0" Click="EraseBtn_Click">
+                    <Path Fill="#43474D">
+                        <Path.Data>
+                            M7.71094 14L15.2031 6.5L9.5 0.796875L0.890625 9.40625C0.765625 9.53125 0.670573 9.67839 0.605469 9.84766C0.540365 10.0169 0.507812 10.1927 0.507812 
+                            10.375C0.507812 10.5573 0.540365 10.7331 0.605469 10.9023C0.670573 11.0716 0.768229 11.2214 0.898438 11.3516L3.53906 14H7.71094ZM8.5 11.7969L4.20312 
+                            7.5L9.5 2.20312L13.7969 6.5L8.5 11.7969ZM3.95312 13H7.28906L7.79688 12.5L3.5 8.20312L1.60156 10.1016C1.53385 10.1693 1.5 10.2604 1.5 10.375C1.5 10.4896 
+                            1.53646 10.5833 1.60938 10.6562L3.95312 13ZM16 14V13H10.0182L9 14H16ZM1.06227 13L2 14H0V13H1.06227Z
+                        </Path.Data>
+                    </Path>
+                </ToggleButton>
+            </StackPanel>
+            
+            <StackPanel Name="FreehandPanel" Orientation="Vertical">
+                <StackPanel Height="75" Margin="5">
+                    <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Color}"></TextBlock>
+                    <cpdfcommon:ColorPickerControl x:Name="ColorPickerControl" TransparentBtnProperty="Collapsed"></cpdfcommon:ColorPickerControl>
+                </StackPanel>
+                <StackPanel Height="75" Margin="5">
+                    <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Opacity}"></TextBlock>
+                    <cpdfcommon:CPDFOpacityControl x:Name="CPDFOpacityControl"></cpdfcommon:CPDFOpacityControl>
+                </StackPanel>
+                <StackPanel Height="75" Margin="5">
+                    <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_LineWidth}"></TextBlock>
+                    <cpdfcommon:CPDFThicknessControl x:Name="CPDFThicknessControl"></cpdfcommon:CPDFThicknessControl>
+                </StackPanel>
+                <StackPanel Height="200" Margin="5">
+                    <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Note}"></TextBlock>
+                    <TextBox Height="150" x:Name="NoteTextBox" TextChanged="NoteTextBox_TextChanged" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Name="ErasePanel" Margin="5" Visibility="Collapsed">
+                <TextBlock Text="Line Width"></TextBlock>
+                <cpdfcommon:CPDFThicknessControl x:Name="EraseThickness"></cpdfcommon:CPDFThicknessControl>
+            </StackPanel>
+           
+        </StackPanel>
+    </Grid>
+    </ScrollViewer>
+
+</UserControl>

@@ -1,7 +1,7 @@
 ﻿<Application x:Class="PDFViewer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-              xmlns:cpdfcommon="clr-namespace:Compdfkit_Tools.Common;assembly=Compdfkit_Tools"
+              xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common;assembly=ComPDFKit.Controls"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <cpdfcommon:WindowStateToThicknessConverter x:Key="WindowStateToThicknessConverter"></cpdfcommon:WindowStateToThicknessConverter>

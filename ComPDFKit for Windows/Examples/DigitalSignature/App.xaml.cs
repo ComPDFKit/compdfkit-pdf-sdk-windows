@@ -1,5 +1,5 @@
 ﻿using ComPDFKit.NativeMethod;
-using Compdfkit_Tools.Helper;
+using ComPDFKit.Controls.Helper;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

@@ -3,7 +3,8 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices; 
+using System.Runtime.InteropServices;
+using ImageMagick;
 
 namespace BackgroundTest
 {
@@ -90,35 +91,6 @@ namespace BackgroundTest
         }
 
         /// <summary>
-        ///  Convert the bitmap to an array that can be set as an image watermark
-        /// </summary>
-        /// <param name="bitmap">Image source to be used as a image watermark.</param>
-        /// <returns>An array for setting image</returns>
-        public static byte[] BitmapToByteArray(Bitmap bitmap)
-        {
-
-            BitmapData bmpdata = null;
-
-            try
-            {
-                bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-                int numbytes = bmpdata.Stride * bitmap.Height;
-                byte[] bytedata = new byte[numbytes];
-                IntPtr ptr = bmpdata.Scan0;
-
-                Marshal.Copy(ptr, bytedata, 0, numbytes);
-
-                return bytedata;
-            }
-            finally
-            {
-                if (bmpdata != null)
-                    bitmap.UnlockBits(bmpdata);
-            }
-
-        }
-
-        /// <summary>
         /// Add image background.
         /// </summary>
         /// <param name="document">Regular document</param>
@@ -126,8 +98,12 @@ namespace BackgroundTest
         {
             CPDFBackground background = document.GetBackground();
             background.SetBackgroundType(C_Background_Type.BG_TYPE_IMAGE);
-            Bitmap bitmap = new Bitmap("logo.png");
-            background.SetImage(BitmapToByteArray(bitmap), bitmap.Width, bitmap.Height, ComPDFKit.Import.C_Scale_Type.fitCenter);
+            
+            using (var image = new MagickImage("ComPDFKit_Logo.ico"))
+            {
+                byte[] byteArray = image.ToByteArray(MagickFormat.Bgra);
+                background.SetImage(byteArray, image.Width, image.Height, ComPDFKit.Import.C_Scale_Type.fitCenter);
+            }
             background.SetOpacity(128);//0-255
             background.SetScale(1);//1 == 100%
             background.SetRotation(1f);//Use radians

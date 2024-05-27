@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControl.AddCustomCertificationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+              xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             Height="350" Width="403">
+    <UserControl.Resources>
+        <cpdfcommon:TextLengthToVisibilityConverter x:Key="TextLengthToVisibilityConverter"></cpdfcommon:TextLengthToVisibilityConverter>
+        <cpdfcommon:BoolToCollapsedConverter x:Key="BoolToCollapsedConverter"></cpdfcommon:BoolToCollapsedConverter>
+        <cpdfcommon:SigResourceConverter x:Key="SigResourceConverter"></cpdfcommon:SigResourceConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="280"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Background="#ffffff"  Margin="20,0,0,0"  Panel.ZIndex="1" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Title_CreateID}" FontWeight="Bold" FontSize="16"></TextBlock>
+        </Grid>
+        <Border Margin="12" BorderBrush="#33000000" BorderThickness="1">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Name}" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Text="*" Foreground="Red" VerticalAlignment="Center"></TextBlock>
+                </StackPanel>
+                <Grid Grid.Column="1">
+                    <TextBox Height="28" x:Name="GrantorNameTxt" VerticalContentAlignment="Center" VerticalAlignment="Center" Text="{Binding GrantorName}" MaxLength="50"/>
+                    <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_Name}" VerticalAlignment="Center"  Margin="10,0,0,0" Visibility="{Binding ElementName=GrantorNameTxt, Path=Text, Converter={StaticResource TextLengthToVisibilityConverter}}" IsHitTestVisible="False"  Foreground="#BBB"></TextBlock>
+                </Grid>
+                <TextBlock Grid.Row="1" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Unit}" VerticalAlignment="Center"></TextBlock>
+                <Grid Grid.Column="1" Grid.Row="1">
+                    <TextBox Height="28" x:Name="OrganizationalUnitTxt" VerticalContentAlignment="Center" Text="{Binding OrganizationalUnit}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_Unit}" VerticalAlignment="Center"  Margin="10,0,0,0" Visibility="{Binding ElementName=OrganizationalUnitTxt, Path=Text, Converter={StaticResource TextLengthToVisibilityConverter}}" IsHitTestVisible="False"  Foreground="#BBB"></TextBlock>
+                </Grid>
+                <TextBlock Grid.Row="2" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Organization}" VerticalAlignment="Center"></TextBlock>
+                <Grid Grid.Column="1" Grid.Row="2">
+                    <TextBox Height="28" x:Name="OrganizationTxt" VerticalContentAlignment="Center" Text="{Binding Organization}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_Organization}" VerticalAlignment="Center"  Margin="10,0,0,0" Visibility="{Binding ElementName=OrganizationTxt, Path=Text, Converter={StaticResource TextLengthToVisibilityConverter}}" IsHitTestVisible="False"  Foreground="#BBB"></TextBlock>
+                </Grid>
+                <StackPanel Grid.Row="3" Orientation="Horizontal">
+                    <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Email}" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Text="*" Foreground="Red" VerticalAlignment="Center"></TextBlock>
+                </StackPanel>
+                <Grid Grid.Column="1" Grid.Row="3">
+                    <TextBox Height="28" x:Name="EmailTxt" VerticalContentAlignment="Center" Text="{Binding Email}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Holder_Email}" VerticalAlignment="Center"  Margin="10,0,0,0" Visibility="{Binding ElementName=EmailTxt, Path=Text, Converter={StaticResource TextLengthToVisibilityConverter}}" IsHitTestVisible="False"  Foreground="#BBB"></TextBlock>
+                </Grid>
+                <TextBlock Grid.Row="4" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Country}" VerticalAlignment="Center"></TextBlock>
+                <Grid Grid.Column="1" Grid.Row="4">
+                    <ComboBox VerticalContentAlignment="Center" Margin="0,5,0,5" Name="AreaCmb" SelectedIndex="0" SelectionChanged="AreaCmb_SelectionChanged"></ComboBox>
+                </Grid>
+                <TextBlock Grid.Row="5" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Tip_Use}" VerticalAlignment="Center"></TextBlock>
+                <Grid Grid.Column="1" Grid.Row="5">
+                    <ComboBox Margin="0,5,0,5" VerticalContentAlignment="Center" Name="PurposeCmb" SelectedIndex="0" SelectionChanged="PurposeCmb_SelectionChanged"></ComboBox>
+                </Grid>
+            </Grid>
+        </Border>
+        <TextBlock Grid.Row="1" Name="ErrorTipsText" Foreground="Red" Margin="15,0,24,14"></TextBlock>
+        <Grid Grid.Row="2">
+            <StackPanel Margin="0,-10,24,12" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelBtn" Height="32" Width="112" Margin="0,0,8,0" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Cancel}" Click="CancelBtn_Click"></Button>
+                <Button x:Name="SaveBtn" Height="32" Width="112" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Continue}" Click="SaveBtn_Click"></Button>
+            </StackPanel>   
+        </Grid>
+    </Grid>
+</UserControl>

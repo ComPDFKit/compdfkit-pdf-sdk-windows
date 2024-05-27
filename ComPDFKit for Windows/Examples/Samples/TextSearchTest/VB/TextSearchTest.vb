@@ -2,8 +2,6 @@ Imports ComPDFKit.Import
 Imports ComPDFKit.PDFAnnotation
 Imports ComPDFKit.PDFDocument
 Imports ComPDFKit.PDFPage
-Imports System
-Imports System.Collections.Generic
 Imports System.IO
 Imports System.Windows
 
@@ -55,7 +53,7 @@ Module TextSearchTest
     ' Highlight the first result
     Private Function HighlightTheFirstResult(page As CPDFPage, rect As Rect) As Boolean
         Dim cRectList As New List(Of CRect)()
-        cRectList.Add(New CRect(CSng(rect.Left), CSng(rect.Top), CSng(rect.Right), CSng(rect.Bottom)))
+        cRectList.Add(New CRect(CSng(rect.Left), CSng(rect.Bottom), CSng(rect.Right), CSng(rect.Top)))
 
         Dim annotation As CPDFHighlightAnnotation = CType(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_HIGHLIGHT), CPDFHighlightAnnotation)
         Dim color As Byte() = {0, 255, 0}

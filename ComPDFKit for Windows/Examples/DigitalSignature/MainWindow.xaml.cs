@@ -1,14 +1,14 @@
 ﻿using ComPDFKit.PDFDocument;
-using Compdfkit_Tools.Helper;
-using Compdfkit_Tools.PDFControl;
-using Compdfkit_Tools.PDFView;
+using ComPDFKit.Controls.Helper;
+using ComPDFKit.Controls.PDFControl;
+using ComPDFKit.Controls.PDFView;
 using ComPDFKitViewer;
-using ComPDFKitViewer.PdfViewer;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ComPDFKit.DigitalSign;
-using System.Reflection;
+using ComPDFKit.Tool;
 
 namespace DigitalSignature
 {
@@ -50,7 +49,7 @@ namespace DigitalSignature
         /// <summary>
         /// Whether the save operation can be performed.
         /// </summary>
-        private bool _canSave = false;
+        private bool _canSave = true;
         public bool CanSave
         {
             get => _canSave;
@@ -133,11 +132,11 @@ namespace DigitalSignature
             {
                 filePath = CommonHelper.GetExistedPathOrEmpty();
             }
-            string oldFilePath = pdfViewer.PDFView.Document.FilePath;
+            string oldFilePath = pdfViewer.GetCPDFViewer().GetDocument().FilePath;
 
             if (!string.IsNullOrEmpty(filePath) && regularViewerControl.PdfViewControl != null)
             {
-                if (pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (pdfViewer.GetCPDFViewer() != null && pdfViewer.GetCPDFViewer().GetDocument() != null)
                 {
                     if (oldFilePath.ToLower() == filePath.ToLower())
                     {
@@ -146,14 +145,14 @@ namespace DigitalSignature
                 }
 
                 passwordViewer = new PDFViewControl();
-                passwordViewer.PDFView.InitDocument(filePath);
-                if (passwordViewer.PDFView.Document == null)
+                passwordViewer.InitDocument(filePath);
+                if (passwordViewer.GetCPDFViewer().GetDocument() == null)
                 {
                     MessageBox.Show("Open File Failed");
                     return;
                 }
 
-                if (passwordViewer.PDFView.Document.IsLocked)
+                if (passwordViewer.GetCPDFViewer().GetDocument().IsLocked)
                 {
                     PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
                     PasswordUI.ClearPassword();
@@ -162,7 +161,7 @@ namespace DigitalSignature
                 }
                 else
                 {
-                    pdfViewer.PDFView.Document.Release();
+                    pdfViewer.GetCPDFViewer().GetDocument().Release();
                     pdfViewer = passwordViewer;
                     LoadDocument();
                 }
@@ -175,7 +174,7 @@ namespace DigitalSignature
         private void LoadDefaultDocument()
         {
             string defaultFilePath = "ComPDFKit_Signatures_Sample_File.pdf";
-            pdfViewer.PDFView.InitDocument(defaultFilePath);
+            pdfViewer.InitDocument(defaultFilePath);
             LoadDocument();
         }
 
@@ -185,25 +184,29 @@ namespace DigitalSignature
         private void LoadCustomControl()
         {
             regularViewerControl.PdfViewControl = pdfViewer;
-            regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
-            regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
+            regularViewerControl.InitWithPDFViewer(pdfViewer);
+            regularViewerControl.PdfViewControl.PDFToolManager.SetToolType(ToolType.Viewer);
             regularViewerControl.SetBOTAContainer(null);
             regularViewerControl.SetBOTAContainer(botaBarControl);
             regularViewerControl.SetDisplaySettingsControl(displaySettingsControl);
             PDFGrid.Child = regularViewerControl;
             
-            SignatureHelper.InitEffectiveSignatureList(pdfViewer.PDFView.Document);
-            digitalSignatureControl.OnCanSaveChanged -= DigitalSignatureControl_OnCanSaveChanged;
-            digitalSignatureControl.OnCanSaveChanged += DigitalSignatureControl_OnCanSaveChanged;
+            SignatureHelper.InitEffectiveSignatureList(pdfViewer.GetCPDFViewer().GetDocument());
             digitalSignatureControl.SignatureStatusChanged -= DigitalSignatureControl_OnSignatureStatusChanged;
             digitalSignatureControl.SignatureStatusChanged += DigitalSignatureControl_OnSignatureStatusChanged;
             signatureStatusBarControl.OnViewSignatureButtonClicked -= ViewAllSignatures;
             signatureStatusBarControl.OnViewSignatureButtonClicked += ViewAllSignatures;
             
-            SignatureHelper.VerifySignatureList(pdfViewer.PDFView.Document);
-            digitalSignatureControl.LoadUndoManagerEvent(pdfViewer.PDFView);
+            SignatureHelper.VerifySignatureList(pdfViewer.GetCPDFViewer().GetDocument());
             signatureStatusBarControl.SetStatus(SignatureHelper.SignatureList);
             regularViewerControl.SetSignatureStatusBarControl(signatureStatusBarControl);
+            regularViewerControl.PdfViewControl.PDFViewTool.DocumentModifiedChanged -= PDFViewTool_DocumentModifiedChanged;
+            regularViewerControl.PdfViewControl.PDFViewTool.DocumentModifiedChanged += PDFViewTool_DocumentModifiedChanged;
+        }
+
+        private void PDFViewTool_DocumentModifiedChanged(object sender, EventArgs e)
+        { 
+            CanSave = regularViewerControl.PdfViewControl.PDFViewTool.IsDocumentModified;
         }
 
         /// <summary>
@@ -211,18 +214,18 @@ namespace DigitalSignature
         /// </summary>
         private void LoadDocument()
         {
-            if (pdfViewer.PDFView.Document == null)
+            if (pdfViewer.GetCPDFViewer().GetDocument() == null)
             {
                 return;
             }
 
-            pdfViewer.PDFView.Load();
-            pdfViewer.PDFView.SetShowLink(true);
-
-            pdfViewer.PDFView.InfoChanged -= PdfViewer_InfoChanged;
-            pdfViewer.PDFView.InfoChanged += PdfViewer_InfoChanged;
-
-            pdfViewer.PDFView.SetFormFieldHighlight(true);
+            // pdfViewer.PDFView.Load();
+            // pdfViewer.PDFView.SetShowLink(true);
+            //
+            // pdfViewer.PDFView.InfoChanged -= PdfViewer_InfoChanged;
+            // pdfViewer.PDFView.InfoChanged += PdfViewer_InfoChanged;
+            //
+            // pdfViewer.PDFView.SetFormFieldHighlight(true);
             pdfViewer.CustomSignHandle = true;
 
             PasswordUI.Closed -= PasswordUI_Closed;
@@ -232,7 +235,7 @@ namespace DigitalSignature
             PasswordUI.Canceled += PasswordUI_Canceled;
             PasswordUI.Confirmed += PasswordUI_Confirmed;
             ModeComboBox.SelectedIndex = 0;
-            botaBarControl.InitWithPDFViewer(pdfViewer.PDFView);
+            botaBarControl.InitWithPDFViewer(pdfViewer);
             botaBarControl.AddBOTAContent(new []{BOTATools.Thumbnail , BOTATools.Outline , BOTATools.Bookmark , BOTATools.Search , BOTATools.Annotation , BOTATools.Signature});
             botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
             botaBarControl.DeleteSignatureEvent -= BotaControlOnDeleteSignatureEvent;
@@ -242,10 +245,10 @@ namespace DigitalSignature
             botaBarControl.ViewSignatureEvent -= digitalSignatureControl.ViewSignatureEvent;    
             botaBarControl.ViewSignatureEvent += digitalSignatureControl.ViewSignatureEvent;
             
-            displaySettingsControl.InitWithPDFViewer(pdfViewer.PDFView);
+            displaySettingsControl.InitWithPDFViewer(pdfViewer);
             LoadCustomControl();
-            pdfViewer.PDFView.ChangeFitMode(FitMode.FitWidth);
-            CPDFSaclingControl.InitWithPDFViewer(pdfViewer.PDFView);
+            pdfViewer.GetCPDFViewer().SetFitMode(FitMode.FitWidth);
+            CPDFSaclingControl.InitWithPDFViewer(pdfViewer);
             
             panelState.PropertyChanged -= PanelState_PropertyChanged;
             panelState.PropertyChanged += PanelState_PropertyChanged;
@@ -258,10 +261,10 @@ namespace DigitalSignature
         /// <param name="e"></param>
         private void PasswordUI_Confirmed(object sender, string e)
         {
-            if (passwordViewer != null && passwordViewer.PDFView != null && passwordViewer.PDFView.Document != null)
+            if (passwordViewer != null && passwordViewer.GetCPDFViewer() != null && passwordViewer.GetCPDFViewer().GetDocument() != null)
             {
-                passwordViewer.PDFView.Document.UnlockWithPassword(e);
-                if (passwordViewer.PDFView.Document.IsLocked == false)
+                passwordViewer.GetCPDFViewer().GetDocument().UnlockWithPassword(e);
+                if (passwordViewer.GetCPDFViewer().GetDocument().IsLocked == false)
                 {
                     PasswordUI.SetShowError("", Visibility.Collapsed);
                     PasswordUI.ClearPassword();
@@ -343,9 +346,8 @@ namespace DigitalSignature
         /// <param name="e"></param>
         private void BotaControlOnDeleteSignatureEvent(object sender, EventArgs e)
         {
-            pdfViewer.PDFView.UndoManager.CanSave = true;
+            pdfViewer.PDFViewTool.IsDocumentModified = true;
             DigitalSignatureControl_OnSignatureStatusChanged(sender, e);
-            //this.CanSave = true;
         }
         
         /// <summary>
@@ -355,20 +357,10 @@ namespace DigitalSignature
         /// <param name="e"></param>
         private void DigitalSignatureControl_OnSignatureStatusChanged(object sender, EventArgs e)
         {
-            SignatureHelper.InitEffectiveSignatureList(pdfViewer.PDFView.Document);
-            SignatureHelper.VerifySignatureList(pdfViewer.PDFView.Document);
+            SignatureHelper.InitEffectiveSignatureList(pdfViewer.GetCPDFViewer().GetDocument());
+            SignatureHelper.VerifySignatureList(pdfViewer.GetCPDFViewer().GetDocument());
             signatureStatusBarControl.SetStatus(SignatureHelper.SignatureList);
             botaBarControl.LoadSignatureList();
-        }
-
-        /// <summary>
-        /// Event handler for updating the CanSave property.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DigitalSignatureControl_OnCanSaveChanged(object sender, bool e)
-        {
-            this.CanSave = e;
         }
 
         /// <summary>
@@ -392,7 +384,7 @@ namespace DigitalSignature
         private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            pdfViewer.PDFView.UndoManager.CanSave = false;
+            pdfViewer.PDFViewTool.IsDocumentModified = false;
         }
 
         /// <summary>
@@ -434,12 +426,12 @@ namespace DigitalSignature
 
             if (item.Content as string == "Viewer")
             {
-                if (regularViewerControl.PdfViewControl != null && regularViewerControl.PdfViewControl.PDFView != null)
+                if (regularViewerControl.PdfViewControl != null)
                 {
                     PDFGrid.Child = regularViewerControl;
-                    regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
+                    regularViewerControl.PdfViewControl.PDFToolManager.SetToolType(ToolType.Viewer);
                     regularViewerControl.PdfViewControl = pdfViewer;
-                    regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    regularViewerControl.InitWithPDFViewer(pdfViewer);
                     regularViewerControl.SetBOTAContainer(botaBarControl);
                     regularViewerControl.SetDisplaySettingsControl(displaySettingsControl);
                     regularViewerControl.SetSignatureStatusBarControl(signatureStatusBarControl);
@@ -447,12 +439,12 @@ namespace DigitalSignature
             }
             else if (item.Content as string == "Digital Signature")
             {
-                if (digitalSignatureControl.PDFViewControl != null && digitalSignatureControl.PDFViewControl.PDFView != null)
+                if (digitalSignatureControl.PDFViewControl != null)
                 {
                     PDFGrid.Child = digitalSignatureControl;
-                    digitalSignatureControl.PDFViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
+                    digitalSignatureControl.PDFViewControl.PDFToolManager.SetToolType(ToolType.WidgetEdit);
                     digitalSignatureControl.PDFViewControl = pdfViewer;
-                    digitalSignatureControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    digitalSignatureControl.InitWithPDFViewer(pdfViewer);
                     digitalSignatureControl.SetBOTAContainer(botaBarControl);
                     digitalSignatureControl.SetDisplaySettingsControl(displaySettingsControl);
                     digitalSignatureControl.SetSignatureStatusBarControl(signatureStatusBarControl);
@@ -526,7 +518,7 @@ namespace DigitalSignature
         {
             PasswordUI.Visibility = Visibility.Collapsed;
             FileInfoUI.Visibility = Visibility.Visible;
-            FileInfoControl.InitWithPDFViewer(pdfViewer.PDFView);
+            FileInfoControl.InitWithPDFViewer(pdfViewer);
             PopupBorder.Visibility = Visibility.Visible;
 
         }
@@ -598,9 +590,9 @@ namespace DigitalSignature
         public void SaveAsFile()
         {
             {
-                if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (pdfViewer != null && pdfViewer.GetCPDFViewer() != null && pdfViewer.GetCPDFViewer().GetDocument() != null)
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewer.GetCPDFViewer().GetDocument();
                     SaveFileDialog saveDialog = new SaveFileDialog();
                     saveDialog.Filter = "(*.pdf)|*.pdf";
                     saveDialog.DefaultExt = ".pdf";
@@ -619,11 +611,11 @@ namespace DigitalSignature
         /// </summary>
         public void SaveFile()
         {
-            if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+            if (pdfViewer != null && pdfViewer.GetCPDFViewer() != null && pdfViewer.GetCPDFViewer().GetDocument() != null)
             {
                 try
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewer.GetCPDFViewer().GetDocument();
                     if (pdfDoc.WriteToLoadedPath())
                     {
                         return;

@@ -4,17 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AnnotationViewControl"
-        xmlns:pdfControl="clr-namespace:Compdfkit_Tools.PDFControl;assembly=ComPDFKit_Tools"
-        xmlns:common="clr-namespace:Compdfkit_Tools.Common;assembly=ComPDFKit_Tools"
+        xmlns:pdfControl="clr-namespace:ComPDFKit.Controls.PDFControl;assembly=ComPDFKit.Controls"
+        xmlns:common="clr-namespace:ComPDFKit.Controls.Common;assembly=ComPDFKit.Controls"
         mc:Ignorable="d"
         Loaded="MainWindow_Loaded"
         Title="{Binding AppInfo}" Height="720" Width="1080"  WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <common:DocInfoResourceConverter x:Key="DocInfoResourceConverter"></common:DocInfoResourceConverter>
         </ResourceDictionary>

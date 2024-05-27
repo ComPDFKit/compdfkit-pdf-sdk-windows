@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PDFViewer"
-        xmlns:common="clr-namespace:Compdfkit_Tools.Common;assembly=ComPDFKit_Tools"
+        xmlns:common="clr-namespace:ComPDFKit.Controls.Common;assembly=ComPDFKit.Controls"
         mc:Ignorable="d"
         Title="Settings" Height="580" Width="440"
         ShowInTaskbar="False"
@@ -14,7 +14,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Compdfkit_Tools;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <local:ResourceConverter x:Key="ResourceConverter" />
             <DropShadowEffect x:Key="HoverThumbEffect" BlurRadius="5" ShadowDepth="0" Opacity="0.5" Color="RoyalBlue"/>

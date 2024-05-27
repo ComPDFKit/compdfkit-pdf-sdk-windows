@@ -2,13 +2,15 @@
 using ComPDFKit.PDFPage;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+
+using ComPDFKit.Import;
+using ImageMagick;
 
 namespace PDFToImageTest
 {
@@ -43,16 +45,6 @@ namespace PDFToImageTest
             document.PdfToImage("1", outputPath);
         }
 
-        static private void SaveWriteableBitmapAsPng(WriteableBitmap writeableBitmap, string fileName)
-        {
-            using (FileStream stream = new FileStream(fileName, FileMode.Create))
-            {
-                PngBitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(writeableBitmap));
-                encoder.Save(stream);
-            }
-        }
-
         /// <summary>
         /// Convert PDF to image
         /// </summary>
@@ -61,16 +53,24 @@ namespace PDFToImageTest
             for (int i = 0; i < document.PageCount; i++)
             {
                 CPDFPage pdfPage = document.PageAtIndex(i, true);
-                Size pageSize = document.GetPageSize(0);
-                Rect pageRect = new Rect(0, 0, (int)(pageSize.Width / 72.0 * 96), (int)(pageSize.Height / 72.0 * 96));
-                byte[] bmpData = new byte[(int)(pageRect.Width * pageRect.Height * (96 / 72.0) * (96 / 72.0) * 4)];
+                CSize cSize = document.GetPageSize(0);
+                System.Drawing.Size pageSize = new System.Drawing.Size((int)cSize.width, (int)cSize.height);
+                CRect pageRect = new CRect(0, (int)(pageSize.Height / 72.0 * 96), (int)(pageSize.Width / 72.0 * 96), 0);
+                byte[] bmpData = new byte[(int)(pageRect.width() * pageRect.height() * (96 / 72.0) * (96 / 72.0) * 4)];
                 pdfPage.RenderPageBitmapWithMatrix((float)(96 / 72.0), pageRect, 0xFFFFFFFF, bmpData, 0, true);
+                var path = Path.Combine(outputPath, "PDFToImageTest" + i + ".png");
 
-                WriteableBitmap writeableBitmap = new WriteableBitmap((int)pageRect.Width, (int)pageRect.Height, 96, 96, PixelFormats.Bgra32, null);
-
-                writeableBitmap.WritePixels(new Int32Rect(0, 0, (int)pageRect.Width, (int)pageRect.Height), bmpData, writeableBitmap.BackBufferStride, 0);
-                var path = outputPath + @"\PDFToImageTest" + i + ".png";
-                SaveWriteableBitmapAsPng(writeableBitmap, path);
+                var settings = new MagickReadSettings()
+                {
+                    Format = MagickFormat.Bgra,
+                    Width = (int)pageRect.width(),
+                    Height = (int)pageRect.height()
+                };
+                using (var image = new MagickImage(bmpData,settings))
+                {
+                    image.Format = MagickFormat.Png;
+                    image.Write(path);
+                }
                 Console.WriteLine("Png image saved in {0}", path);
             }
             return false;

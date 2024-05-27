@@ -67,7 +67,7 @@ Module BatesTest
     End Sub
 
     Private Function AddBates(document As CPDFDocument) As Boolean
-        Dim addBatesPath As String = outputPath & "\AddBatesTest.pdf"
+        Dim addBatesPath As String = outputPath & "\AddBates.pdf"
 
         Dim bates As CPDFBates = document.GetBates()
         Dim color As Byte() = {255, 0, 0}

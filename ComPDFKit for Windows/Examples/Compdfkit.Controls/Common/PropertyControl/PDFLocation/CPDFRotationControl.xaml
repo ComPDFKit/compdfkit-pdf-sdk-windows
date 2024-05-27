@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.Common.CPDFRotationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="32" d:DesignWidth="186">
+    <UserControl.Resources>
+        <Style x:Key="TransparentButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="32"></Setter>
+            <Setter Property="Width" Value="32"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" Background="Transparent">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1a000000" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#5a000000" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Left">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition  Width="auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <local:NumericUpDownControl x:Name="NumericUpDownControl" Width="82" Minimum="-360" Maximum="360" Text="{Binding RotationText, Mode=TwoWay}"></local:NumericUpDownControl>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+            <Button x:Name="CounterclockwiseBtn"  Style="{StaticResource TransparentButtonStyle}" Click="RotationBtn_Click">
+                <Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M14.5,0H1.5V16H14.5V0ZM13.5,1V15H2.5V1H13.5ZM6.58579,3.75736L3.75736,6.58579L9.41421,12.2426L12.2426,9.41421L6.58579,3.75736Z" Fill="#001A4E" />
+            </Button>
+            <Button x:Name="ResetBtn"  Style="{StaticResource TransparentButtonStyle}"  Click="RotationBtn_Click">
+                <Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M14.5 0H1.5V16H14.5V0ZM13.5 1V15H2.5V1H13.5ZM10 4H6V12H10V4Z" Fill="#001A4E" />
+            </Button>
+            <Button x:Name="ClockwiseBtn" Style="{StaticResource TransparentButtonStyle}"  Click="RotationBtn_Click">
+                <Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M14.5 0H1.5V16H14.5V0ZM13.5 1V15H2.5V1H13.5ZM12.2426 6.58579L9.41421 3.75736L3.75736 9.41421L6.58579 12.2426L12.2426 6.58579Z" Fill="#001A4E" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

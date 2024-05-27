@@ -1,0 +1,52 @@
+﻿<Window x:Class="ComPDFKit.Controls.PDFControl.ViewCertificateDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+        xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+        mc:Ignorable="d"
+        Title="ViewCertificationControl" Height="670" Width="820" ResizeMode="NoResize" ShowInTaskbar="False">
+    
+    <Window.Resources>
+        <local:DictionaryValueConverter x:Key="DictionaryValueConverter"/>
+        <common:SigResourceConverter x:Key="SigResourceConverter"></common:SigResourceConverter>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="56"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.ColumnSpan="2" Margin="10,20,10,20" Foreground="#666666" Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_ViewIDFile}"></TextBlock>
+
+        <ListView Grid.Row="1" Grid.Column="0" x:Name="CertificateListView" Margin="10,0,10,0" SelectionChanged="CertificateListView_OnSelectionChanged">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Background="#FAFCFF" Margin="-5,0,0,0"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Name="SignatureGrid" Height="40">
+                        <TextBlock Text="{Binding SubjectDict, Converter={StaticResource DictionaryValueConverter}}" Margin="10,0,0,0" ToolTip="{Binding SubjectDict, Converter={StaticResource DictionaryValueConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        
+        <Grid Grid.Row="1" Grid.Column="1">
+            <local:CertificateInfoControl BorderBrush="#999999" Margin="0,0,10,0" BorderThickness="1" x:Name="CertificateInfoControl"></local:CertificateInfoControl>
+        </Grid>
+        
+        <Button Grid.Row="2" Grid.ColumnSpan="2" Height="32" Width="112" HorizontalAlignment="Right" Margin="10" Click="ButtonBase_OnClick"
+                Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Button_Close}"></Button>
+    </Grid>
+</Window>

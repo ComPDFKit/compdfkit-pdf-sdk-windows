@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="ComPDFKit.Tool.CPDFViewerTool"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Tool" 
+             xmlns:compdfkitviewer="clr-namespace:ComPDFKitViewer;assembly=ComPDFKit.Viewer"
+             mc:Ignorable="d" 
+             Focusable="True"
+             Loaded="CPDFViewerTool_Loaded"
+             Unloaded="CPDFViewerTool_Unloaded"
+             >
+    <ScrollViewer Focusable="False" CanContentScroll="True"
+                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                  MouseUp="ScrollViewer_MouseUp" MouseDown="ScrollViewer_MouseDown">
+        <compdfkitviewer:CPDFViewer x:Name="PDFViewer">
+
+        </compdfkitviewer:CPDFViewer>
+    </ScrollViewer>
+</UserControl>

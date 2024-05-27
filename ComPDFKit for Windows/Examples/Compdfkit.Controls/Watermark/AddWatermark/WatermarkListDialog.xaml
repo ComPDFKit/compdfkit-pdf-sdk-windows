@@ -1,0 +1,28 @@
+﻿<Window x:Class="ComPDFKit.Controls.PDFControl.WatermarkListDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+        xmlns:common="clr-namespace:ComPDFKit.Controls.Common" 
+        mc:Ignorable="d"
+        Height="522" Width="516" ShowInTaskbar="False" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <common:SecurityResourceConverter x:Key="SecurityResourceConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <local:FileGridListWithPageRangeControl x:Name="FileGridListWithPageRangeControl"></local:FileGridListWithPageRangeControl>
+        <Grid Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Margin="0,24,24,12" HorizontalAlignment="Right">
+                <Button x:Name="NextBtn" Content="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Button_Apply}" Height="32" Width="112" IsEnabled="{Binding ElementName=FileGridListWithPageRangeControl, Path=IsEnsure}" Margin="0,0,8,0" Click="NextBtn_Click"></Button>
+                <Button x:Name="CancelBtn" Height="32" Content="{Binding Converter={StaticResource SecurityResourceConverter}, ConverterParameter=Button_Cancel}" Width="112"  Click="CancelBtn_Click"></Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
