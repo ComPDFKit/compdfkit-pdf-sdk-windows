@@ -2,13 +2,10 @@
 using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFPage;
-using ComPDFKitViewer.PdfViewer;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
+using ImageMagick;
 
 namespace AnnotationTest
 {
@@ -101,8 +98,6 @@ namespace AnnotationTest
                 new CPoint(100,10),
             });
             ink.SetInkPath(points);
-            ink.SetInkRect(new CRect(10, 10, 200, 200));
-
             ink.UpdateAp();
         }
 
@@ -131,7 +126,7 @@ namespace AnnotationTest
 
             // Circle
             CPDFCircleAnnotation circle = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE) as CPDFCircleAnnotation;
-            circle.SetRect(new CRect(10, 300, 110, 410));
+            circle.SetRect(new CRect(10, 410, 110, 300));
             circle.SetLineColor(lineColor);
             circle.SetBgColor(bgColor);
             circle.SetTransparency(120);
@@ -161,7 +156,7 @@ namespace AnnotationTest
             textAnnotation.SetColor(new byte[] { 255, 0, 0 });
             textAnnotation.SetTransparency(255);
             textAnnotation.SetContent("ComPDFKit");
-            textAnnotation.SetRect(new CRect(300, 600, 350, 650));
+            textAnnotation.SetRect(new CRect(300, 650, 350, 600));
             textAnnotation.UpdateAp();
         }
 
@@ -171,10 +166,15 @@ namespace AnnotationTest
         /// <param name="document"></param>
         static private void CreateSoundAnnotation(CPDFDocument document)
         {
-            CPDFPage page = document.PageAtIndex(0);
+            CPDFPage page = document.PageAtIndex(1);
             CPDFSoundAnnotation sound = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_SOUND) as CPDFSoundAnnotation;
-            sound.SetRect(new CRect(400, 700, 450, 750));
-            sound.SetSoundPath("Bird.wav");
+            sound.SetRect(new CRect(400, 750, 450, 700));
+
+            using (var image = new MagickImage("SoundAnnot.png"))
+            {
+                byte[] byteArray = image.ToByteArray(MagickFormat.Bgra);
+                sound.SetSoundPath(byteArray, image.Width, image.Height, "Bird.wav");
+            }
             sound.UpdateAp();
         }
 
@@ -185,7 +185,7 @@ namespace AnnotationTest
         static private void CreateMarkupAnnotation(CPDFDocument document)
         {
             List<CRect> cRectList = new List<CRect>();
-            CRect rect = new CRect(300, 240, 400, 300);
+            CRect rect = new CRect(300, 300, 400, 240);
             cRectList.Add(rect);
             byte[] color = { 255, 0, 0 };
 
@@ -226,30 +226,7 @@ namespace AnnotationTest
             squiggy.UpdateAp();
 
         }
-
-        public static byte[] BitmapToByteArray(Bitmap bitmap)
-        {
-
-            BitmapData bmpdata = null;
-
-            try
-            {
-                bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-                int numbytes = bmpdata.Stride * bitmap.Height;
-                byte[] bytedata = new byte[numbytes];
-                IntPtr ptr = bmpdata.Scan0;
-
-                Marshal.Copy(ptr, bytedata, 0, numbytes);
-
-                return bytedata;
-            }
-            finally
-            {
-                if (bmpdata != null)
-                    bitmap.UnlockBits(bmpdata);
-            }
-
-        }
+        
 
         /// <summary>
         /// Create stamp annotation
@@ -261,23 +238,28 @@ namespace AnnotationTest
             // Standard
             CPDFStampAnnotation standard = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
             standard.SetStandardStamp("Approved");
-            standard.SetRect(new CRect(300, 100, 450, 160));
+            standard.SetRect(new CRect(300, 160, 450, 100));
             standard.UpdateAp();
 
             // Text
             CPDFStampAnnotation text = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
             text.SetTextStamp("test", "detail text", C_TEXTSTAMP_SHAPE.TEXTSTAMP_LEFT_TRIANGLE, C_TEXTSTAMP_COLOR.TEXTSTAMP_RED);
-            text.SetRect(new CRect(300, 220, 450, 300));
+            text.SetRect(new CRect(300, 300, 450, 220));
 
             text.UpdateAp();
 
             // Image
-            Bitmap bitmap = new Bitmap("logo.png");
-            CPDFStampAnnotation image = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
-            image.SetImageStamp(BitmapToByteArray(bitmap), bitmap.Width, bitmap.Height);
-            image.SetRect(new CRect(300, 320, 380, 400));
-            image.SetTransparency(255);
-            image.UpdateAp();
+            CPDFStampAnnotation stampAnnotation = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
+            
+            using (var image = new MagickImage("ComPDFKit_Logo.ico"))
+            {
+                byte[] byteArray = image.ToByteArray(MagickFormat.Bgra);
+                stampAnnotation.SetImageStamp(byteArray, image.Width, image.Height);
+            }
+            
+            stampAnnotation.SetRect(new CRect(300, 400, 380, 320));
+            stampAnnotation.SetTransparency(255);
+            stampAnnotation.UpdateAp();
         }
 
 

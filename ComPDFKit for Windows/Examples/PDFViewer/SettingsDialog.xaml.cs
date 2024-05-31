@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using Compdfkit_Tools.Helper;
+using ComPDFKit.Controls.Helper;
 
 namespace PDFViewer
 {
@@ -32,7 +32,7 @@ namespace PDFViewer
         {
             Properties.Settings.Default.Divisor = GetDivisor();
             Properties.Settings.Default.Save();
-            Compdfkit_Tools.Data.CPDFAnnotationData.Author = Properties.Settings.Default.DocumentAuthor;
+            ComPDFKit.Controls.Data.CPDFAnnotationData.Author = Properties.Settings.Default.DocumentAuthor;
         }
 
         private void EventSetter_ClickHandler(object sender, RoutedEventArgs e)

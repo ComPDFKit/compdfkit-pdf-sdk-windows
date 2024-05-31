@@ -1,6 +1,5 @@
-﻿using Compdfkit_Tools.Helper;
-using Compdfkit_Tools.PDFControl;
-using ComPDFKitViewer.AnnotEvent;
+﻿using ComPDFKit.Controls.Helper;
+using ComPDFKit.Controls.PDFControl;
 using ComPDFKitViewer;
 using System;
 using System.Collections.Generic;
@@ -12,13 +11,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing;
 using System.ComponentModel;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using ComPDFKit.PDFDocument;
 using Microsoft.Win32;
 using System.Windows.Controls.Primitives;
-using ComPDFKitViewer.PdfViewer;
-using System.Reflection;
-using System.Linq;
+using ComPDFKit.Tool;
 
 namespace DocsEditor
 {
@@ -36,15 +36,17 @@ namespace DocsEditor
         private CPDFDisplaySettingsControl displayPanel = new CPDFDisplaySettingsControl();
         private double[] zoomLevelList = { 1f, 8f, 12f, 25, 33f, 50, 66f, 75, 100, 125, 150, 200, 300, 400, 600, 800, 1000 };
 
+        /// <summary>
+        /// Whether the save operation can be performed.
+        /// </summary>
+        private bool _canSave = true;
         public bool CanSave
         {
-            get
+            get => _canSave;
+            set
             {
-                if (pdfViewControl != null && pdfViewControl.PDFView != null)
-                {
-                    return pdfViewControl.PDFView.UndoManager.CanSave;
-                }
-                return false;
+                _canSave = value;
+                OnPropertyChanged();
             }
         }
 
@@ -72,19 +74,17 @@ namespace DocsEditor
             RightPanelButton.IsEnabled = false;
             ViewSettingBtn.IsEnabled = false;
             pdfViewControl = new PDFViewControl();
-            pdfViewControl.PDFView.InitDocument(defaultFilePath);
+            pdfViewControl.InitDocument(defaultFilePath);
             LoadDocument();
         }
 
         private void LoadDocument()
         {
-            if (pdfViewControl.PDFView.Document == null)
+            if (pdfViewControl.PDFToolManager.GetDocument() == null)
             {
                 return;
             }
-            pdfViewControl.PDFView?.SetMouseMode(MouseModes.Viewer);
-            pdfViewControl.PDFView?.Load();
-            pdfViewControl.PDFView?.SetShowLink(true);
+            pdfViewControl.PDFToolManager?.SetToolType(ToolType.Viewer);
             if (ViewComboBox.SelectedIndex == 0)
             {
                 PDFGrid.Child = pdfViewControl;
@@ -104,17 +104,12 @@ namespace DocsEditor
 
                 CPDFPageEditBarControl.PageEditEvent -= CPDFPageEditBarControl_PageEditEvent;
                 CPDFPageEditBarControl.PageEditEvent += CPDFPageEditBarControl_PageEditEvent;
-                pageEditControl.LoadThumbnails(pdfViewControl.PDFView);
+                pageEditControl.LoadThumbnails(pdfViewControl);
+                pageEditControl.viewControl = pdfViewControl;
                 PDFGrid.Child = pageEditControl;
                 FloatPageTool.Visibility = Visibility.Collapsed;
             }
-            pdfViewControl.PDFView.InfoChanged -= PdfViewer_InfoChanged;
-            pdfViewControl.PDFView.InfoChanged += PdfViewer_InfoChanged;
-            pdfViewControl.PDFView.AnnotCommandHandler -= PDFView_AnnotCommandHandler;
-            pdfViewControl.PDFView.AnnotCommandHandler += PDFView_AnnotCommandHandler;
-            pdfViewControl.PDFView.UndoManager.PropertyChanged -= UndoManager_PropertyChanged;
-            pdfViewControl.PDFView.UndoManager.PropertyChanged += UndoManager_PropertyChanged;
-            pdfViewControl.PDFView.SetFormFieldHighlight(true);
+            
             PasswordUI.Closed -= PasswordUI_Closed;
             PasswordUI.Canceled -= PasswordUI_Canceled;
             PasswordUI.Confirmed -= PasswordUI_Confirmed;
@@ -122,226 +117,25 @@ namespace DocsEditor
             PasswordUI.Canceled += PasswordUI_Canceled;
             PasswordUI.Confirmed += PasswordUI_Confirmed;
 
-            pdfViewControl.PDFView.ChangeFitMode(FitMode.FitWidth);
-            CPDFSaclingControl.InitWithPDFViewer(pdfViewControl.PDFView);
-            CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfViewControl.PDFView.ZoomFactor * 100)));
+            pdfViewControl.PDFViewTool?.GetCPDFViewer().SetFitMode(FitMode.FitWidth);
+            CPDFSaclingControl.InitWithPDFViewer(pdfViewControl);
+            CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfViewControl.PDFViewTool.GetCPDFViewer().GetZoom() * 100)));
+
 
             ViewSettingBtn.IsChecked = false;
             PropertyContainer.Child = null;
             PropertyContainer.Visibility = Visibility.Collapsed;
-            FloatPageTool.InitWithPDFViewer(pdfViewControl.PDFView);
-            BotaSideTool.InitWithPDFViewer(pdfViewControl.PDFView);
+            FloatPageTool.InitWithPDFViewer(pdfViewControl);
+            BotaSideTool.InitWithPDFViewer(pdfViewControl);
             BotaSideTool.SelectBotaTool(BOTATools.Thumbnail);
+
+            pdfViewControl.PDFViewTool.DocumentModifiedChanged -= PDFViewTool_DocumentModifiedChanged;
+            pdfViewControl.PDFViewTool.DocumentModifiedChanged += PDFViewTool_DocumentModifiedChanged;
         }
 
-        #endregion
-
-        #region Context menu
-
-        private void PDFView_AnnotCommandHandler(object sender, AnnotCommandArgs e)
+        private void PDFViewTool_DocumentModifiedChanged(object sender, EventArgs e)
         {
-            if (e != null && e.CommandType == CommandType.Context)
-            {
-                if (e.PressOnSelectedText)
-                {
-                    e.Handle = true;
-                    e.PopupMenu = new ContextMenu();
-                    e.PopupMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
-                }
-                else if (e.CommandTarget == TargetType.ImageSelection)
-                {
-                    if (pdfViewControl != null && pdfViewControl.PDFView != null && pdfViewControl.PDFView.GetSelectImageCount() > 0)
-                    {
-                        e.Handle = true;
-                        e.PopupMenu = new ContextMenu();
-
-                        MenuItem imageCopyMenu = new MenuItem();
-                        imageCopyMenu = new MenuItem();
-                        imageCopyMenu.Header = "Copy Images";
-                        WeakEventManager<MenuItem, RoutedEventArgs>.AddHandler(imageCopyMenu, "Click", CopyImage_Click);
-                        imageCopyMenu.CommandParameter = e;
-                        e.PopupMenu.Items.Add(imageCopyMenu);
-
-                        MenuItem imageExtraMenu = new MenuItem();
-                        imageExtraMenu = new MenuItem();
-                        imageExtraMenu.Header = "Extract Images";
-                        WeakEventManager<MenuItem, RoutedEventArgs>.AddHandler(imageExtraMenu, "Click", ExtraImage_Click);
-                        imageExtraMenu.CommandParameter = e;
-                        e.PopupMenu.Items.Add(imageExtraMenu);
-                    }
-                }
-                else if (e.CommandTarget == TargetType.WidgetView)
-                {
-                    e.Handle = true;
-                    e.PopupMenu = new ContextMenu();
-                    e.PopupMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
-                    e.PopupMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Cut"), Command = ApplicationCommands.Cut, CommandTarget = (UIElement)sender });
-                    e.PopupMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Delete"), Command = ApplicationCommands.Delete, CommandTarget = (UIElement)sender });
-                }
-                else
-                {
-                    e.Handle = true;
-                    e.PopupMenu = new ContextMenu();
-
-                    e.PopupMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Paste"), Command = ApplicationCommands.Paste, CommandTarget = (UIElement)sender });
-                    e.PopupMenu.Items.Add(new Separator());
-
-                    MenuItem fitWidthMenu = new MenuItem();
-                    fitWidthMenu.Header = LanguageHelper.CommonManager.GetString("Menu_AutoSize");
-                    fitWidthMenu.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            pdfViewControl.PDFView?.ChangeFitMode(FitMode.FitWidth);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(fitWidthMenu);
-
-                    MenuItem fitSizeMenu = new MenuItem();
-                    fitSizeMenu.Header = LanguageHelper.CommonManager.GetString("Menu_RealSize");
-                    fitSizeMenu.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            pdfViewControl.PDFView?.ChangeFitMode(FitMode.FitSize);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(fitSizeMenu);
-
-                    MenuItem zoomInMenu = new MenuItem();
-                    zoomInMenu.Header = LanguageHelper.CommonManager.GetString("Menu_ZoomIn");
-                    zoomInMenu.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            double newZoom = CheckZoomLevel(pdfViewControl.PDFView.ZoomFactor + 0.01, true);
-                            pdfViewControl.PDFView?.Zoom(newZoom);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(zoomInMenu);
-
-                    MenuItem zoomOutMenu = new MenuItem();
-                    zoomOutMenu.Header = LanguageHelper.CommonManager.GetString("Menu_ZoomOut");
-                    zoomOutMenu.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            double newZoom = CheckZoomLevel(pdfViewControl.PDFView.ZoomFactor - 0.01, false);
-                            pdfViewControl.PDFView?.Zoom(newZoom);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(zoomOutMenu);
-                    e.PopupMenu.Items.Add(new Separator());
-
-                    MenuItem singleView = new MenuItem();
-                    singleView.Header = LanguageHelper.CommonManager.GetString("Menu_SinglePage");
-                    singleView.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            pdfViewControl.PDFView?.ChangeViewMode(ViewMode.Single);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(singleView);
-
-                    MenuItem singleContinuousView = new MenuItem();
-                    singleContinuousView.Header = LanguageHelper.CommonManager.GetString("Menu_SingleContinuous");
-                    singleContinuousView.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            pdfViewControl.PDFView?.ChangeViewMode(ViewMode.SingleContinuous);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(singleContinuousView);
-
-                    MenuItem doubleView = new MenuItem();
-                    doubleView.Header = LanguageHelper.CommonManager.GetString("Menu_DoublePage");
-                    doubleView.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            pdfViewControl.PDFView?.ChangeViewMode(ViewMode.Double);
-                        }
-                    };
-
-                    e.PopupMenu.Items.Add(doubleView);
-
-                    MenuItem doubleContinuousView = new MenuItem();
-                    doubleContinuousView.Header = LanguageHelper.CommonManager.GetString("Menu_DoubleContinuous");
-                    doubleContinuousView.Click += (o, p) =>
-                    {
-                        if (pdfViewControl != null)
-                        {
-                            pdfViewControl.PDFView?.ChangeViewMode(ViewMode.DoubleContinuous);
-                        }
-                    };
-                    e.PopupMenu.Items.Add(doubleContinuousView);
-                }
-            }
-            else
-            {
-                e.DoCommand();
-            }
-        }
-
-        private void CopyImage_Click(object sender, RoutedEventArgs e)
-        {
-            Dictionary<int, List<Bitmap>> imageDict = pdfViewControl.PDFView?.GetSelectedImages();
-
-            if (imageDict != null && imageDict.Count > 0)
-            {
-                foreach (int pageIndex in imageDict.Keys)
-                {
-                    List<Bitmap> imageList = imageDict[pageIndex];
-                    foreach (Bitmap image in imageList)
-                    {
-                        MemoryStream ms = new MemoryStream();
-                        image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                        BitmapImage imageData = new BitmapImage();
-                        imageData.BeginInit();
-                        imageData.StreamSource = ms;
-                        imageData.CacheOption = BitmapCacheOption.OnLoad;
-                        imageData.EndInit();
-                        imageData.Freeze();
-                        Clipboard.SetImage(imageData);
-                        break;
-                    }
-                }
-            }
-        }
-
-        private void ExtraImage_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog();
-            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                string choosePath = folderDialog.SelectedPath;
-                string openPath = choosePath;
-                Dictionary<int, List<Bitmap>> imageDict = pdfViewControl.PDFView?.GetSelectedImages();
-
-                if (imageDict != null && imageDict.Count > 0)
-                {
-                    foreach (int pageIndex in imageDict.Keys)
-                    {
-                        List<Bitmap> imageList = imageDict[pageIndex];
-                        foreach (Bitmap image in imageList)
-                        {
-                            string savePath = System.IO.Path.Combine(choosePath, Guid.NewGuid() + ".jpg");
-                            image.Save(savePath, System.Drawing.Imaging.ImageFormat.Jpeg);
-                            openPath = savePath;
-                        }
-                    }
-                }
-                Process.Start("explorer", "/select,\"" + openPath + "\"");
-
-            }
+            CanSave = pdfViewControl.PDFViewTool.IsDocumentModified;
         }
 
         #endregion
@@ -361,16 +155,16 @@ namespace DocsEditor
 
         private void PasswordUI_Confirmed(object sender, string e)
         {
-            if (passwordViewer != null && passwordViewer.PDFView != null && passwordViewer.PDFView.Document != null)
+            if (passwordViewer != null && passwordViewer.PDFToolManager != null && passwordViewer.PDFToolManager.GetDocument() != null)
             {
-                passwordViewer.PDFView.Document.UnlockWithPassword(e);
-                if (passwordViewer.PDFView.Document.IsLocked == false)
+                passwordViewer.PDFToolManager.GetDocument().UnlockWithPassword(e);
+                if (passwordViewer.PDFToolManager.GetDocument().IsLocked == false)
                 {
                     PasswordUI.SetShowError("", Visibility.Collapsed);
                     PasswordUI.ClearPassword();
                     PasswordUI.Visibility = Visibility.Collapsed;
                     PopupBorder.Visibility = Visibility.Collapsed;
-                    pdfViewControl.PDFView.Document.Release();
+                    pdfViewControl.PDFToolManager.GetDocument().Release();
                     pdfViewControl = passwordViewer;
                     LoadDocument();
                 }
@@ -419,7 +213,7 @@ namespace DocsEditor
         {
             PasswordUI.Visibility = Visibility.Collapsed;
             FileInfoUI.Visibility = Visibility.Visible;
-            FileInfoControl.InitWithPDFViewer(pdfViewControl.PDFView);
+            FileInfoControl.InitWithPDFViewer(pdfViewControl);
             PopupBorder.Visibility = Visibility.Visible;
         }
 
@@ -434,28 +228,28 @@ namespace DocsEditor
             string filePath = CommonHelper.GetExistedPathOrEmpty();
             if (!string.IsNullOrEmpty(filePath) && pdfViewControl != null)
             {
-                if (pdfViewControl.PDFView != null && pdfViewControl.PDFView.Document != null)
+                if (pdfViewControl.PDFToolManager != null && pdfViewControl.PDFToolManager.GetDocument() != null)
                 {
-                    string oldFilePath = pdfViewControl.PDFView.Document.FilePath;
+                    string oldFilePath = pdfViewControl.PDFToolManager.GetDocument().FilePath;
                     if (oldFilePath.ToLower() == filePath.ToLower())
                     {
                         return;
                     }
                     else
                     {
-                        pdfViewControl.PDFView.Document.Release();
+                        pdfViewControl.PDFToolManager.GetDocument().Release();
                     }
                 }
 
                 passwordViewer = new PDFViewControl();
-                passwordViewer.PDFView.InitDocument(filePath);
-                if (passwordViewer.PDFView.Document == null)
+                passwordViewer.InitDocument(filePath);
+                if (passwordViewer.PDFToolManager.GetDocument() == null)
                 {
                     MessageBox.Show("Open File Failed");
                     return;
                 }
 
-                if (passwordViewer.PDFView.Document.IsLocked)
+                if (passwordViewer.PDFToolManager.GetDocument().IsLocked)
                 {
                     PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
                     PasswordUI.ClearPassword();
@@ -464,7 +258,7 @@ namespace DocsEditor
                 }
                 else
                 {
-                    pdfViewControl.PDFView.Document.Release();
+                    pdfViewControl.PDFToolManager.GetDocument().Release();
                     pdfViewControl = passwordViewer;
                     LoadDocument();
                 }
@@ -493,7 +287,7 @@ namespace DocsEditor
         private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            pdfViewControl.PDFView.UndoManager.CanSave = false;
+            pdfViewControl.PDFViewTool.IsDocumentModified = false;
         }
 
         private void FileInfoCloseBtn_Click(object sender, RoutedEventArgs e)
@@ -580,9 +374,9 @@ namespace DocsEditor
         public void SaveAsFile()
         {
             {
-                if (pdfViewControl != null && pdfViewControl.PDFView != null && pdfViewControl.PDFView.Document != null)
+                if (pdfViewControl != null && pdfViewControl.PDFToolManager != null && pdfViewControl.PDFToolManager.GetDocument() != null)
                 {
-                    CPDFDocument pdfDoc = pdfViewControl.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewControl.PDFToolManager.GetDocument();
                     SaveFileDialog saveDialog = new SaveFileDialog();
                     saveDialog.Filter = "(*.pdf)|*.pdf";
                     saveDialog.DefaultExt = ".pdf";
@@ -601,9 +395,9 @@ namespace DocsEditor
         /// </summary>
         private void SaveFile()
         {
-            if (pdfViewControl != null && pdfViewControl.PDFView != null && pdfViewControl.PDFView.Document != null)
+            if (pdfViewControl != null && pdfViewControl.PDFToolManager != null && pdfViewControl.PDFToolManager.GetDocument() != null)
             {
-                CPDFDocument pdfDoc = pdfViewControl.PDFView.Document;
+                CPDFDocument pdfDoc = pdfViewControl.PDFToolManager.GetDocument();
                 if (pdfDoc.WriteToLoadedPath())
                 {
                     return;
@@ -644,7 +438,7 @@ namespace DocsEditor
                     pageEditControl.PageMoved -= PageEditControl_PageMoved;
                     CPDFPageEditBarControl.PageEditEvent -= CPDFPageEditBarControl_PageEditEvent;
                     FloatPageTool.Visibility = Visibility.Visible;
-                    pdfViewControl.PDFView.ReloadDocument();
+                    //pdfViewControl.PDFView.ReloadDocument();
                     LeftToolPanelButton.IsEnabled = true;
                     SearchButton.IsEnabled = true;
                     RightPanelButton.IsEnabled = true;
@@ -668,7 +462,7 @@ namespace DocsEditor
                 pageEditControl.ExitPageEdit += PageEditControl_ExitPageEdit;
                 pageEditControl.PageMoved += PageEditControl_PageMoved;
                 CPDFPageEditBarControl.PageEditEvent += CPDFPageEditBarControl_PageEditEvent;
-                pageEditControl.LoadThumbnails(pdfViewControl.PDFView);
+                pageEditControl.LoadThumbnails(pdfViewControl);
                 PDFGrid.Child = pageEditControl;
                 LeftToolPanelButton.IsChecked = false;
                 LeftToolPanelButton.IsEnabled = false;
@@ -710,11 +504,11 @@ namespace DocsEditor
         }
         private void PageEditControl_PageMoved(object sender, RoutedEventArgs e)
         {
-            if (pdfViewControl == null || pdfViewControl.PDFView == null)
+            if (pdfViewControl == null)
             {
                 return;
             }
-            BotaSideTool.InitWithPDFViewer(pdfViewControl.PDFView);
+            BotaSideTool.InitWithPDFViewer(pdfViewControl);
         }
 
         private void PdfViewer_InfoChanged(object sender, KeyValuePair<string, object> e)
@@ -815,14 +609,14 @@ namespace DocsEditor
 
         private void CommandBinding_Executed_ScaleAdd(object sender, ExecutedRoutedEventArgs e)
         {
-            double newZoom = CheckZoomLevel(pdfViewControl.PDFView.ZoomFactor + 0.01, true);
-            pdfViewControl.PDFView?.Zoom(newZoom);
+            double newZoom = CheckZoomLevel(pdfViewControl.GetCPDFViewer().GetZoom() + 0.01, true);
+            pdfViewControl.GetCPDFViewer().SetZoom(newZoom);
         }
 
         private void CommandBinding_Executed_ScaleSubtract(object sender, ExecutedRoutedEventArgs e)
         {
-            double newZoom = CheckZoomLevel(pdfViewControl.PDFView.ZoomFactor - 0.01, false);
-            pdfViewControl.PDFView?.Zoom(newZoom);
+            double newZoom = CheckZoomLevel(pdfViewControl.GetCPDFViewer().GetZoom() - 0.01, false);
+            pdfViewControl.GetCPDFViewer().SetZoom(newZoom);
         }
 
         private void ShowViewSettings()
@@ -832,7 +626,7 @@ namespace DocsEditor
                 if (ViewSettingBtn.IsChecked == true)
                 {
                     displayPanel = new CPDFDisplaySettingsControl();
-                    displayPanel.InitWithPDFViewer(pdfViewControl.PDFView);
+                    displayPanel.InitWithPDFViewer(pdfViewControl);
                     PropertyContainer.Child = displayPanel;
                     PropertyContainer.Visibility = Visibility.Visible;
                     if ((bool)RightPanelButton.IsChecked)
@@ -863,7 +657,7 @@ namespace DocsEditor
             {
                 PasswordUI.Visibility = Visibility.Collapsed;
                 FileInfoUI.Visibility = Visibility.Visible;
-                FileInfoControl.InitWithPDFViewer(pdfViewControl.PDFView);
+                FileInfoControl.InitWithPDFViewer(pdfViewControl);
                 PopupBorder.Visibility = Visibility.Visible;
             }
             else

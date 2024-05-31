@@ -1,0 +1,22 @@
+<UserControl x:Class="ComPDFKit.Controls.PDFControl.DigitalSignatureValiditySummaaryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+             xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d"
+             d:DesignHeight="239" d:DesignWidth="504">
+    <UserControl.Resources>
+        <common:SigResourceConverter x:Key="SigResourceConverter"></common:SigResourceConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Background="#ffffff"  Margin="20,0,0,0"  Panel.ZIndex="1" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_Statement}" FontWeight="Bold" FontSize="14" FontFamily="Microsoft YaHei"></TextBlock>
+        </Grid>
+        <Border Grid.Row="0" Margin="12" BorderBrush="#CCCCCC" BorderThickness="1">
+            <TextBlock Margin="10" Text="{Binding ValiditySummaryString}" Width="448" TextWrapping="Wrap"></TextBlock>
+        </Border>
+    </Grid>
+
+</UserControl>

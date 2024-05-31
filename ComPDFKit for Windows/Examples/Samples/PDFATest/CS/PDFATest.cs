@@ -6,7 +6,7 @@ namespace PDFATest
 {
     internal class PDFATest
     {
-        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
+        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
 
         static void Main(string[] args)
         {
@@ -69,7 +69,7 @@ namespace PDFATest
         /// <param name="document">Regular document</param> 
         static public bool CovertToPDFA1a(CPDFDocument document)
         {
-            string convertToPDFA1aPath = outputPath + "\\ConvertToPDFA1aTest.pdf";
+            string convertToPDFA1aPath = Path.Combine(outputPath, "ConvertToPDFA1aTest.pdf");
             if (!document.WritePDFAToFilePath(CPDFType.CPDFTypePDFA1a, convertToPDFA1aPath))
             {
                 return false;
@@ -84,7 +84,7 @@ namespace PDFATest
         /// <param name="document">Regular document</param> 
         static public bool CovertToPDFA1b(CPDFDocument document)
         {
-            string convertToPDFA1bPath = outputPath + "\\ConvertToPDFA1bTest.pdf";
+            string convertToPDFA1bPath = Path.Combine(outputPath, "ConvertToPDFA1bTest.pdf");
             if (!document.WritePDFAToFilePath(CPDFType.CPDFTypePDFA1b, convertToPDFA1bPath))
             {
                 return false;

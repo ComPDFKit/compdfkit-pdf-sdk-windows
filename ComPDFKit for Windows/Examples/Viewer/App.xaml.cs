@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using ComPDFKit.NativeMethod;
-using Compdfkit_Tools.Helper;
+using ComPDFKit.Controls.Helper;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -8,7 +8,7 @@ using System.Windows;
 using System.Xml; 
 
 namespace Viewer
-{ 
+{
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>

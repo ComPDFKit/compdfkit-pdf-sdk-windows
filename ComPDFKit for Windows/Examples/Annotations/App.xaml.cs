@@ -1,6 +1,6 @@
 using System.Globalization;
 using ComPDFKit.NativeMethod;
-using Compdfkit_Tools.Helper;
+using ComPDFKit.Controls.Helper;
 using System.Reflection;
 using System.Threading;
 using System.Windows; 

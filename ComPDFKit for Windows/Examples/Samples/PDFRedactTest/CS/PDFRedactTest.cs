@@ -10,7 +10,7 @@ namespace PDFRedactTest
 {
     internal class PDFRedactTest
     {
-        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
+        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
         static void Main(string[] args)
         {
             #region Perparation work
@@ -18,8 +18,8 @@ namespace PDFRedactTest
             SDKLicenseHelper.LicenseVerify();
 
             CPDFDocument document = CPDFDocument.InitWithFilePath("CommonFivePage.pdf");
-
-            string str = document.PageAtIndex(0).GetTextPage().GetSelectText(new Point(300, 240), new Point(400, 300), new Point(0, 0));
+            
+            string str = document.PageAtIndex(0).GetTextPage().GetSelectText(new CPoint(300, 240), new CPoint(400, 300), new CPoint(0, 0));
             Console.WriteLine("The text need to be redact is: {0}", str);
 
             if (!Directory.Exists(outputPath))
@@ -57,7 +57,7 @@ namespace PDFRedactTest
             CPDFPage page = document.PageAtIndex(0);
             CPDFRedactAnnotation redact = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_REDACT) as CPDFRedactAnnotation;
             //Set radact rect: cover the title
-            redact.SetRect(new CRect(300, 240, 400, 300));
+            redact.SetRect(new CRect(300, 300, 400, 240));
             //Set overlay text: REDACTED
             redact.SetOverlayText("REDACTED");
 
@@ -79,7 +79,7 @@ namespace PDFRedactTest
             redact.UpdateAp();
             document.ApplyRedaction();
             // Save to pointed path so you can observe the effect.
-            string path = outputPath + "\\RedactTest.pdf";
+            string path = Path.Combine(outputPath, "RedactTest.pdf");
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -88,7 +88,7 @@ namespace PDFRedactTest
             CPDFDocument newDocument = CPDFDocument.InitWithFilePath(path);
 
             //Validation: try to get the text of the covered area
-            string str = newDocument.PageAtIndex(0).GetTextPage().GetSelectText(new Point(60, 200), new Point(560, 250), new Point(0, 0));
+            string str = newDocument.PageAtIndex(0).GetTextPage().GetSelectText(new CPoint(60, 200), new CPoint(560, 250), new CPoint(0, 0));
             Console.WriteLine("Text in the redacted area is: {0}", str); 
             return true;
         }

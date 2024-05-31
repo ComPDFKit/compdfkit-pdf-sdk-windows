@@ -87,7 +87,7 @@ namespace BatesTest
         /// <param name="document">Regular document</param> 
         private static bool AddBates(CPDFDocument document)
         {
-            string addBatesPath = outputPath + "\\AddBatesTest.pdf";
+            string addBatesPath = Path.Combine(outputPath, "AddBatesTest.pdf");
 
             CPDFBates bates = document.GetBates();
             byte[] color = { 255, 0, 0 };
@@ -140,7 +140,7 @@ namespace BatesTest
              
             Console.WriteLine("Change bates 0 done, new text is {0}", bates.GetText(0));
 
-            string editBatesPath = outputPath + "\\EditBatesTest.pdf";
+            string editBatesPath = Path.Combine(outputPath, "EditBatesTest.pdf");
 
             if (document.WriteToFilePath(editBatesPath))
             {
@@ -163,7 +163,7 @@ namespace BatesTest
 
             bates.Clear();
 
-            string clearBatesPath = outputPath + "\\ClearBatesTest.pdf";
+            string clearBatesPath = Path.Combine(outputPath, "ClearBatesTest.pdf");
 
             if (document.WriteToFilePath(clearBatesPath))
             {

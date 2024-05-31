@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControl.CPDFCreateInfoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <common:DocInfoResourceConverter x:Key="DocInfoResourceConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <GroupBox Header="{Binding Converter={StaticResource DocInfoResourceConverter},ConverterParameter=Subtitle_CreationInfo}">
+        <StackPanel Orientation="Vertical" Margin="19,12,0,0">
+            <StackPanel Orientation="Horizontal"  Height="30">
+                <TextBlock Text="{Binding Converter={StaticResource DocInfoResourceConverter},ConverterParameter=Info_Version}"></TextBlock>
+                <TextBlock x:Name="VersionTextBlock" Margin="4,0,0,0" Foreground="#999999"></TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"  Height="30">
+                <TextBlock Text="{Binding Converter={StaticResource DocInfoResourceConverter},ConverterParameter=Info_Pages}"></TextBlock>
+                <TextBlock x:Name="PageCountTextBlock" Margin="4,0,0,0" Foreground="#999999"></TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"  Height="30">
+                <TextBlock Text="{Binding Converter={StaticResource DocInfoResourceConverter},ConverterParameter=Info_Creator}"></TextBlock>
+                <TextBlock x:Name="CreatorTextBlock" Margin="4,0,0,0" Foreground="#999999"></TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"  Height="30">
+                <TextBlock Text="{Binding Converter={StaticResource DocInfoResourceConverter},ConverterParameter=Info_CreationDate}"></TextBlock>
+                <TextBlock x:Name="CreationDateTextBlock" Margin="4,0,0,0" Foreground="#999999"></TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"  Height="30">
+                <TextBlock Text="{Binding Converter={StaticResource DocInfoResourceConverter},ConverterParameter=Info_ModDate}"></TextBlock>
+                <TextBlock x:Name="ModificationDateTextBlock" Margin="4,0,0,0" Foreground="#999999"></TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </GroupBox>
+</UserControl>

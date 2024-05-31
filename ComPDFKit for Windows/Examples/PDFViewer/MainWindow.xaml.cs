@@ -1,4 +1,4 @@
-﻿using Compdfkit_Tools.PDFControl;
+﻿using ComPDFKit.Controls.PDFControl;
 
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,14 @@ using System.ComponentModel;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using Dragablz;
-using Compdfkit_Tools.Helper;
-using System.Windows.Controls.Primitives;
-using Compdfkit_Tools.Common;
-using Compdfkit_Tools.Data;
+using ComPDFKit.Controls.Helper;
+using ComPDFKitViewer;
 using ComPDFKit.PDFDocument;
+using ComPDFKit.Controls.Data;
+using ComPDFKit.Controls.Common;
 using System.Reflection;
-using System.Net.Http;
+using ComPDFKit.NativeMethod;
+using System.Threading;
 
 namespace PDFViewer
 {
@@ -35,7 +36,6 @@ namespace PDFViewer
     {
         #region Property
         private PDFViewControl passwordViewer;
-        private PDFViewControl pdfViewControl = new PDFViewControl();
         private string[] oldAndNewFilePath;
         public string AppInfo
         {
@@ -47,10 +47,8 @@ namespace PDFViewer
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
-            DataContext = this; 
-        }
-
-
+            DataContext = this;
+        } 
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -150,7 +148,7 @@ namespace PDFViewer
                     Keywords = "Document",
                     Version = string.Join(".", Assembly.GetExecutingAssembly().GetName().Version.ToString().Split('.').Take(3))
                 });
-                document.InsertPage(0, blankPageSetting.Size.Width * 7.2 / 2.54, blankPageSetting.Size.Height * 7.2 / 2.54, "");
+                document.InsertPage(0, (float)(blankPageSetting.Size.Width * 7.2 / 2.54), (float)(blankPageSetting.Size.Height * 7.2 / 2.54), "");
                 if (blankPageSetting.Orientation == Orientation.Horizontal)
                 {
                     document.RotatePage(0, 1);
@@ -171,7 +169,6 @@ namespace PDFViewer
                 TabControl.Items.Add(tabItem);
 
                 viewPage.CanSave = true;
-                viewPage.pdfViewer.PDFView.UndoManager.CanSave = true;
             }
             else
             {
@@ -193,9 +190,8 @@ namespace PDFViewer
                     tabItem.FileName = Path.GetFileName(e);
                     tabItem.Tag = e;
                 }
-                mainPage.pdfViewer.PDFView.CloseDocument();
-                mainPage.pdfViewer.PDFView.InitDocument(e);
-                mainPage.pdfViewer.PDFView.Load();
+                mainPage.GetPDFViewControl().GetCPDFViewer().CloseDocument();
+                mainPage.GetPDFViewControl().InitDocument(e);
 
                 App.OpenedFilePathList.Add(e);
             }
@@ -237,34 +233,39 @@ namespace PDFViewer
             viewPage.AfterSaveAsFileEvent += ViewPage_AfterSaveAsFileEvent;
 
             passwordViewer = new PDFViewControl();
-            passwordViewer.PDFView.InitDocument(filePath);
-            if (passwordViewer.PDFView.Document == null)
+            passwordViewer.InitDocument(filePath);
+            if (passwordViewer != null && passwordViewer.PDFViewTool != null)
             {
-                MessageBox.Show("Open File Failed");
-                return;
-            }
-
-            if (passwordViewer.PDFView.Document.IsLocked)
-            {
-                PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
-                PasswordUI.ClearPassword();
-                PopupBorder.Visibility = Visibility.Visible;
-                PasswordUI.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                viewPage.InitWithFilePath(filePath);
-                tabItem.Content = viewPage;
-                tabItem.IsSelected = true;
-                tabItem.FileName = Path.GetFileName(filePath);
-                tabItem.Tag = filePath;
-
-                App.OpenedFilePathList.Add(filePath);
-                TabControl.Items.Add(tabItem);
-                viewPage.Loaded += (sender, e) =>
+                CPDFViewer tempViewer = passwordViewer.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = tempViewer?.GetDocument();
+                if (pdfDoc == null)
                 {
-                    viewPage.SetFeatureMode(featureName);
-                 };
+                    MessageBox.Show("Open File Failed");
+                    return;
+                }
+
+                if (pdfDoc.IsLocked)
+                {
+                    PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
+                    PasswordUI.ClearPassword();
+                    PopupBorder.Visibility = Visibility.Visible;
+                    PasswordUI.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    viewPage.InitWithFilePath(filePath);
+                    tabItem.Content = viewPage;
+                    tabItem.IsSelected = true;
+                    tabItem.FileName = Path.GetFileName(filePath);
+                    tabItem.Tag = filePath;
+
+                    App.OpenedFilePathList.Add(filePath);
+                    TabControl.Items.Add(tabItem);
+                    viewPage.Loaded += (sender, e) =>
+                    {
+                        viewPage.SetFeatureMode(featureName);
+                    };
+                }
             }
         }
 
@@ -282,18 +283,24 @@ namespace PDFViewer
 
         private void PasswordUI_Confirmed(object sender, string e)
         {
-            if (passwordViewer != null && passwordViewer.PDFView != null && passwordViewer.PDFView.Document != null)
+            if (passwordViewer != null && passwordViewer.PDFViewTool != null)
             {
-                passwordViewer.PDFView.Document.UnlockWithPassword(e);
-                if (passwordViewer.PDFView.Document.IsLocked == false)
+                CPDFViewer tempViewer=passwordViewer.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc=tempViewer?.GetDocument();
+                if(pdfDoc==null)
+                {
+                    return;
+                }
+
+                pdfDoc.UnlockWithPassword(e);
+                if (pdfDoc.IsLocked == false)
                 {
                     PasswordUI.SetShowError("", Visibility.Collapsed);
                     PasswordUI.ClearPassword();
                     PasswordUI.Visibility = Visibility.Collapsed;
                     PopupBorder.Visibility = Visibility.Collapsed;
-                    pdfViewControl = passwordViewer;
 
-                    string filePath = passwordViewer.PDFView.Document.FilePath;
+                    string filePath = pdfDoc.FilePath;
                     TabItemExt tabItem = new TabItemExt();
                     MainPage viewPage = new MainPage();
 
@@ -302,7 +309,7 @@ namespace PDFViewer
                     tabItem.FileName = Path.GetFileName(filePath);
                     tabItem.Tag = filePath;
 
-                    viewPage.SetPDFViewer(pdfViewControl);
+                    viewPage.SetPDFViewer(passwordViewer);
                     App.OpenedFilePathList.Add(filePath);
 
                     TabControl.Items.Add(tabItem);
@@ -399,6 +406,15 @@ namespace PDFViewer
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
+
+            //protected override void OnSelected(RoutedEventArgs e)
+            //{
+            //    string filePath = Tag?.ToString();
+            //    if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            //    {
+            //        this.IsSelected = true;
+            //    }
+            //}
         }
 
         private DragablzItem FindParentDragablzItem(DependencyObject element)
@@ -574,7 +590,7 @@ namespace PDFViewer
                             break;
                         }
                     }
-                    mainPage.pdfViewer.PDFView.CloseDocument();
+                    mainPage.GetPDFViewControl().GetCPDFViewer().CloseDocument();
                 }
             }
 
@@ -612,9 +628,7 @@ namespace PDFViewer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        protected bool UpdateProper<T>(ref T properValue,
-    T newValue,
-    [CallerMemberName] string properName = "")
+        protected bool UpdateProper<T>(ref T properValue, T newValue, [CallerMemberName] string properName = "")
         {
             if (object.Equals(properValue, newValue))
                 return false;

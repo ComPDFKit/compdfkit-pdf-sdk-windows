@@ -1,5 +1,4 @@
-﻿Imports System.Drawing
-Imports System.IO
+﻿Imports System.IO
 Imports ComPDFKit.DigitalSign
 Imports ComPDFKit.Import
 Imports ComPDFKit.PDFAnnotation.Form
@@ -147,8 +146,8 @@ Module DigitalSignatureTest
                    "Location: " & location & Environment.NewLine &
                    "DN: " & DN & Environment.NewLine,
         .IsContentAlignLeft = False,
-        .IsDrawLogo = True,
-        .LogoBitmap = New Bitmap("Logo.png"),
+        .IsDrawLogo = False,
+        .LogoData = File.ReadAllBytes("logo.png"),
         .TextColor = New Single() {0, 0, 0},
         .ContentColor = New Single() {0, 0, 0}
     }

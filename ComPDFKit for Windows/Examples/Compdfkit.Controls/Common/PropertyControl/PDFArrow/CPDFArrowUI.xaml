@@ -1,0 +1,175 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.Common.CPDFArrowUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="115">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="CmbItemTemplate" TargetType="{x:Type ComboBoxItem}">
+            <Border
+                    Name="Bd"
+                    Padding="{TemplateBinding Control.Padding}"
+                    Background="{TemplateBinding Panel.Background}"
+                    BorderBrush="{TemplateBinding Border.BorderBrush}"
+                    BorderThickness="{TemplateBinding Border.BorderThickness}"
+                    SnapsToDevicePixels="True">
+                <ContentPresenter
+                        HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                        Content="{TemplateBinding ContentControl.Content}"
+                        ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                        ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsEnabled" Value="False">
+                    <Setter TargetName="Bd" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelected" Value="False" />
+                        <Condition Property="UIElement.IsMouseOver" Value="True" />
+                        <Condition Property="UIElement.IsKeyboardFocused" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Panel.Background" Value="#1F26A0DA" />
+                    <Setter TargetName="Bd" Property="Border.BorderBrush" Value="#A826A0DA" />
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelected" Value="True" />
+                        <Condition Property="UIElement.IsMouseOver" Value="False" />
+                        <Condition Property="UIElement.IsKeyboardFocused" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Panel.Background" Value="#3D26A0DA" />
+                    <Setter TargetName="Bd" Property="Border.BorderBrush" Value="#26A0DA" />
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelected" Value="True" />
+                        <Condition Property="UIElement.IsMouseOver" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Panel.Background" Value="#1A477EDE" />
+                    <Setter TargetName="Bd" Property="Border.BorderBrush" Value="#1A477EDE" />
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelected" Value="True" />
+                        <Condition Property="UIElement.IsMouseOver" Value="False" />
+                        <Condition Property="UIElement.IsKeyboardFocused" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Panel.Background" Value="#3DDADADA" />
+                    <Setter TargetName="Bd" Property="Border.BorderBrush" Value="#DADADA" />
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelected" Value="False" />
+                        <Condition Property="UIElement.IsMouseOver" Value="False" />
+                        <Condition Property="UIElement.IsKeyboardFocused" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Border.BorderBrush" Value="#26A0DA" />
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelected" Value="False" />
+                        <Condition Property="UIElement.IsMouseOver" Value="True" />
+                        <Condition Property="UIElement.IsKeyboardFocused" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter TargetName="Bd" Property="Panel.Background" Value="#1A000000" />
+                    <Setter TargetName="Bd" Property="Border.BorderBrush" Value="#1A000000" />
+                </MultiTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Border BorderBrush="#E2E3E6" BorderThickness="0"  Width="115" Height="32">
+            <ComboBox x:Name="ArrowBox" Background="Transparent" BorderThickness="1" BorderBrush="#FFE2E3E6" IsReadOnly="True" MaxDropDownHeight="200" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                      VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="Padding" Value="25 0 0 0"></Setter>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+                <ComboBoxItem VerticalAlignment="Center" Height="32" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Line" Height="20">
+                        <Path.Data>
+                            F1 M40,16z M0,0z M34,7.5L34,7.5 34,8.5 6,8.5 6,7.5z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem  VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Arrow" Height="20">
+                        <Path.Data>
+                            F1 M40,16z M0,0z M10.7427521,4.57125354L11.2572479,5.42874646 7.80417468,7.49925354 34,7.5 34,8.5 7.80417468,8.49925354 11.2572479,10.5712535 10.7427521,11.4287465 5.02817468,8 10.7427521,4.57125354z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="CloseArrow" Height="20">
+                        <Path.Data>
+                            F1 M40,16z M0,0z M11.5,4.11690481L11.4991747,7.49990481 34,7.5 34,8.5 11.4991747,8.49990481 11.5,11.8830952 5.02817468,8 11.5,4.11690481z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Square"  Height="20">
+                        <Path.Data>
+                            M11.5,5 L11.5,7.5 L34,7.5 L34,8.5 L11.5,8.5 L11.5,11 L5.5,11 L5.5,5 L11.5,5 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Circle"  Height="20">
+                        <Path.Data>
+                            M8.5,5 C9.98660106,5 11.2206526,6.08129303 11.4585702,7.50029469 L34,7.5 L34,8.5 L11.4584039,8.50069618 C11.2200781,9.9192103 9.98625501,11 8.5,11 C6.84314575,11 5.5,9.65685425 5.5,8 C5.5,6.34314575 6.84314575,5 8.5,5 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Diamond"  Height="20">
+                        <Path.Data>
+                            M9,4.29289322 L12.2068932,7.49989322 L34,7.5 L34,8.5 L12.2068932,8.49989322 L9,11.7071068 L5.29289322,8 L9,4.29289322 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Butt"  Height="20">
+                        <Path.Data>
+                            M7.5,5.5 L7.5,7.5 L34,7.5 L34,8.5 L7.5,8.5 L7.5,10.5 L6.5,10.5 L6.5,5.5 L7.5,5.5 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem  VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="RArrow" Height="20" >
+                        <Path.Data>
+                            M5.58660083,5.07600085 L9.46460189,7.49900085 L34,7.5 L34,8.5 L9.46460189,8.49900085 L5.58660083,10.9239992 L5.05660189,10.0760008 L8.37960136,8 L5.05660189,5.92399915 L5.58660083,5.07600085 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="RCloseArrow" Height="20">
+                        <Path.Data>
+                            M5.5,4.59787618 L10.143,7.49987618 L34,7.5 L34,8.5 L10.143,8.49987618 L5.5,11.4021238 L5.5,4.59787618 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+                <ComboBoxItem VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" Template="{StaticResource CmbItemTemplate}">
+                    <Path Fill="#000000" Tag="Slash" Height="20">
+                        <Path.Data>
+                            M9.531981,5.84644661 L10.239087,6.55355339 L9.292447,7.49944661 L34,7.5 L34,8.5 L8.292447,8.49944661 L6.703553,10.0890873 L5.996447,9.38198052 L9.531981,5.84644661 Z
+                        </Path.Data>
+                    </Path>
+                </ComboBoxItem>
+            </ComboBox>
+        </Border>
+    </Grid>
+</UserControl>

@@ -8,9 +8,12 @@ using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;  
+using System.Windows.Data;
+using System.Windows.Threading;
+using System.Xml;
 using ComPDFKit.NativeMethod;
-using Compdfkit_Tools.Helper;
+using ComPDFKit.PDFDocument;
+using ComPDFKit.Controls.Helper;
 using PDFViewer.Properties;
 
 namespace PDFViewer
@@ -59,25 +62,25 @@ namespace PDFViewer
             base.OnStartup(e);
              
             LicenseVerify();
-            CPDFSDKVerifier.PrintPermissions();
-            CPDFSDKVerifier.LicenseRefreshed -= CPDFSDKVerifier_LicenseRefreshed;
-            CPDFSDKVerifier.LicenseRefreshed += CPDFSDKVerifier_LicenseRefreshed;
+            //CPDFSDKVerifier.PrintPermissions();
+            //CPDFSDKVerifier.LicenseRefreshed -= CPDFSDKVerifier_LicenseRefreshed;
+            //CPDFSDKVerifier.LicenseRefreshed += CPDFSDKVerifier_LicenseRefreshed;
             HistoryFile(@"TestFile\ComPDFKit_Sample_File_Windows.pdf");
             FileHistoryHelper<PDFFileInfo>.Instance.LoadHistory();
         }
 
-        private void CPDFSDKVerifier_LicenseRefreshed(object sender, ResponseModel e)
-        {
-            if(e != null)
-            {
-                string message = string.Format("{0} {1}", e.Code, e.Message);
-                Trace.WriteLine(message);
-            }
-            else
-            {
-                Trace.WriteLine("Network not connected."); 
-            } 
-        }
+        //private void CPDFSDKVerifier_LicenseRefreshed(object sender, ResponseModel e)
+        //{
+        //    if(e != null)
+        //    {
+        //        string message = string.Format("{0} {1}", e.Code, e.Message);
+        //        Trace.WriteLine(message);
+        //    }
+        //    else
+        //    {
+        //        Trace.WriteLine("Network not connected."); 
+        //    } 
+        //}
 
         private void HistoryFile(string item)
         {

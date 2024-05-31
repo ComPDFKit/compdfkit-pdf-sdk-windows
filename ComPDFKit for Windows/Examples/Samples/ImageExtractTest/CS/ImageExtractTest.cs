@@ -6,12 +6,12 @@ namespace ImageExtractTest
 {
     internal class ImageExtractTest
     {
-        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
+        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
 
         static void Main(string[] args)
         {
             #region Perparation work
-            Console.WriteLine("Running Bookmark test sample…\r\n");
+            Console.WriteLine("Running ImageExtractTest test sample…\r\n");
 
             SDKLicenseHelper.LicenseVerify();
 

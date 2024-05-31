@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControl.CPDFPageEditBarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border BorderThickness="1">
+        <StackPanel  Name="FormGrid" Orientation="Horizontal" HorizontalAlignment="Center">
+        </StackPanel>
+    </Border>
+</UserControl>

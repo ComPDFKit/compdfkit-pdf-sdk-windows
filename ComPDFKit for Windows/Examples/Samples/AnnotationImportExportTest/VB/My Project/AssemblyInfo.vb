@@ -10,9 +10,9 @@ Imports System.Runtime.InteropServices
 
 <Assembly: AssemblyTitle("AnnotationImportExportTest")>
 <Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("PDF Technologies, Inc.")>
+<Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("AnnotationImportExportTest")>
-<Assembly: AssemblyCopyright("Copyright © 2014-2024 PDF Technologies, Inc. All Rights Reserved.")>
+<Assembly: AssemblyCopyright("Copyright ©  2023")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.12.0.0")>
-<Assembly: AssemblyFileVersion("1.12.0.0")>
+<Assembly: AssemblyVersion("1.0.0.0")>
+<Assembly: AssemblyFileVersion("1.0.0.0")>

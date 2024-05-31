@@ -2,9 +2,7 @@
 Imports ComPDFKit.PDFAnnotation
 Imports ComPDFKit.PDFDocument
 Imports ComPDFKit.PDFPage
-Imports System
 Imports System.IO
-Imports System.Windows
 
 Module PDFRedactTest
     Private outputPath As String = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) & "\Output\VB"
@@ -16,7 +14,7 @@ Module PDFRedactTest
 
         Dim document As CPDFDocument = CPDFDocument.InitWithFilePath("CommonFivePage.pdf")
 
-        Dim str As String = document.PageAtIndex(0).GetTextPage().GetSelectText(New Point(300, 240), New Point(400, 300), New Point(0, 0))
+        Dim str As String = document.PageAtIndex(0).GetTextPage().GetSelectText(New CPoint(300, 240), New CPoint(400, 300), New CPoint(0, 0))
         Console.WriteLine("The text need to be redact is: {0}", str)
 
         If Not Directory.Exists(outputPath) Then
@@ -43,7 +41,7 @@ Module PDFRedactTest
         Dim page As CPDFPage = document.PageAtIndex(0)
         Dim redactAnnot As CPDFRedactAnnotation = TryCast(page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_REDACT), CPDFRedactAnnotation)
         ' Set redact rect: cover the title
-        redactAnnot.SetRect(New CRect(300, 240, 400, 300))
+        redactAnnot.SetRect(New CRect(300, 300, 400, 240))
         ' Set overlay text: REDACTED
         redactAnnot.SetOverlayText("REDACTED")
 
@@ -73,7 +71,7 @@ Module PDFRedactTest
         Dim newDocument As CPDFDocument = CPDFDocument.InitWithFilePath(path)
 
         ' Validation: try to get the text of the covered area
-        Dim str As String = newDocument.PageAtIndex(0).GetTextPage().GetSelectText(New Point(60, 200), New Point(560, 250), New Point(0, 0))
+        Dim str As String = newDocument.PageAtIndex(0).GetTextPage().GetSelectText(New CPoint(60, 200), New CPoint(560, 250), New CPoint(0, 0))
         Console.WriteLine("Text in the redacted area is: {0}", str)
         Return True
     End Function

@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 '查看程序集特性的值
 
-<Assembly: AssemblyTitle("TextSearchTest")>
+<Assembly: AssemblyTitle("VB")>
 <Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("PDF Technologies, Inc.")>
-<Assembly: AssemblyProduct("TextSearchTest")>
-<Assembly: AssemblyCopyright("Copyright © 2014-2024 PDF Technologies, Inc. All Rights Reserved.")>
+<Assembly: AssemblyCompany("")>
+<Assembly: AssemblyProduct("VB")>
+<Assembly: AssemblyCopyright("Copyright ©  2023")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 '通过使用 "*"，如下所示:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.12.0.0")>
-<Assembly: AssemblyFileVersion("1.12.0.0")>
+<Assembly: AssemblyVersion("1.0.0.0")>
+<Assembly: AssemblyFileVersion("1.0.0.0")>

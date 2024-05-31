@@ -1,10 +1,8 @@
 using ComPDFKit.PDFDocument;
-using Compdfkit_Tools.Data;
-using Compdfkit_Tools.Helper;
-using Compdfkit_Tools.PDFControl;
+using ComPDFKit.Controls.Data;
+using ComPDFKit.Controls.Helper;
+using ComPDFKit.Controls.PDFControl;
 using ComPDFKitViewer;
-using ComPDFKitViewer.AnnotEvent;
-using ComPDFKitViewer.PdfViewer;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -20,9 +18,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Compdfkit_Tools.PDFView;
+using ComPDFKit.Controls.PDFView;
+using ComPDFKit.Tool;
 using System.Reflection;
 using System.Linq;
+using ComPDFKit.Controls.PDFControlUI; 
 
 namespace AnnotationViewControl
 {
@@ -107,60 +107,84 @@ namespace AnnotationViewControl
         private void LoadDefaultDocument()
         {
             string defaultFilePath = "ComPDFKit_Annotations_Sample_File.pdf";
-            pdfViewer.PDFView.InitDocument(defaultFilePath);
+            pdfViewer.InitDocument(defaultFilePath);
             LoadDocument();
         }
 
         private void LoadDocument()
         {
-            pdfViewer.PDFView.Load();
-            pdfViewer.PDFView.SetShowLink(true);
-            
-            pdfViewer.PDFView.InfoChanged -= PdfViewer_InfoChanged;
-            pdfViewer.PDFView.InfoChanged += PdfViewer_InfoChanged;
-            PDFGrid.Child = annotationControl;
-            
-            annotationControl.PDFViewControl = pdfViewer;
-            annotationControl.InitWithPDFViewer(pdfViewer.PDFView);
-            annotationControl.ClearAllToolState();
-            annotationControl.ExpandRightPropertyPanel(null, Visibility.Collapsed);
+            if (pdfViewer != null && pdfViewer.PDFViewTool != null)
+            {
+                CPDFViewer viewer = pdfViewer.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = viewer?.GetDocument();
+                if (pdfDoc == null)
+                {
+                    return;
+                }
 
-            annotationControl.OnCanSaveChanged -= AnnotationControl_OnCanSaveChanged;
-            annotationControl.OnCanSaveChanged += AnnotationControl_OnCanSaveChanged;
-            annotationControl.OnAnnotEditHandler -= PdfAnnotationControl_RefreshAnnotList;
-            annotationControl.OnAnnotEditHandler += PdfAnnotationControl_RefreshAnnotList;
-            
-            annotationControl.PDFViewControl.PDFView.SetFormFieldHighlight(true);
-            PasswordUI.Closed -= PasswordUI_Closed;
-            PasswordUI.Canceled -= PasswordUI_Canceled;
-            PasswordUI.Confirmed -= PasswordUI_Confirmed;
-            PasswordUI.Closed += PasswordUI_Closed;
-            PasswordUI.Canceled += PasswordUI_Canceled;
-            PasswordUI.Confirmed += PasswordUI_Confirmed;
-            ModeComboBox.SelectedIndex = 1;
-            annotationControl.PDFViewControl.PDFView.ChangeFitMode(FitMode.FitWidth);
-            CPDFSaclingControl.InitWithPDFViewer(annotationControl.PDFViewControl.PDFView);
-            CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(annotationControl.PDFViewControl.PDFView.ZoomFactor * 100)));
+                //pdfViewer.PDFView.InfoChanged -= PdfViewer_InfoChanged;
+                //pdfViewer.PDFView.InfoChanged += PdfViewer_InfoChanged;
+                PDFGrid.Child = annotationControl;
 
-            ViewSettingBtn.IsChecked = false;
-            botaBarControl.InitWithPDFViewer(annotationControl.PDFViewControl.PDFView);
-            botaBarControl.AddBOTAContent(new []{BOTATools.Thumbnail , BOTATools.Outline , BOTATools.Bookmark , BOTATools.Annotation , BOTATools.Search});
-            botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
-            annotationControl.SetBOTAContainer(botaBarControl);
-            annotationControl.InitialPDFViewControl(annotationControl.PDFViewControl);
-            
-            panelState.PropertyChanged -= PanelState_PropertyChanged;
-            panelState.PropertyChanged += PanelState_PropertyChanged;
+                annotationControl.PDFViewControl = pdfViewer;
+                regularViewerControl.PdfViewControl = pdfViewer;
+                annotationControl.InitWithPDFViewer(pdfViewer);
+                annotationControl.ClearAllToolState();
+                annotationControl.ExpandRightPropertyPanel(null, Visibility.Collapsed);
+
+                annotationControl.OnCanSaveChanged -= AnnotationControl_OnCanSaveChanged;
+                annotationControl.OnCanSaveChanged += AnnotationControl_OnCanSaveChanged;
+                annotationControl.OnAnnotEditHandler -= PdfAnnotationControl_RefreshAnnotList;
+                annotationControl.OnAnnotEditHandler += PdfAnnotationControl_RefreshAnnotList;
+
+                //annotationControl.PDFViewControl.PDFView.SetFormFieldHighlight(true);
+                PasswordUI.Closed -= PasswordUI_Closed;
+                PasswordUI.Canceled -= PasswordUI_Canceled;
+                PasswordUI.Confirmed -= PasswordUI_Confirmed;
+                PasswordUI.Closed += PasswordUI_Closed;
+                PasswordUI.Canceled += PasswordUI_Canceled;
+                PasswordUI.Confirmed += PasswordUI_Confirmed;
+                ModeComboBox.SelectedIndex = 1;
+                //annotationControl.PDFViewControl.PDFView.ChangeFitMode(FitMode.FitWidth);
+                CPDFSaclingControl.InitWithPDFViewer(annotationControl.PDFViewControl);
+                //CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(annotationControl.PDFViewControl.PDFView.ZoomFactor * 100)));
+                displaySettingsControl.InitWithPDFViewer(annotationControl.PDFViewControl);
+                ViewSettingBtn.IsChecked = false;
+                botaBarControl.InitWithPDFViewer(annotationControl.PDFViewControl);
+                botaBarControl.AddBOTAContent(new[]
+                {
+                    BOTATools.Thumbnail, BOTATools.Outline, BOTATools.Bookmark, BOTATools.Annotation, BOTATools.Search
+                });
+                botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
+                annotationControl.SetBOTAContainer(botaBarControl);
+                annotationControl.InitialPDFViewControl(annotationControl.PDFViewControl);
+                panelState.PropertyChanged -= PanelState_PropertyChanged;
+                panelState.PropertyChanged += PanelState_PropertyChanged;
+                displaySettingsControl.SplitModeChanged -= DisplaySettingsControl_SplitModeChanged;
+                displaySettingsControl.SplitModeChanged += DisplaySettingsControl_SplitModeChanged;
+                annotationControl.PDFViewControl.PDFViewTool.DocumentModifiedChanged -= PDFViewTool_DocumentModifiedChanged;
+                annotationControl.PDFViewControl.PDFViewTool.DocumentModifiedChanged += PDFViewTool_DocumentModifiedChanged;
+            }
         }
-        
+
+        private void PDFViewTool_DocumentModifiedChanged(object sender, EventArgs e)
+        { 
+            CanSave = annotationControl.PDFViewControl.PDFViewTool.IsDocumentModified;
+        }
+
+        private void DisplaySettingsControl_SplitModeChanged(object sender, CPDFViewModeUI.SplitMode e)
+        {
+            pdfViewer.SetSplitViewMode(e);
+        }
+
         private void OpenFile()
         {
             string filePath = CommonHelper.GetExistedPathOrEmpty();
             if (!string.IsNullOrEmpty(filePath) && annotationControl.PDFViewControl != null)
             {
-                if (pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (pdfViewer != null && pdfViewer.PDFToolManager != null)
                 {
-                    string oldFilePath = pdfViewer.PDFView.Document.FilePath;
+                    string oldFilePath = pdfViewer.PDFToolManager.GetDocument().FilePath;
                     if (oldFilePath.ToLower() == filePath.ToLower())
                     {
                         return;
@@ -168,14 +192,14 @@ namespace AnnotationViewControl
                 }
 
                 passwordViewer = new PDFViewControl();
-                passwordViewer.PDFView.InitDocument(filePath);
-                if (passwordViewer.PDFView.Document == null)
+                passwordViewer.InitDocument(filePath);
+                if (passwordViewer.PDFToolManager.GetDocument() == null)
                 {
                     MessageBox.Show("Open File Failed");
                     return;
                 }
 
-                if (passwordViewer.PDFView.Document.IsLocked)
+                if (passwordViewer.PDFToolManager.GetDocument().IsLocked)
                 {
                     PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
                     PasswordUI.ClearPassword();
@@ -184,7 +208,7 @@ namespace AnnotationViewControl
                 }
                 else
                 {
-                    pdfViewer.PDFView.Document.Release();
+                    pdfViewer?.PDFToolManager?.GetDocument().Release();
                     pdfViewer = passwordViewer;
                     LoadDocument();
                 }
@@ -197,10 +221,10 @@ namespace AnnotationViewControl
 
         private void PasswordUI_Confirmed(object sender, string e)
         {
-            if (passwordViewer != null && passwordViewer.PDFView != null && passwordViewer.PDFView.Document != null)
+            if (passwordViewer != null && passwordViewer.PDFToolManager != null && passwordViewer.PDFToolManager.GetDocument() != null)
             {
-                passwordViewer.PDFView.Document.UnlockWithPassword(e);
-                if (passwordViewer.PDFView.Document.IsLocked == false)
+                passwordViewer.PDFToolManager.GetDocument().UnlockWithPassword(e);
+                if (passwordViewer.PDFToolManager.GetDocument().IsLocked == false)
                 {
                     PasswordUI.SetShowError("", Visibility.Collapsed);
                     PasswordUI.ClearPassword();
@@ -241,9 +265,8 @@ namespace AnnotationViewControl
         
         private void LoadCustomControl()
         {
-            regularViewerControl.PdfViewControl = pdfViewer;
-            regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
-            regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
+            regularViewerControl.InitWithPDFViewer(pdfViewer);
+            regularViewerControl.PdfViewControl.PDFToolManager.SetToolType(ToolType.Viewer);
             regularViewerControl.SetBOTAContainer(null);
             regularViewerControl.SetBOTAContainer(botaBarControl);
             regularViewerControl.SetDisplaySettingsControl(displaySettingsControl);
@@ -284,7 +307,7 @@ namespace AnnotationViewControl
         private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            pdfViewer.PDFView.UndoManager.CanSave = false;
+            pdfViewer.PDFViewTool.IsDocumentModified = false;
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -317,24 +340,22 @@ namespace AnnotationViewControl
 
             if (item.Content as string == "Viewer")
             {
-                if (regularViewerControl.PdfViewControl != null && regularViewerControl.PdfViewControl.PDFView != null)
+                if (regularViewerControl.PdfViewControl != null && regularViewerControl.PdfViewControl.PDFViewTool != null)
                 {
                     PDFGrid.Child = regularViewerControl;
-                    regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
-                    regularViewerControl.PdfViewControl = pdfViewer;
-                    regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    regularViewerControl.PdfViewControl.PDFToolManager.SetToolType(ToolType.Viewer);
+                    regularViewerControl.InitWithPDFViewer(pdfViewer);
                     regularViewerControl.SetBOTAContainer(botaBarControl);
                     regularViewerControl.SetDisplaySettingsControl(displaySettingsControl);
                 }
             }
             else if (item.Content as string == "Annotation")
             {
-                if (annotationControl.PDFViewControl != null && annotationControl.PDFViewControl.PDFView != null)
+                if (annotationControl.PDFViewControl != null && annotationControl.PDFViewControl.PDFViewTool != null)
                 {
                     PDFGrid.Child = annotationControl;
-                    annotationControl.PDFViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
-                    annotationControl.PDFViewControl = pdfViewer;
-                    annotationControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    annotationControl.PDFViewControl.PDFToolManager.SetToolType(ToolType.Viewer);
+                    annotationControl.InitWithPDFViewer(pdfViewer);
                     annotationControl.SetBOTAContainer(botaBarControl);
                     annotationControl.SetDisplaySettingsControl(displaySettingsControl);
                 }
@@ -346,7 +367,7 @@ namespace AnnotationViewControl
         {
             PasswordUI.Visibility = Visibility.Collapsed;
             FileInfoUI.Visibility = Visibility.Visible;
-            FileInfoControl.InitWithPDFViewer(pdfViewer.PDFView);
+            FileInfoControl.InitWithPDFViewer(pdfViewer);
             PopupBorder.Visibility = Visibility.Visible;
         }
 
@@ -399,9 +420,9 @@ namespace AnnotationViewControl
         public void SaveAsFile()
         {
             {
-                if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (pdfViewer != null && pdfViewer.PDFToolManager != null && pdfViewer.PDFToolManager.GetDocument() != null)
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewer.PDFToolManager.GetDocument();
                     SaveFileDialog saveDialog = new SaveFileDialog();
                     saveDialog.Filter = "(*.pdf)|*.pdf";
                     saveDialog.DefaultExt = ".pdf";
@@ -420,11 +441,11 @@ namespace AnnotationViewControl
         /// </summary>
         private void SaveFile()
         {
-            if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+            if (pdfViewer != null && pdfViewer.PDFToolManager != null && pdfViewer.PDFToolManager.GetDocument() != null)
             {
                 try
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewer.PDFToolManager.GetDocument();
                     if (pdfDoc.WriteToLoadedPath())
                     {
                         return;

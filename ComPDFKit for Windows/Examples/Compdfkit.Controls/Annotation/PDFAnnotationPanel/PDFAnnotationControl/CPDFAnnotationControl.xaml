@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControl.CPDFAnnotationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControlUI"
+             xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             Loaded="AnnotationControl_Loaded"
+             Unloaded="AnnotationControl_Unloaded"
+             d:DesignHeight="800" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <common:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></common:PropertyPanelResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Border x:Name="AnnotationPanelContainer" Background="#FAFCFF"></Border>
+        <TextBlock x:Name="EmptyMessage" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Text_EmptyPanel}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+    </Grid>
+</UserControl>

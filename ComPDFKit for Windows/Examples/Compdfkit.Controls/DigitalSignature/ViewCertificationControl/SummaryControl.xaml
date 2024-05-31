@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControl.SummaryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+             xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="160" d:DesignWidth="600">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <common:SigResourceConverter x:Key="SigResourceConverter"></common:SigResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Background="#ffffff"  Margin="20,0,0,0"  Panel.ZIndex="1" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_Summary}" FontWeight="Bold" FontSize="16"></TextBlock>
+        </Grid>
+        <Border Margin="12" BorderBrush="#33000000" BorderThickness="1" >
+            <ScrollViewer Margin="0,10,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <StackPanel VerticalAlignment="Center" Margin="20,0,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_IssuedTo}" Foreground="Black"  FontSize="14"></TextBlock>
+                        <TextBlock Text="{Binding Award}" Foreground="#666" FontSize="14"></TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_Issuer}" Foreground="Black"  FontSize="14"></TextBlock>
+                        <TextBlock Text="{Binding Grantor}" Foreground="#666"  FontSize="14"></TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_ValidFrom}" Foreground="Black"  FontSize="14"></TextBlock>
+                        <TextBlock Text="{Binding ValidityFrom}" Foreground="#666"  FontSize="14"></TextBlock>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_ValidTo}" Foreground="Black"  FontSize="14"></TextBlock>
+                        <TextBlock Text="{Binding ValidityTo}" Foreground="#666"  FontSize="14"></TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Text_Usage}" Foreground="Black"  FontSize="14"></TextBlock>
+                        <TextBlock Text="{Binding IntendedUsage}" Foreground="#666"  FontSize="14"></TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

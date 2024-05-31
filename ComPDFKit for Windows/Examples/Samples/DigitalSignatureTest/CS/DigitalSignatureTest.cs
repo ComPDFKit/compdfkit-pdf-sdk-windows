@@ -1,22 +1,25 @@
 ﻿using ComPDFKit.DigitalSign;
 using ComPDFKit.Import;
-using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFAnnotation.Form;
 using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFPage;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 using System.Xml.Linq;
+using ImageMagick;
 
 namespace DigitalSignatureTest
 {
-    internal class DigitalSignatureTest
+    internal class DigitalSignatureTestCertPathInPath
     {
-
         static private string parentPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())));
         static private string outputPath = Path.Combine(parentPath, "Output", "CS");
+        static string trustedFolder = AppDomain.CurrentDomain.BaseDirectory + @"\TrustedFolder\";
 
         static void Main()
         {
@@ -31,6 +34,13 @@ namespace DigitalSignatureTest
             {
                 Directory.CreateDirectory(outputPath);
             }
+
+            if (!Directory.Exists(trustedFolder))
+            {
+                Directory.CreateDirectory(trustedFolder);
+            }
+            CPDFSignature.SignCertTrustedFolder = trustedFolder;
+            
             #endregion
 
             #region Sample 0: Create certificate 
@@ -97,7 +107,7 @@ namespace DigitalSignatureTest
 
             string info = "/C=SG/O=ComPDFKit/D=R&D Department/CN=Alan/emailAddress=xxxx@example.com";
             string password = "ComPDFKit";
-            string filePath = outputPath + "\\Certificate.pfx";
+            string filePath = "Certificate.pfx";
             if (CPDFPKCS12CertHelper.GeneratePKCS12Cert(info, password, filePath, CPDFCertUsage.CPDFCertUsageAll, true))
             {
                 Console.WriteLine("File saved in " + filePath);
@@ -165,11 +175,17 @@ namespace DigitalSignatureTest
                 "DN: " + DN + "\n",
                 IsContentAlignLeft = false,
                 IsDrawLogo = true,
-                LogoBitmap = new Bitmap("Logo.png"),
                 TextColor = new float[] { 0, 0, 0 },
                 ContentColor = new float[] { 0, 0, 0 }
             };
-            string filePath = outputPath + "\\" + document.FileName + "_Signed.pdf";
+            using (var image = new MagickImage("Logo.png"))
+            {
+                byte[] byteArray = image.ToByteArray(MagickFormat.Bgra);
+                signatureConfig.LogoData = byteArray;
+                signatureConfig.LogoHeight = image.Height;
+                signatureConfig.LogoWidth = image.Width;
+            }
+            string filePath = Path.Combine(outputPath, document.FileName + "_Signed.pdf");
             signatureField.UpdataApWithSignature(signatureConfig);
             if (document.WriteSignatureToFilePath(signatureField,
                 filePath,
@@ -199,7 +215,7 @@ namespace DigitalSignatureTest
 
             CPDFSignature signature = document.GetSignatureList()[0];
             document.RemoveSignature(signature, true);
-            string filePath = outputPath + "\\" + document.FileName + "_RemovedSign.pdf";
+            string filePath = Path.Combine(outputPath, "" + document.FileName + "_RemovedSign.pdf");
             document.WriteToFilePath(filePath);
             Console.WriteLine("File saved in " + filePath);
 
@@ -224,12 +240,6 @@ namespace DigitalSignatureTest
 
             Console.WriteLine("---Begin trusted---");
 
-            string trustedFolder = AppDomain.CurrentDomain.BaseDirectory + @"\TrustedFolder\";
-            if (!Directory.Exists(trustedFolder))
-            {
-                Directory.CreateDirectory(trustedFolder);
-            }
-            CPDFSignature.SignCertTrustedFolder = trustedFolder;
             if (signatureCertificate.AddToTrustedCertificates())
             {
                 Console.WriteLine("Certificate trusted status: " + signatureCertificate.IsTrusted.ToString());

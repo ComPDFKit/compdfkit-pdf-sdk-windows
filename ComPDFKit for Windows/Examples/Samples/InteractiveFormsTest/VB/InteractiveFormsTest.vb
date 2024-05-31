@@ -4,11 +4,7 @@ Imports ComPDFKit.PDFAnnotation.Form
 Imports ComPDFKit.PDFDocument
 Imports ComPDFKit.PDFDocument.Action
 Imports ComPDFKit.PDFPage
-Imports ComPDFKit.PDFPage.Edit
-Imports System
-Imports System.Collections.Generic
 Imports System.IO
-Imports System.Text
 
 Module InteractiveFormsTest
     Private outputPath As String = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) & "\Output\VB"
@@ -36,7 +32,7 @@ Module InteractiveFormsTest
     Private Sub CreateTextField(document As CPDFDocument)
         Dim page As CPDFPage = document.PageAtIndex(0)
         Dim textField As CPDFTextWidget = TryCast(page.CreateWidget(C_WIDGET_TYPE.WIDGET_TEXTFIELD), CPDFTextWidget)
-        textField.SetRect(New CRect(28, 32, 235, 75))
+        textField.SetRect(New CRect(28, 75, 235, 32))
         textField.SetWidgetBorderRGBColor(New Byte() {0, 0, 0})
         textField.SetWidgetBgRGBColor(New Byte() {240, 255, 240})
     End Sub

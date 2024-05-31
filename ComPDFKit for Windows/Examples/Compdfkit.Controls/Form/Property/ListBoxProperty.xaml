@@ -1,0 +1,135 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControl.ListBoxProperty"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl" 
+             xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="300"
+             Loaded="UserControl_Loaded"
+             Unloaded="UserControl_Unloaded"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Asset/Styles/TabControlStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../Asset/Styles/TabItemStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <cpdfcommon:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></cpdfcommon:PropertyPanelResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border BorderThickness="0" BorderBrush="#1A000000">
+            <Grid  Height="40" Background="White" >
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_ListBox}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+            </Grid>
+        </Border>
+        <TabControl x:Name="TopTabControl" Grid.Row="1" Style="{DynamicResource TabControlStyle1}" BorderThickness="0">
+            <TabItem Height="32" Style="{DynamicResource TabItemStyle1}" Header="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_General}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1">
+                        <StackPanel  >
+                            <TextBlock Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Name}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <TextBox x:Name="FieldNameText" Height="32" Margin="0,8,0,0" TextChanged="FieldNameText_TextChanged"/>
+                        </StackPanel>
+                        <StackPanel >
+                            <TextBlock Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Visibility}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <ComboBox x:Name="FormFieldCmb" Height="32" Margin="0,8,0,0" Style="{StaticResource ComboBoxStyle1}" SelectedIndex="0" SelectionChanged="FormFieldCmb_SelectionChanged">
+                                <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Visible}"/>
+                                <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Hidden}"/>
+                                <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_NoPrint}"/>
+                                <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Print}"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Height="32" Style="{DynamicResource TabItemStyle1}" Header="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Appearance}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1">
+                        <StackPanel>
+                            <TextBlock  Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_StrokeColor}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <cpdfcommon:ColorPickerControl Margin="0,18,0,0" x:Name="BorderColorPickerControl" ColorChanged="BorderColorPickerControl_ColorChanged"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock  Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_BgColor}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <cpdfcommon:ColorPickerControl Margin="0,18,0,0" x:Name="BackgroundColorPickerControl" ColorChanged="BackgroundColorPickerControl_ColorChanged"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock  Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_FontColor}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <cpdfcommon:ColorPickerControl Margin="0,18,0,0" x:Name="TextColorPickerControl" ColorChanged="TextColorPickerControl_ColorChanged"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock  Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Font}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold" />
+                            <ComboBox x:Name="FontCmb" Height="28" Margin="0,8,0,0" Style="{StaticResource ComboBoxStyle1}" SelectedIndex="0" SelectionChanged="FontCmb_SelectionChanged" PreviewMouseDown="FontCmb_PreviewMouseDown">
+                            </ComboBox>
+                            <StackPanel Orientation="Horizontal"  Height="28" Margin="0,8,0,0">
+                                <ComboBox x:Name="FontStyleCmb"  Margin="0,0,0,0" Width="148" Style="{StaticResource ComboBoxStyle1}" SelectedIndex="0" SelectionChanged="FontStyleCmb_SelectionChanged" PreviewMouseDown="FontStyleCmb_PreviewMouseDown">
+                                </ComboBox>
+                                <ComboBox x:Name="FontSizeCmb" Margin="4,0,0,0" Width="72" Style="{StaticResource ComboBoxStyle1}" SelectedIndex="0" SelectionChanged="FontSizeCmb_SelectionChanged"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem  Style="{DynamicResource TabItemStyle1}" Header="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Preferences}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1">
+                        <StackPanel>
+                            <TextBlock Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Item}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <TextBox Name="txtItemInput" Width="192" Height="28" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" TextChanged="txtItemInput_TextChanged"/>
+                                <Button Name="btnAddItem" Margin="8,0,0,0" Width="20" Height="20"  Background="Transparent" IsEnabled="False" BorderThickness="1" HorizontalAlignment="Right"  Click="btnAddItem_Click" >
+                                    <Path Fill="Black" Data="M0.000488281 5.47803H4.52197V10H5.4834V5.47803H10.0005V4.5166H5.4834V0H4.52197V4.5166H0.000488281V5.47803Z"/>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel >
+                            <TextBlock Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_ItemList}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                            <StackPanel Orientation="Horizontal">
+                            <ListBox x:Name="itemsListBox" Margin="0,0,0,0" SelectionMode="Single" Height="96" HorizontalAlignment="Left" Width="192" SelectionChanged="itemsListBox_SelectionChanged"/>
+                                <StackPanel Height="96" Margin="8,0,0,0">
+                                    <Button x:Name="btnDelete" Width="20" Height="20" IsEnabled="False" Background="Transparent" BorderThickness="1"  VerticalAlignment="Top" Click="btnDelete_Click">
+                                        <Path Fill="Black" Data="M0.000488281 1.61084H10.0005V0.649414H0.000488281V1.61084Z"/>
+                                    </Button>
+                                    <Button x:Name="btnMoveUp" Width="20" Height="20" Margin="0,18,0,0" IsEnabled="False" Background="Transparent" BorderThickness="1"  VerticalAlignment="Center"  Click="btnMoveUp_Click">
+                                        <Path Fill="Black" Data="M5.47803 11.8477L5.44043 2.15728L9.271 6.12212L9.92627 5.43462L5 0.5L0.0791016 5.43462L0.729004 6.12212L4.56494 2.1519L4.52197 11.8477H5.47803Z"/>
+                                    </Button>
+                                    <Button x:Name="btnMoveDown"  Width="20" Height="20" Margin="0,18,0,0" IsEnabled="False" Background="Transparent" BorderThickness="1" VerticalAlignment="Bottom"  Click="btnMoveDown_Click">
+                                        <Path Fill="Black" Data="M5.47705 0.152295L5.43945 9.84272L9.27002 5.87788L9.92529 6.56538L4.99902 11.5L0.078125 6.56538L0.728027 5.87788L4.56396 9.8481L4.521 0.152295H5.47705Z"/>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel x:Name="TipPanel" Grid.ColumnSpan="3" Orientation="Horizontal" Background="#E2E3E6" VerticalAlignment="Bottom">
+                        <Path Fill="Black" Margin="8,10,8,0" VerticalAlignment="Top" Data="M6 11.6006C3.0083 11.6006 0.521484 9.11377 0.521484 6.12207C0.521484 3.125 3.00293 0.643555 5.99463 0.643555C8.9917 0.643555 11.4785 3.125 11.4785 6.12207C11.4785 9.11377 8.99707 11.6006 6 11.6006ZM5.94629 4.16162C6.34912 4.16162 6.66602 3.83936 6.66602 3.43115C6.66602 3.02295 6.34912 2.70068 5.94629 2.70068C5.54346 2.70068 5.22119 3.02295 5.22119 3.43115C5.22119 3.83936 5.54346 4.16162 5.94629 4.16162ZM5.02783 9.17822H7.27832C7.50928 9.17822 7.68652 9.01172 7.68652 8.78076C7.68652 8.56592 7.50928 8.38867 7.27832 8.38867H6.59619V5.57959C6.59619 5.27881 6.4458 5.07471 6.16113 5.07471H5.11914C4.89355 5.07471 4.71631 5.25195 4.71631 5.4668C4.71631 5.69775 4.89355 5.86426 5.11914 5.86426H5.70996V8.38867H5.02783C4.79688 8.38867 4.61963 8.56592 4.61963 8.78076C4.61963 9.01172 4.79688 9.17822 5.02783 9.17822Z"/>
+                        <TextBlock Margin="0,8,8,8" VerticalAlignment="Center" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Tip_Default}" Width="224" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
+

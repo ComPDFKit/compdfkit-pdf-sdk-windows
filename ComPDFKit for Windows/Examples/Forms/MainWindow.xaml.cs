@@ -1,26 +1,19 @@
-using ComPDFKit.PDFDocument;
-using Compdfkit_Tools.Data;
-using Compdfkit_Tools.Helper;
-using Compdfkit_Tools.PDFControl;
-using ComPDFKitViewer;
-using ComPDFKitViewer.AnnotEvent;
-using ComPDFKitViewer.PdfViewer;
+using ComPDFKit.Controls.Helper;
+using ComPDFKit.Controls.PDFControl;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using Compdfkit_Tools.PDFView;
-using System.Reflection;
-using System.Linq;
+using ComPDFKit.Controls.PDFView;
+using ComPDFKitViewer;
+using ComPDFKit.PDFDocument;
+using ComPDFKit.Tool;
 
 namespace FormViewControl
 {
@@ -38,9 +31,10 @@ namespace FormViewControl
         private CPDFDisplaySettingsControl displaySettingsControl = new CPDFDisplaySettingsControl();
         private CPDFBOTABarControl botaBarControl = new CPDFBOTABarControl();
         private PanelState panelState = PanelState.GetInstance();
-        private bool _canSave = false;
         private string currentMode = "Viewer";
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool _canSave = false;
         public bool CanSave
         {
 
@@ -105,30 +99,22 @@ namespace FormViewControl
         private void LoadDefaultDocument()
         {
             string defaultFilePath = "ComPDFKit_Forms_Sample_File.pdf";
-            pdfViewer.PDFView.InitDocument(defaultFilePath);
+            pdfViewer.InitDocument(defaultFilePath);
             LoadDocument();
         }
 
         private void LoadDocument()
         {
-            pdfViewer.PDFView.Load();
-            pdfViewer.PDFView.SetShowLink(true);
-            
-            pdfViewer.PDFView.InfoChanged -= PdfViewer_InfoChanged;
-            pdfViewer.PDFView.InfoChanged += PdfViewer_InfoChanged;
-            
             formControl.PdfViewControl = pdfViewer;
-            formControl.InitWithPDFViewer(pdfViewer.PDFView);
+            regularViewerControl.PdfViewControl = pdfViewer;
+            formControl.InitWithPDFViewer(pdfViewer);
             
             formControl.ClearAllToolState();
             formControl.ExpandRightPropertyPanel(null, Visibility.Collapsed);
 
-            formControl.OnCanSaveChanged -= FormControlOnCanSaveChanged;
-            formControl.OnCanSaveChanged += FormControlOnCanSaveChanged;
             formControl.OnAnnotEditHandler -= PdfFormControlRefreshAnnotList;
             formControl.OnAnnotEditHandler += PdfFormControlRefreshAnnotList;
             
-            formControl.PdfViewControl.PDFView.SetFormFieldHighlight(true);
             PasswordUI.Closed -= PasswordUI_Closed;
             PasswordUI.Canceled -= PasswordUI_Canceled;
             PasswordUI.Confirmed -= PasswordUI_Confirmed;
@@ -138,12 +124,12 @@ namespace FormViewControl
             
             ModeComboBox.SelectedIndex = 1;
             formControl.SetToolBarContainerVisibility(Visibility.Visible);
-            formControl.PdfViewControl.PDFView.ChangeFitMode(FitMode.FitWidth);
-            CPDFSaclingControl.InitWithPDFViewer(formControl.PdfViewControl.PDFView);
-            CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(formControl.PdfViewControl.PDFView.ZoomFactor * 100)));
+            formControl.PdfViewControl.PDFViewTool.GetCPDFViewer().SetFitMode(FitMode.FitWidth);
+            CPDFSaclingControl.InitWithPDFViewer(formControl.PdfViewControl);
+            CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(formControl.PdfViewControl.PDFViewTool.GetCPDFViewer().GetZoom() * 100)));
             
             ViewSettingBtn.IsChecked = false;
-            botaBarControl.InitWithPDFViewer(formControl.PdfViewControl.PDFView);
+            botaBarControl.InitWithPDFViewer(formControl.PdfViewControl);
             botaBarControl.AddBOTAContent(new []{BOTATools.Thumbnail , BOTATools.Outline , BOTATools.Bookmark , BOTATools.Annotation , BOTATools.Search});
             botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
             formControl.SetBOTAContainer(botaBarControl);
@@ -151,16 +137,24 @@ namespace FormViewControl
             
             panelState.PropertyChanged -= PanelState_PropertyChanged;
             panelState.PropertyChanged += PanelState_PropertyChanged;
+
+            regularViewerControl.PdfViewControl.PDFViewTool.DocumentModifiedChanged -= PDFViewTool_DocumentModifiedChanged;
+            regularViewerControl.PdfViewControl.PDFViewTool.DocumentModifiedChanged += PDFViewTool_DocumentModifiedChanged;
         }
-        
+
+        private void PDFViewTool_DocumentModifiedChanged(object sender, EventArgs e)
+        {
+            CanSave = regularViewerControl.PdfViewControl.PDFViewTool.IsDocumentModified;
+        }
+
         private void OpenFile()
         {
             string filePath = CommonHelper.GetExistedPathOrEmpty();
             if (!string.IsNullOrEmpty(filePath) && formControl.PdfViewControl != null)
             {
-                if (pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (pdfViewer.PDFViewTool != null && pdfViewer.PDFToolManager.GetDocument() != null)
                 {
-                    string oldFilePath = pdfViewer.PDFView.Document.FilePath;
+                    string oldFilePath = pdfViewer.PDFToolManager.GetDocument().FilePath;
                     if (oldFilePath.ToLower() == filePath.ToLower())
                     {
                         return;
@@ -168,14 +162,14 @@ namespace FormViewControl
                 }
 
                 passwordViewer = new PDFViewControl();
-                passwordViewer.PDFView.InitDocument(filePath);
-                if (passwordViewer.PDFView.Document == null)
+                passwordViewer.InitDocument(filePath);
+                if (passwordViewer.PDFToolManager.GetDocument() == null)
                 {
                     MessageBox.Show("Open File Failed");
                     return;
                 }
 
-                if (passwordViewer.PDFView.Document.IsLocked)
+                if (passwordViewer.PDFToolManager.GetDocument().IsLocked)
                 {
                     PasswordUI.SetShowText(System.IO.Path.GetFileName(filePath) + " " + LanguageHelper.CommonManager.GetString("Tip_Encrypted"));
                     PasswordUI.ClearPassword();
@@ -184,7 +178,7 @@ namespace FormViewControl
                 }
                 else
                 {
-                    pdfViewer.PDFView.Document.Release();
+                    passwordViewer.PDFToolManager.GetDocument().Release();
                     pdfViewer = passwordViewer;
                     LoadDocument();
                 }
@@ -201,10 +195,10 @@ namespace FormViewControl
         #region Password
         private void PasswordUI_Confirmed(object sender, string e)
         {
-            if (passwordViewer != null && passwordViewer.PDFView != null && passwordViewer.PDFView.Document != null)
+            if (passwordViewer != null && passwordViewer.PDFViewTool != null && passwordViewer.PDFToolManager.GetDocument() != null)
             {
-                passwordViewer.PDFView.Document.UnlockWithPassword(e);
-                if (passwordViewer.PDFView.Document.IsLocked == false)
+                passwordViewer.PDFToolManager.GetDocument().UnlockWithPassword(e);
+                if (passwordViewer.PDFToolManager.GetDocument().IsLocked == false)
                 {
                     PasswordUI.SetShowError("", Visibility.Collapsed);
                     PasswordUI.ClearPassword();
@@ -257,7 +251,7 @@ namespace FormViewControl
         private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            pdfViewer.PDFView.UndoManager.CanSave = false;
+            CanSave = false;
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -269,6 +263,8 @@ namespace FormViewControl
         {
             panelState.IsLeftPanelExpand = (sender as ToggleButton).IsChecked == true;
         }
+
+        bool T = false;
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -290,24 +286,32 @@ namespace FormViewControl
             
             if ((string)item.Content == "Viewer")
             {
-                if (regularViewerControl.PdfViewControl != null && regularViewerControl.PdfViewControl.PDFView != null)
+                if (regularViewerControl.PdfViewControl != null && regularViewerControl.PdfViewControl.PDFToolManager != null)
                 {
                     PDFGrid.Child = regularViewerControl;
-                    regularViewerControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.Viewer);
+                    regularViewerControl.PdfViewControl.PDFToolManager.SetToolType(ToolType.Viewer);
                     regularViewerControl.PdfViewControl = pdfViewer;
-                    regularViewerControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    regularViewerControl.InitWithPDFViewer(pdfViewer);
                     regularViewerControl.SetBOTAContainer(botaBarControl);
                     regularViewerControl.SetDisplaySettingsControl(displaySettingsControl);
                 }
             }
             else if ((string)item.Content == "Form")
             {
-                if (formControl.PdfViewControl != null && formControl.PdfViewControl.PDFView != null)
+                if (formControl.PdfViewControl != null && formControl.PdfViewControl.PDFToolManager != null)
                 {
                     PDFGrid.Child = formControl;
-                    formControl.PdfViewControl.PDFView.SetMouseMode(MouseModes.FormEditTool);
+                    if (T)
+                    {
+                        formControl.PdfViewControl.PDFToolManager.SetToolType(ToolType.WidgetEdit);
+                    }
+                    if (IsLoaded)
+                    {
+                        T = IsLoaded;
+                    }
+
                     formControl.PdfViewControl = pdfViewer;
-                    formControl.InitWithPDFViewer(pdfViewer.PDFView);
+                    formControl.InitWithPDFViewer(pdfViewer);
                     formControl.SetBOTAContainer(botaBarControl);
                     formControl.SetDisplaySettingsControl(displaySettingsControl);
                 }
@@ -319,7 +323,7 @@ namespace FormViewControl
         {
             PasswordUI.Visibility = Visibility.Collapsed;
             FileInfoUI.Visibility = Visibility.Visible;
-            FileInfoControl.InitWithPDFViewer(pdfViewer.PDFView);
+            FileInfoControl.InitWithPDFViewer(pdfViewer);
             PopupBorder.Visibility = Visibility.Visible;
         }
 
@@ -364,11 +368,6 @@ namespace FormViewControl
             }
         }
         
-        private void FormControlOnCanSaveChanged(object sender, bool e)
-        {
-            this.CanSave = e;
-        }
-        
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -383,9 +382,9 @@ namespace FormViewControl
         public void SaveAsFile()
         {
             {
-                if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+                if (pdfViewer != null && pdfViewer.PDFToolManager != null && pdfViewer.PDFToolManager.GetDocument() != null)
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewer.PDFToolManager.GetDocument();
                     SaveFileDialog saveDialog = new SaveFileDialog();
                     saveDialog.Filter = "(*.pdf)|*.pdf";
                     saveDialog.DefaultExt = ".pdf";
@@ -404,11 +403,11 @@ namespace FormViewControl
         /// </summary>
         private void SaveFile()
         {
-            if (pdfViewer != null && pdfViewer.PDFView != null && pdfViewer.PDFView.Document != null)
+            if (pdfViewer != null && pdfViewer.PDFToolManager != null && pdfViewer.PDFToolManager.GetDocument() != null)
             {
                 try
                 {
-                    CPDFDocument pdfDoc = pdfViewer.PDFView.Document;
+                    CPDFDocument pdfDoc = pdfViewer.PDFToolManager.GetDocument();
                     if (pdfDoc.WriteToLoadedPath())
                     {
                         return;
