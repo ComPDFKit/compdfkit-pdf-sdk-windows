@@ -14,7 +14,6 @@
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <!--上一页-->
             <Border Background="Transparent" Width="20" Height="20" Margin="11,0,0,0" MouseLeftButtonDown="PrevPageBorder_MouseLeftButtonDown">
                 <Path Fill="White" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Path.Data>
@@ -26,16 +25,15 @@
                 </Path>
             </Border>
 
-            <!--页码范围-->
             <TextBlock Name="PageRangeText" Grid.Column="1" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       MouseLeftButtonUp="PageRangeText_MouseLeftButtonUp">19999/99999</TextBlock>
+                       MouseLeftButtonUp="PageRangeText_MouseLeftButtonUp">1/1</TextBlock>
 
             <TextBox Name="PageInputText" Grid.Column="1" VerticalAlignment="Center" Background="Transparent" Foreground="White" FontSize="12"
                      LostFocus="PageInputText_LostFocus" KeyDown="PageInputText_KeyDown" Visibility="Collapsed" InputMethod.IsInputMethodEnabled="False"
                      PreviewKeyDown="PageInputText_PreviewKeyDown" CaretBrush="White" CommandManager.PreviewCanExecute="PageInputText_CanExecute"
                      HorizontalContentAlignment="Center"
                       ></TextBox>
-            <!--下一页-->
+            
             <Border Width="20" Height="20" Background="Transparent" Grid.Column="2" Margin="0,0,11,0" MouseLeftButtonDown="NextPageBorder_MouseLeftButtonDown">
                 <Path Fill="White" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Path.Data>

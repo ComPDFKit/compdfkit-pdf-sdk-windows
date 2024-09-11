@@ -179,6 +179,7 @@ namespace ComPDFKit.Tool.DrawTool
         /// Array passed from outside for multiple selection
         /// </summary>
         protected List<SelectedRect> selectedRects = new List<SelectedRect>();
+        protected Dictionary<SelectedRect,KeyValuePair<int,int>> RelationDict=new Dictionary<SelectedRect, KeyValuePair<int, int>>();
 
         protected bool isHover = false;
 
@@ -207,13 +208,53 @@ namespace ComPDFKit.Tool.DrawTool
         public MultiSelectedRect(DefaultDrawParam defaultDrawParam, SelectedType type) : base()
         {
             drawParam = defaultDrawParam;
-            currentDrawPointType = DrawPointType.Square;
+            currentDrawPointType = DrawPointType.Circle;
             selectedType = type;
         }
 
-        public void SetMulitSelectedRect(SelectedRect selectedobject)
+        public void SetMulitSelectedRect(SelectedRect selectedobject,int pageIndex,int editIndex)
         {
             selectedRects.Add(selectedobject);
+            RelationDict[selectedobject] = new KeyValuePair<int, int>(pageIndex, editIndex);
+        }
+
+        public bool GetRelationKey(SelectedRect selectedobject,out int pageIndex,out int editIndex)
+        {
+            pageIndex = -1;
+            editIndex = -1;
+            if(RelationDict!=null && RelationDict.ContainsKey(selectedobject))
+            {
+                KeyValuePair<int, int> relateData = RelationDict[selectedobject];
+                pageIndex = relateData.Key;
+                editIndex = relateData.Value;
+                return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// delete
+        /// </summary>
+        /// <param name="selectedobject"></param>
+        public void DelMulitSelectedRect(SelectedRect selectedobject)
+        {
+            selectedRects.Remove(selectedobject);
+            RelationDict.Remove(selectedobject);
+        }
+
+        /// <summary>
+        /// get selectedRects Index
+        /// </summary>
+        /// <param name="selectedobject"></param>
+        /// <returns></returns>
+        public int GetMulitSelectedRectIndex(SelectedRect selectedobject)
+        {
+          return selectedRects.IndexOf(selectedobject);
+        }
+
+        public List<SelectedRect> GetMulitSelectList()
+        {
+            return selectedRects==null ? new List<SelectedRect>() : selectedRects;
         }
 
         public SelectedType GetSelectedType()
@@ -226,6 +267,7 @@ namespace ComPDFKit.Tool.DrawTool
             if (selectedType != type)
             {
                 selectedRects.Clear();
+                RelationDict.Clear();
             }
             selectedType = type;
         }
@@ -233,6 +275,7 @@ namespace ComPDFKit.Tool.DrawTool
         public void CleanMulitSelectedRect()
         {
             selectedRects.Clear();
+            RelationDict.Clear();
         }
 
         public virtual void OnMouseLeftButtonDown(Point downPoint)
@@ -296,6 +339,25 @@ namespace ComPDFKit.Tool.DrawTool
             return (float)(drawRect.Height / drawDefaultRect.Height);
         }
 
+        /// <summary>
+        /// Multiple selection of movement distance
+        /// </summary>
+        /// <returns></returns>
+        public float GetChangeX()
+        {
+            return (float)(drawRect.Width - drawDefaultRect.Width);
+        }
+
+        /// <summary>
+        /// Multiple selection of movement distance
+        /// </summary>
+        /// <returns></returns>
+        public float GetChangeY()
+        {
+            return (float)(drawRect.Height - drawDefaultRect.Height);
+        }
+
+
         public void Draw()
         {
             switch (currentDrawType)
@@ -303,7 +365,7 @@ namespace ComPDFKit.Tool.DrawTool
                 case MulitiDrawMoveType.Default:
                     Dispatcher.Invoke(() =>
                     {
-                        if(drawDefaultRect.IsEmpty==false && drawDefaultRect.Width>0 && drawDefaultRect.Height>0)
+                        if (drawDefaultRect.IsEmpty == false && drawDefaultRect.Width > 0 && drawDefaultRect.Height > 0)
                         {
                             drawDC = RenderOpen();
                             CalcControlPoint(drawDefaultRect);
@@ -311,7 +373,7 @@ namespace ComPDFKit.Tool.DrawTool
                             SolidColorBrush solidColorBrush = drawParam.SPDFEditMultiRectFillBrush;
                             Pen pen = drawParam.SPDFEditMultiRectLinePen;
                             GetBrushAndPen(ref solidColorBrush, ref pen);
-                            if (selectedRects.Count > 1)
+                            if (selectedRects.Count >= 1)
                             {
                                 foreach (SelectedRect item in selectedRects)
                                 {
@@ -338,7 +400,14 @@ namespace ComPDFKit.Tool.DrawTool
                                         SolidColorBrush moveBrush = drawParam.PDFEditMultiMoveBrush;
                                         Pen movepen = drawParam.PDFEditMultiMovePen;
                                         GetMoveBrushAndPen(ref moveBrush, ref movepen);
-                                        DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect);
+                                        if (selectedType == SelectedType.PDFEdit)
+                                        {
+                                            DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect, drawParam.PDFEditMultiMoveRectPen);
+                                        }
+                                        else
+                                        {
+                                            DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect);
+                                        }
                                     }
                                     drawDC?.DrawRectangle(solidColorBrush, pen, drawDefaultRect);
                                     break;
@@ -349,7 +418,15 @@ namespace ComPDFKit.Tool.DrawTool
                             switch (currentDrawPointType)
                             {
                                 case DrawPointType.Circle:
-                                    DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
+                                    if (selectedType == SelectedType.PDFEdit)
+                                    {
+                                        //Edit Settings Frame
+                                        DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, new SolidColorBrush(Color.FromRgb(71, 126, 222)));
+                                    }
+                                    else
+                                    {
+                                        DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
+                                    }
                                     break;
                                 case DrawPointType.Square:
                                     DrawSquarePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
@@ -358,7 +435,7 @@ namespace ComPDFKit.Tool.DrawTool
                             drawDC?.Close();
                             drawDC = null;
                         }
-                        
+
                     });
                     break;
                 case MulitiDrawMoveType.Alone:
@@ -579,7 +656,7 @@ namespace ComPDFKit.Tool.DrawTool
         /// <param name="moveRect">
         /// Move rectangle
         /// </param>
-        protected void DrawMoveBounds(DrawingContext drawDc, PointControlType controltype, Pen activePen, Brush moveBrush, Rect moveRect)
+        protected void DrawMoveBounds(DrawingContext drawDc, PointControlType controltype, Pen activePen, Brush moveBrush, Rect moveRect, Pen RectPen = null)
         {
             switch (controltype)
             {
@@ -615,15 +692,20 @@ namespace ComPDFKit.Tool.DrawTool
                     break;
                 case PointControlType.Body:
                 case PointControlType.Line:
-                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Top), new Point(PDFViewerActualWidth, moveRect.Top));
-                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
-                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, 0), new Point(moveRect.Left, PDFViewerActualHeight));
-                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, 0), new Point(moveRect.Right, PDFViewerActualHeight));
+                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Top), new Point(moveRect.Left, moveRect.Top));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Top), new Point(PDFViewerActualWidth, moveRect.Top));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, moveRect.Top), new Point(moveRect.Left, 0));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Top), new Point(moveRect.Right, 0));
+
+                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(moveRect.Left, moveRect.Bottom));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, moveRect.Bottom), new Point(moveRect.Left, PDFViewerActualHeight));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Bottom), new Point(moveRect.Right, PDFViewerActualHeight));
                     break;
                 default:
                     break;
             }
-            drawDc?.DrawRectangle(moveBrush, null, moveRect);
+            drawDc?.DrawRectangle(moveBrush, RectPen, moveRect);
         }
 
         public virtual void ClearDraw()
@@ -926,6 +1008,10 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 TmpDown = maxRect.Bottom;
             }
+            if (TmpRight - TmpLeft < 0.0 || TmpDown - TmpUp < 0.0)
+            {
+                return false;
+            }
             drawRect = new Rect(TmpLeft, TmpUp, TmpRight - TmpLeft, TmpDown - TmpUp);
             moveOffset = new Point(drawRect.X - cacheRect.X, drawRect.Y - cacheRect.Y);
             return true;
@@ -1173,7 +1259,60 @@ namespace ComPDFKit.Tool.DrawTool
                     switch (currentDrawPointType)
                     {
                         case DrawPointType.Circle:
+                            if (IgnorePointsList.Contains(checkPoint))
+                            {
+                                continue;
+                            }
                             Vector checkVector = checkPoint - point;
+                            double wlen = drawRect.Width;
+                            if (wlen > 50)
+                            {
+                                wlen = 20;
+                            }
+                            else
+                            {
+                                wlen = wlen / 3;
+                            }
+                            double hlen = drawRect.Height;
+                            if (hlen > 50)
+                            {
+                                hlen = 20;
+                            }
+                            else
+                            {
+                                hlen = wlen / 3;
+                            }
+                            if ((PointControlType)i == PointControlType.RightMiddle)
+                            {
+
+                                if (Math.Abs(point.X - checkPoint.X) < wlen && checkVector.Length < drawRect.Height / 3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+                            if ((PointControlType)i == PointControlType.LeftMiddle)
+                            {
+                                if (Math.Abs(point.X - checkPoint.X) < wlen && checkVector.Length < drawRect.Height / 3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+
+                            if ((PointControlType)i == PointControlType.MiddleTop)
+                            {
+                                if (Math.Abs(point.Y - checkPoint.Y) < hlen && checkVector.Length < drawRect.Width / 3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+
+                            if ((PointControlType)i == PointControlType.MiddlBottom)
+                            {
+                                if (Math.Abs(point.Y - checkPoint.Y) < hlen && checkVector.Length < drawRect.Width / 3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
                             if (checkVector.Length < pointSize)
                             {
                                 return (PointControlType)i;
@@ -1181,7 +1320,7 @@ namespace ComPDFKit.Tool.DrawTool
                             break;
                         case DrawPointType.Square:
 
-                            Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize,0), Math.Max(checkPoint.Y - pointSize,0), pointSize * 2, pointSize * 2);
+                            Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
                             if (checkRect.Contains(point))
                             {
                                 return (PointControlType)i;
@@ -1192,19 +1331,19 @@ namespace ComPDFKit.Tool.DrawTool
                     }
                 }
 
-                Rect defrect = drawDefaultRect;
+                Rect defrect = drawRect;
 
                 defrect.X -= rectPadding;
                 defrect.Y -= rectPadding;
                 defrect.Width += rectPadding;
                 defrect.Height += rectPadding;
-                if (drawDefaultRect.Contains(point))
+                if (drawRect.Contains(point))
                 {
                     Rect rect = new Rect(
-                        Math.Max(drawDefaultRect.X + rectPadding, 0), 
-                        Math.Max(drawDefaultRect.Y + rectPadding,0),
-                        drawDefaultRect.Width - 2 * rectPadding,
-                        drawDefaultRect.Height - 2 * rectPadding);
+                        Math.Max(drawRect.X + rectPadding, 0),
+                        Math.Max(drawRect.Y + rectPadding, 0),
+                        drawRect.Width - 2 * rectPadding,
+                        drawRect.Height - 2 * rectPadding);
                     if (rect.Contains(point))
                     {
                         if (!ignoreList.Contains(PointControlType.Body))
@@ -1219,6 +1358,47 @@ namespace ComPDFKit.Tool.DrawTool
                 }
             }
             return PointControlType.None;
+        }
+
+        /// <summary>
+        /// Get the rectangle where the current point is located
+        /// </summary>
+        /// <param name="clickPoint">
+        /// Coordinate point
+        /// </param>
+        /// <returns>
+        /// Control point type
+        /// </returns>
+        public SelectedRect GetHitControlRect(Point point)
+        {
+            HitTestResult hitResult = VisualTreeHelper.HitTest(this, point);
+            if (hitResult != null && hitResult.VisualHit is DrawingVisual)
+            {
+                foreach (SelectedRect selectedRect in selectedRects) {
+                    Rect defrect = selectedRect.GetRect();
+                    defrect.X -= rectPadding;
+                    defrect.Y -= rectPadding;
+                    defrect.Width += rectPadding;
+                    defrect.Height += rectPadding;
+
+                    if (defrect.Contains(point))
+                    {
+                        Rect rect = new Rect(
+                            Math.Max(defrect.X + rectPadding, 0),
+                            Math.Max(defrect.Y + rectPadding, 0),
+                            defrect.Width - 2 * rectPadding,
+                            defrect.Height - 2 * rectPadding);
+                        if (rect.Contains(point))
+                        {
+                            return selectedRect;
+                        }
+                    }
+
+                }
+
+                
+            }
+            return null;
         }
     }
 }

@@ -219,7 +219,7 @@ namespace ComPDFKit.Controls.Measure
         {
             if(annot is CPDFLineAnnotation lineAnnot)
             {
-                if (lineAnnot.IsMersured())
+                if (lineAnnot.IsMeasured())
                 {
                     CPDFDistanceMeasure lineMeasure = lineAnnot.GetDistanceMeasure();
                     CPDFMeasureInfo info = lineMeasure.MeasureInfo;
@@ -240,7 +240,7 @@ namespace ComPDFKit.Controls.Measure
             }
             else if(annot is CPDFPolylineAnnotation polylineAnnot)
             {
-                if (polylineAnnot.IsMersured())
+                if (polylineAnnot.IsMeasured())
                 {
                     CPDFPerimeterMeasure polylineMeasure = polylineAnnot.GetPerimeterMeasure();
                     CPDFMeasureInfo info = polylineMeasure.MeasureInfo;
@@ -258,7 +258,7 @@ namespace ComPDFKit.Controls.Measure
             }
             else if(annot is CPDFPolygonAnnotation areaAnnot)
             {
-                if (areaAnnot.IsMersured())
+                if (areaAnnot.IsMeasured())
                 {
                     CPDFAreaMeasure areaMeasure = areaAnnot.GetAreaMeasure();
                     CPDFMeasureInfo info = areaMeasure.MeasureInfo;

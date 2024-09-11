@@ -17,32 +17,35 @@
             <cpdfcommon:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></cpdfcommon:PropertyPanelResourceConverter>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="White">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Border BorderThickness="0" BorderBrush="#1A000000">
-            <Grid  Height="40" Background="White" >
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Sig}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
-            </Grid>
-        </Border>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="16"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="16"/>
-            </Grid.ColumnDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-            <StackPanel Grid.Column="1">
-                <TextBlock Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Visibility}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
-                <ComboBox x:Name="FormFieldCmb" Margin="0,8,0,0" Style="{StaticResource ComboBoxStyle1}" SelectedIndex="0" SelectionChanged="FormFieldCmb_SelectionChanged" Height="32">
-                    <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Visible}"/>
-                    <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Hidden}"/>
-                    <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_NoPrint}"/>
-                    <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Print}"/>
-                </ComboBox>
-            </StackPanel>
+        <Grid Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0" BorderBrush="#1A000000">
+                <Grid  Height="40" Background="White" >
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Sig}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Margin="0,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Visibility}" FontSize="14" FontFamily="Microsoft YaHei" FontWeight="Bold"/>
+                    <ComboBox x:Name="FormFieldCmb" Margin="0,8,0,0" Style="{StaticResource ComboBoxStyle1}" SelectedIndex="0" SelectionChanged="FormFieldCmb_SelectionChanged" Height="32">
+                        <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Visible}"/>
+                        <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Hidden}"/>
+                        <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_NoPrint}"/>
+                        <ComboBoxItem Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_Print}"/>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

@@ -11,7 +11,7 @@ namespace PDFPageTest
 {
     internal class PDFPageTest
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
         static void Main(string[] args)
         {
             #region Perparation work
@@ -156,7 +156,7 @@ namespace PDFPageTest
             Console.WriteLine("Insert PageIndex: {0}", pageIndex);
             Console.WriteLine("Size: {0}*{1}", pageWidth, pageHeight);
 
-            string path = Path.Combine(outputPath, "InsertBlankPageTest.pdf");
+            string path = outputPath + "\\InsertBlankPageTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -174,7 +174,7 @@ namespace PDFPageTest
             CPDFDocument documentForInsert = CPDFDocument.InitWithFilePath("Text.pdf");
             document.ImportPagesAtIndex(documentForInsert, "1", 1);
 
-            string path = Path.Combine(outputPath, "InsertPDFPPageTest.pdf");
+            string path = outputPath + "\\InsertPDFPPageTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -193,7 +193,7 @@ namespace PDFPageTest
             CPDFDocument documentPart1 = CPDFDocument.CreateDocument();
             documentPart1.ImportPagesAtIndex(document, "1-2", 0);
 
-            string pathPart1 = Path.Combine(outputPath, "SplitPart1Test.pdf");
+            string pathPart1 = outputPath + "\\SplitPart1Test.pdf";
             if (!documentPart1.WriteToFilePath(pathPart1))
             {
                 return false;
@@ -204,7 +204,7 @@ namespace PDFPageTest
             CPDFDocument documentPart2 = CPDFDocument.CreateDocument();
             documentPart2.ImportPagesAtIndex(document, "3-5", 0);
 
-            string pathPart2 = Path.Combine(outputPath, "SplitPart2Test.pdf");
+            string pathPart2 = outputPath + "\\SplitPart2Test.pdf";
             if (!documentPart2.WriteToFilePath(pathPart2))
             {
                 return false;
@@ -229,7 +229,7 @@ namespace PDFPageTest
             document.RemovePages(pageNumbersToRemove.ToArray());
              
 
-            string path = Path.Combine(outputPath, "RemoveEvenPagesTest.pdf");
+            string path = outputPath + "\\RemoveEvenPagesTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -245,7 +245,7 @@ namespace PDFPageTest
         static private bool RotatePage(CPDFDocument document)
         {
             document.RotatePage(0, 1);//Rotation: Rotate 90 degrees per unit
-            string path = Path.Combine(outputPath, "RotatePageTest.pdf");
+            string path = outputPath + "\\RotatePageTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -266,7 +266,7 @@ namespace PDFPageTest
             document.RemovePages(pageList.ToArray());
             CPDFDocument documentForInsert = CPDFDocument.InitWithFilePath("Text.pdf");
             document.ImportPagesAtIndex(documentForInsert, "1", 0);
-            string path = Path.Combine(outputPath, "RepalcePagesTest.pdf");
+            string path = outputPath + "\\RepalcePagesTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -285,7 +285,7 @@ namespace PDFPageTest
         {
             CPDFDocument extractDocument = CPDFDocument.CreateDocument();
             extractDocument.ImportPagesAtIndex(document, "1", 0);
-            string path = Path.Combine(outputPath, "ExtractPagesTest.pdf");
+            string path = outputPath + "\\ExtractPagesTest.pdf";
             if (!extractDocument.WriteToFilePath(path))
             {
                 return false;

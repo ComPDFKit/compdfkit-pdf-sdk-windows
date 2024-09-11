@@ -133,6 +133,15 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reply.
+        /// </summary>
+        internal static string Button_Reply {
+            get {
+                return ResourceManager.GetString("Button_Reply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         internal static string Button_Search {
@@ -187,6 +196,15 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reply or add thoughts.
+        /// </summary>
+        internal static string Holder_Reply {
+            get {
+                return ResourceManager.GetString("Holder_Reply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         internal static string Holder_Search {
@@ -196,11 +214,47 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a new reply.
+        /// </summary>
+        internal static string Menu_AddReply {
+            get {
+                return ResourceManager.GetString("Menu_AddReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Certification Details.
         /// </summary>
         internal static string Menu_CertDetail {
             get {
                 return ResourceManager.GetString("Menu_CertDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete all annotations.
+        /// </summary>
+        internal static string Menu_DelAllAnnot {
+            get {
+                return ResourceManager.GetString("Menu_DelAllAnnot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete a replies.
+        /// </summary>
+        internal static string Menu_DelAllReply {
+            get {
+                return ResourceManager.GetString("Menu_DelAllReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete annotation.
+        /// </summary>
+        internal static string Menu_DelAnnot {
+            get {
+                return ResourceManager.GetString("Menu_DelAnnot", resourceCulture);
             }
         }
         
@@ -223,11 +277,137 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        internal static string Menu_Edit {
+            get {
+                return ResourceManager.GetString("Menu_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand all annotation.
+        /// </summary>
+        internal static string Menu_ExpandAllAnnot {
+            get {
+                return ResourceManager.GetString("Menu_ExpandAllAnnot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand all replies.
+        /// </summary>
+        internal static string Menu_ExpandAllReply {
+            get {
+                return ResourceManager.GetString("Menu_ExpandAllReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expand replies.
+        /// </summary>
+        internal static string Menu_ExpandReply {
+            get {
+                return ResourceManager.GetString("Menu_ExpandReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fold all annotation.
+        /// </summary>
+        internal static string Menu_FoldAllAnnot {
+            get {
+                return ResourceManager.GetString("Menu_FoldAllAnnot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fold all replies.
+        /// </summary>
+        internal static string Menu_FoldAllReply {
+            get {
+                return ResourceManager.GetString("Menu_FoldAllReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fold replies.
+        /// </summary>
+        internal static string Menu_FoldReply {
+            get {
+                return ResourceManager.GetString("Menu_FoldReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Signature Details.
         /// </summary>
         internal static string Menu_SigDetail {
             get {
                 return ResourceManager.GetString("Menu_SigDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepted.
+        /// </summary>
+        internal static string Status_Accepted {
+            get {
+                return ResourceManager.GetString("Status_Accepted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        internal static string Status_Cancelled {
+            get {
+                return ResourceManager.GetString("Status_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        internal static string Status_Completed {
+            get {
+                return ResourceManager.GetString("Status_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marked.
+        /// </summary>
+        internal static string Status_Marked {
+            get {
+                return ResourceManager.GetString("Status_Marked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string Status_None {
+            get {
+                return ResourceManager.GetString("Status_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rejected.
+        /// </summary>
+        internal static string Status_Rejected {
+            get {
+                return ResourceManager.GetString("Status_Rejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unmarked.
+        /// </summary>
+        internal static string Status_Unmarked {
+            get {
+                return ResourceManager.GetString("Status_Unmarked", resourceCulture);
             }
         }
         
@@ -408,6 +588,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Tooltip_Import {
             get {
                 return ResourceManager.GetString("Tooltip_Import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More.
+        /// </summary>
+        internal static string Tooltip_More {
+            get {
+                return ResourceManager.GetString("Tooltip_More", resourceCulture);
             }
         }
         

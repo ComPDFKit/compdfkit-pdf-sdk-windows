@@ -1,6 +1,7 @@
 ﻿using ComPDFKit.Tool;
 using ComPDFKit.Controls.PDFControl;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace ComPDFKit.Controls.Edit
 {
@@ -32,7 +33,7 @@ namespace ComPDFKit.Controls.Edit
             PDFImageEditControl.SetRotationText(rotation);
         }
 
-        public void SetPDFTextEditData(TextEditParam editEvent, bool isTemp = false)
+        public void SetPDFTextEditData(List<TextEditParam> editEvent, bool isTemp = false)
         {
             if (!isTemp)
             {
@@ -59,11 +60,12 @@ namespace ComPDFKit.Controls.Edit
             ContentEditContainer.Child = null;
         }
 
-        public void SetPDFImageEditData(ImageEditParam editEvent)
+        public void SetPDFImageEditData(List<ImageEditParam> editEvent)
         {
             PDFImageEditControl.SetPDFImageEditData(editEvent);
             ContentEditContainer.Child = PDFImageEditControl;
         }
+
 
         //public void SetPDFImageMultiEditData(List<PDFEditEvent> editEventList)
         //{

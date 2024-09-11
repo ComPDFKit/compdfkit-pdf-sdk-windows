@@ -300,7 +300,7 @@ namespace ComPDFKit.Controls.PDFControl
                 
                 keyWord = e;
                 textSearch.TextSearchDocument = pdfView.GetDocument();
-                textSearch.SearchText(e, C_Search_Options.Search_Case_Insensitive);
+                textSearch.SearchText(e, C_Search_Options.Search_Case_Insensitive, ViewControl.Password);
             }
             else if (ReplaceTog.IsChecked == true)
             {

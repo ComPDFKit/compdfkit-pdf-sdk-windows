@@ -31,6 +31,8 @@ namespace ComPDFKit.Controls.PDFControl
         private CPDFViewerTool viewerTool;
         private CPDFToolManager toolManager;
 
+        public string Password { get; set; } = string.Empty;
+
         public CPDFViewerTool PDFViewTool { get; private set; }
         public CPDFToolManager PDFToolManager { get; private set; }
 
@@ -79,7 +81,6 @@ namespace ComPDFKit.Controls.PDFControl
             PDFToolManager.MouseLeftButtonDownHandler -= PDFToolManager_MouseLeftButtonDownHandler;
             PDFToolManager.MouseLeftButtonUpHandler -= PDFToolManager_MouseLeftButtonUpHandler;
             PDFToolManager.MouseMoveHandler -= PDFToolManager_MouseMoveHandler;
-            PDFToolManager.AnnotDefaultEditedHandler -= PDFToolManager_AnnotDefaultEditedHandler;
             PDFToolManager.MouseRightButtonDownHandler -= PDFToolManager_MouseRightButtonDownHandler;
 
             PDFViewTool.SizeChanged += PDFViewTool_SizeChanged;
@@ -89,7 +90,6 @@ namespace ComPDFKit.Controls.PDFControl
             PDFToolManager.MouseLeftButtonDownHandler += PDFToolManager_MouseLeftButtonDownHandler;
             PDFToolManager.MouseLeftButtonUpHandler += PDFToolManager_MouseLeftButtonUpHandler;
             PDFToolManager.MouseMoveHandler += PDFToolManager_MouseMoveHandler;
-            PDFToolManager.AnnotDefaultEditedHandler += PDFToolManager_AnnotDefaultEditedHandler;
             PDFToolManager.MouseRightButtonDownHandler += PDFToolManager_MouseRightButtonDownHandler;
 
             splitViewerTool.SizeChanged -= SplitViewerTool_SizeChanged;
@@ -98,7 +98,6 @@ namespace ComPDFKit.Controls.PDFControl
             splitToolManager.MouseLeftButtonDownHandler -= PDFToolManager_MouseLeftButtonDownHandler;
             splitToolManager.MouseLeftButtonUpHandler -= PDFToolManager_MouseLeftButtonUpHandler;
             splitToolManager.MouseMoveHandler -= PDFToolManager_MouseMoveHandler;
-            splitToolManager.AnnotDefaultEditedHandler -= PDFToolManager_AnnotDefaultEditedHandler;
             splitToolManager.MouseRightButtonDownHandler -= PDFToolManager_MouseRightButtonDownHandler;
 
             splitViewerTool.SizeChanged += SplitViewerTool_SizeChanged;
@@ -107,19 +106,14 @@ namespace ComPDFKit.Controls.PDFControl
             splitToolManager.MouseLeftButtonDownHandler += PDFToolManager_MouseLeftButtonDownHandler;
             splitToolManager.MouseLeftButtonUpHandler += PDFToolManager_MouseLeftButtonUpHandler;
             splitToolManager.MouseMoveHandler += PDFToolManager_MouseMoveHandler;
-            splitToolManager.AnnotDefaultEditedHandler += PDFToolManager_AnnotDefaultEditedHandler;
             splitToolManager.MouseRightButtonDownHandler += PDFToolManager_MouseRightButtonDownHandler;
 
             SetCursor();
         }
-
-        private void PDFToolManager_AnnotDefaultEditedHandler(object sender, SelectedAnnotData e)
-        {
-            UpdateAnnotFrame();
-        }
-
+    
         private void PDFViewTool_DrawChanged(object sender, EventArgs e)
         {
+            FocusPDFViewToolChanged?.Invoke(this, EventArgs.Empty);
             DrawChanged?.Invoke(sender, e);
         }
 
@@ -197,7 +191,7 @@ namespace ComPDFKit.Controls.PDFControl
 
         private void PDFViewTool_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
+
         }
 
         private void SplitViewerTool_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -206,11 +200,11 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 splitWidthScale = VerticalView.ActualWidth / ViewToolGrid.ActualWidth;
             }
+
             if (HorizontalView.Visibility == Visibility.Visible)
             {
                 splitHeightScale = HorizontalView.ActualHeight / ViewToolGrid.ActualHeight;
             }
-            splitViewerTool.GetCPDFViewer().UpdateRenderFrame();
         }
 
         public void InitDocument(string Path)
@@ -222,6 +216,8 @@ namespace ComPDFKit.Controls.PDFControl
 
                 PDFViewTool.GetCPDFViewer().SetFitMode(FitMode.FitHeight);
                 PDFViewTool.GetCPDFViewer().SetViewMode(ViewMode.SingleContinuous);
+
+                PDFViewTool.SetIsMultiSelected(true);
 
                 splitViewerTool.GetCPDFViewer().InitDoc(pdfDoc);
 

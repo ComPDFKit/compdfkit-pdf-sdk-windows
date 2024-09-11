@@ -24,9 +24,6 @@ using CFontNameHelper = ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 
 namespace ComPDFKit.Controls.Measure.Property
 {
-    /// <summary>
-    /// StraightnessProperty.xaml 的交互逻辑
-    /// </summary>
     public partial class StraightnessProperty : UserControl
     {
         //private AnnotAttribEvent LineEvent { get; set; }

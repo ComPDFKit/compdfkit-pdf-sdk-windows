@@ -4,6 +4,7 @@ using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFPage;
 using ComPDFKitViewer.Helper;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ComPDFKit.Tool.UndoManger
 {
@@ -87,7 +88,21 @@ namespace ComPDFKit.Tool.UndoManger
                 MultiAnnotHistory multiHistory = (MultiAnnotHistory)checkItem;
                 foreach (AnnotHistory checkAnnot in multiHistory.Histories)
                 {
-                    if (checkAnnot == null)
+                    if (checkAnnot == null || checkAnnotList.Contains(checkAnnot))
+                    {
+                        continue;
+                    }
+                    checkAnnotList.Add(checkAnnot);
+                }
+            }
+
+            if (checkItem is GroupHistory)
+            {
+                GroupHistory groupHistory = (GroupHistory)checkItem;
+                foreach (IHistory checkHistory in groupHistory.Histories)
+                {
+                    AnnotHistory checkAnnot = checkHistory as AnnotHistory;
+                    if (checkAnnot == null || checkAnnotList.Contains(checkAnnot))
                     {
                         continue;
                     }
@@ -98,6 +113,21 @@ namespace ComPDFKit.Tool.UndoManger
             if (checkItem is AnnotHistory)
             {
                 checkAnnotList.Add((AnnotHistory)checkItem);
+            }
+
+            List<AnnotHistory> loopList = new List<AnnotHistory>();
+            if (checkAnnotList != null && checkAnnotList.Count > 0)
+            {
+                List<int> pageList = checkAnnotList.AsEnumerable().Select(x => x.GetPageIndex()).Distinct().ToList();
+                pageList.Sort();
+                foreach (int pageIndex in pageList)
+                {
+                    List<AnnotHistory> groupList = checkAnnotList.AsEnumerable().Where(x => x.GetPageIndex() == pageIndex).OrderByDescending(x => x.GetAnnotIndex()).ToList();
+                    if (groupList != null && groupList.Count > 0)
+                    {
+                        loopList.AddRange(groupList);
+                    }
+                }
             }
 
             foreach (AnnotHistory checkAnnot in checkAnnotList)
@@ -139,16 +169,18 @@ namespace ComPDFKit.Tool.UndoManger
             if (GetPageIndex() == pageIndex)
             {
                 int oldIndex = GetAnnotIndex();
-                if (oldIndex > annotIndex || oldIndex<=-1)
-                {
-                    SetAnnotIndex(oldIndex - 1);
-                    HistoryIndex = oldIndex - 1;
-                }
-               
-                if(oldIndex==annotIndex)
+                if (oldIndex == annotIndex && oldIndex >= 0)
                 {
                     SetAnnotIndex(-1);
                     HistoryIndex = -1;
+                }
+                else
+                {
+                    if (oldIndex > annotIndex || oldIndex <= -1)
+                    {
+                        SetAnnotIndex(oldIndex - 1);
+                        HistoryIndex = oldIndex - 1;
+                    }
                 }
             }
         }

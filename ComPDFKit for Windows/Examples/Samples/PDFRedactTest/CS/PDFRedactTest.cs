@@ -10,7 +10,7 @@ namespace PDFRedactTest
 {
     internal class PDFRedactTest
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
         static void Main(string[] args)
         {
             #region Perparation work
@@ -18,7 +18,7 @@ namespace PDFRedactTest
             SDKLicenseHelper.LicenseVerify();
 
             CPDFDocument document = CPDFDocument.InitWithFilePath("CommonFivePage.pdf");
-            
+
             string str = document.PageAtIndex(0).GetTextPage().GetSelectText(new CPoint(300, 240), new CPoint(400, 300), new CPoint(0, 0));
             Console.WriteLine("The text need to be redact is: {0}", str);
 
@@ -57,7 +57,7 @@ namespace PDFRedactTest
             CPDFPage page = document.PageAtIndex(0);
             CPDFRedactAnnotation redact = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_REDACT) as CPDFRedactAnnotation;
             //Set radact rect: cover the title
-            redact.SetRect(new CRect(300, 300, 400, 240));
+            redact.SetRect(new CRect(300, 240, 400, 300));
             //Set overlay text: REDACTED
             redact.SetOverlayText("REDACTED");
 
@@ -79,7 +79,7 @@ namespace PDFRedactTest
             redact.UpdateAp();
             document.ApplyRedaction();
             // Save to pointed path so you can observe the effect.
-            string path = Path.Combine(outputPath, "RedactTest.pdf");
+            string path = outputPath + "\\RedactTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;

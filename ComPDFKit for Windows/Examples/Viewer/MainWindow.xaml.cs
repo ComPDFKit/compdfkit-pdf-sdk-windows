@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using ComPDFKit.PDFPage;
 using ComPDFKit.Tool;
 using ComPDFKitViewer;
+using ComPDFKit.Tool.DrawTool;
 
 namespace Viewer
 {
@@ -395,11 +396,23 @@ namespace Viewer
             System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var image = pdfViewControl.FocusPDFViewTool.GetSelectImage();
-                if(image == null)
+                PageImageItem image = null;
+                Dictionary<int, List<PageImageItem>> pageImageDict = pdfViewControl.FocusPDFViewTool.GetSelectImageItems();
+                if (pageImageDict != null && pageImageDict.Count > 0)
+                {
+                    foreach (int pageIndex in pageImageDict.Keys)
+                    {
+                        List<PageImageItem> imageItemList = pageImageDict[pageIndex];
+                        image = imageItemList[0];
+                        break;
+                    }
+                }
+
+                if (image == null)
                 {
                     return;
                 }
+
                 CPDFPage page = pdfViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
                 string savePath = Path.Combine(folderDialog.SelectedPath, Guid.NewGuid() + ".jpg");
                 string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
@@ -413,11 +426,23 @@ namespace Viewer
 
         private void CopyImage_Click(object sender, RoutedEventArgs e)
         {
-            var image = pdfViewControl.FocusPDFViewTool.GetSelectImage();
-            if(image == null)
+            PageImageItem image = null;
+            Dictionary<int, List<PageImageItem>> pageImageDict = pdfViewControl.FocusPDFViewTool.GetSelectImageItems();
+            if (pageImageDict != null && pageImageDict.Count > 0)
+            {
+                foreach (int pageIndex in pageImageDict.Keys)
+                {
+                    List<PageImageItem> imageItemList = pageImageDict[pageIndex];
+                    image = imageItemList[0];
+                    break;
+                }
+            }
+
+            if (image == null)
             {
                 return;
             }
+
             CPDFPage page = pdfViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
             string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
             page.GetImgSelection().GetImgBitmap(image.ImageIndex, tempPath);
@@ -430,7 +455,7 @@ namespace Viewer
                 imageData = new BitmapImage();
                 imageData.BeginInit();
                 imageData.StreamSource = ms;
-                
+
                 imageData.CacheOption = BitmapCacheOption.OnLoad;
                 imageData.EndInit();
                 imageData.Freeze();
@@ -439,7 +464,7 @@ namespace Viewer
                 File.Delete(tempPath);
             }
         }
-        
+
         private void CreateImageContextMenu(object sender, ref ContextMenu menu)
         {
             if (menu == null)

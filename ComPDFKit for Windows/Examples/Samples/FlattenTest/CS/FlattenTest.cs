@@ -7,7 +7,7 @@ namespace FlattenTest
 {
     internal class FlattenTest
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
         static void Main(string[] args)
         {
             #region Perparation work
@@ -56,7 +56,7 @@ namespace FlattenTest
                 annotationCount += page.GetAnnotCount();
             }
             Console.Write("{0} annotations in the file. ", annotationCount);
-            string flattenPath = Path.Combine(outputPath, "FlattenTest.pdf");
+            string flattenPath = outputPath + "\\FlattenTest.pdf";
             if (!document.WriteFlattenToFilePath(flattenPath))
             {
                 return false;

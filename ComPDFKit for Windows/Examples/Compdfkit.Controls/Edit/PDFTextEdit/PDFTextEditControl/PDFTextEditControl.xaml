@@ -15,46 +15,49 @@
             <common:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></common:PropertyPanelResourceConverter>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        
-        <Border Height="36" Background="White">
-            <TextBlock FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" LineHeight="17" VerticalAlignment="Center"
-                       Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_TextProperty}"></TextBlock>
-        </Border>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-        <Grid Grid.Row="1">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Margin="0,20,0,0" Foreground="#0E1114" FontSize="14"
-                       Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_FontColor}"></TextBlock>
+            <Border Height="36" Background="White">
+                <TextBlock FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" LineHeight="17" VerticalAlignment="Center"
+                       Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_TextProperty}"></TextBlock>
+            </Border>
 
-            <common:ColorPickerControl x:Name="FontColorUI" Grid.Row="1" Margin="0,20,0,0" TransparentBtnProperty="Collapsed"></common:ColorPickerControl>
-
-            <Grid Grid.Row="2" Margin="0,20,0,0" Visibility="Visible">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock FontSize="14" Foreground="#43474D"
+                <TextBlock Margin="0,20,0,0" Foreground="#0E1114" FontSize="14"
+                       Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_FontColor}"></TextBlock>
+
+                <common:ColorPickerControl x:Name="FontColorUI" Grid.Row="1" Margin="0,20,0,0" TransparentBtnProperty="Collapsed"></common:ColorPickerControl>
+
+                <Grid Grid.Row="2" Margin="0,20,0,0" Visibility="Visible">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock FontSize="14" Foreground="#43474D"
                            Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Opacity}"></TextBlock>
 
-                <Slider Style="{StaticResource SliderStyle}" Grid.Row="1" Width="148" Height="28"
+                    <Slider Style="{StaticResource SliderStyle}" Grid.Row="1" Width="148" Height="28"
                     Name="FontOpacitySlider" 
                     Value="14"  
                     IsSelectionRangeEnabled="True" 
@@ -70,29 +73,35 @@
                     Tag="true"
                     />
 
-                <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,0">
-                    <ComboBox Name="OpacityComboBox" VerticalContentAlignment="Center" Width="72" Height="28" Foreground="#43474D" FontSize="14"
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,0">
+                        <ComboBox Name="OpacityComboBox" VerticalContentAlignment="Center" Width="72" Height="28" Foreground="#43474D" FontSize="14"
                               SelectionChanged="OpacityComboBox_SelectionChanged" BorderBrush="#1E000000">
-                        <ComboBoxItem>25%</ComboBoxItem>
-                        <ComboBoxItem>50%</ComboBoxItem>
-                        <ComboBoxItem>75%</ComboBoxItem>
-                        <ComboBoxItem>100%</ComboBoxItem>
-                    </ComboBox>
-                    <TextBox Name="OpacityTextBox" IsHitTestVisible="False" Width="72" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                            <ComboBoxItem>25%</ComboBoxItem>
+                            <ComboBoxItem>50%</ComboBoxItem>
+                            <ComboBoxItem>75%</ComboBoxItem>
+                            <ComboBoxItem>100%</ComboBoxItem>
+                        </ComboBox>
+                        <TextBox Name="OpacityTextBox" IsHitTestVisible="False" Width="72" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                              IsReadOnly="True" Background="White" Padding="0,0,15,0" FontSize="14">100%</TextBox>
-                    <Path Fill="#43474D" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" IsHitTestVisible="False">
-                        <Path.Data>
-                            M0.5 0.510248L4.5041 5.5L8.5 0.5L0.5 0.510248Z
-                        </Path.Data>
-                    </Path>
+                        <Path Fill="#43474D" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" IsHitTestVisible="False">
+                            <Path.Data>
+                                M0.5 0.510248L4.5041 5.5L8.5 0.5L0.5 0.510248Z
+                            </Path.Data>
+                        </Path>
+                    </Grid>
                 </Grid>
+
+                <local:CPDFTextStyleUI x:Name="TextStyleUI" Grid.Row="3" FontSize="16" Margin="0,20,0,0"></local:CPDFTextStyleUI>
+
+                <local:CPDFTextAlignUI x:Name="TextAlignUI" Grid.Row="4" FontSize="16" Margin="0,20,0,0" Width="150" HorizontalAlignment="Left"></local:CPDFTextAlignUI>
+                <StackPanel Grid.Row="5">
+                    <CheckBox x:Name="chkMulti" IsChecked="{Binding IsMultiSelected}"  Content="Multi Selected" Margin="0,10,0,0" Click="chkMulti_Click"></CheckBox>
+
+                    <CheckBox x:Name="chkEditPen" IsChecked="{Binding ShowBorder}" Content="Show Border" Margin="0,10,0,0" Click="chkEditPen_Click"></CheckBox>
+
+                </StackPanel>
             </Grid>
-
-            <local:CPDFTextStyleUI x:Name="TextStyleUI" Grid.Row="3" FontSize="16" Margin="0,20,0,0"></local:CPDFTextStyleUI>
-
-            <local:CPDFTextAlignUI x:Name="TextAlignUI" Grid.Row="4" FontSize="16" Margin="0,20,0,0" Width="150" HorizontalAlignment="Left"></local:CPDFTextAlignUI>
-            
         </Grid>
+    </ScrollViewer>
 
-    </Grid>
 </UserControl>

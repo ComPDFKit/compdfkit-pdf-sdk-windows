@@ -7,8 +7,8 @@ namespace TextExtractTest
     internal class TextExtractTest
     {
         private static string parentPath =
-            Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));
-        private static string outputPath = Path.Combine(parentPath, "Output", "CS");
+            Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())));
+        private static string outputPath = parentPath + "\\Output\\CS";
         static void Main(string[] args)
         {
             #region Perparation work
@@ -40,7 +40,7 @@ namespace TextExtractTest
         //
         static private bool PDFToText(CPDFDocument document)
         {
-            string path = Path.Combine(outputPath, "PDFToText.txt");
+            string path = outputPath + "//PDFToText.txt";
             if (!document.PdfToText("1-" + document.PageCount.ToString(), path))//Page ranges are counted from 1
             {
                 return false;

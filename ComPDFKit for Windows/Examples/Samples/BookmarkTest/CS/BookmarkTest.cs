@@ -114,16 +114,23 @@ namespace BookmarkTest
         static private bool CreateBookmark(CPDFDocument document)
         {
             var bookmarkCount = document.GetBookmarkList().Count;
+
+            CPDFBookmark bookmark2 = new CPDFBookmark();
+            bookmark2.Title = "new bookmark123";
+            bookmark2.PageIndex = 4;
+            document.AddBookmark(bookmark2);
+
             CPDFBookmark bookmark = new CPDFBookmark();
             bookmark.Title = "new bookmark";
             bookmark.PageIndex = 4;
             document.AddBookmark(bookmark);
+
             if (!(document.GetBookmarkList().Count - bookmarkCount == 1))
             {
                 return false;
             }
             Console.WriteLine("Add bookmark in page {0}. ", bookmark.PageIndex + 1);
-            string addBookmarkPath = Path.Combine(outputPath, "AddBookmarkTest.pdf");
+            string addBookmarkPath = outputPath + "//AddBookmarkTest.pdf";
             if (document.WriteToFilePath(addBookmarkPath))
             {
                 Console.WriteLine("Browse the changed file in " + addBookmarkPath);
@@ -146,7 +153,7 @@ namespace BookmarkTest
             {
                 return false;
             }
-            string removeBookmarkPath = Path.Combine(outputPath, "RemoveBookmarkTest.pdf");
+            string removeBookmarkPath = outputPath + "//RemoveBookmarkTest.pdf";
             if (document.WriteToFilePath(removeBookmarkPath))
             {
                 Console.WriteLine("Browse the changed file in " + removeBookmarkPath);

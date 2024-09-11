@@ -1,6 +1,7 @@
 ﻿using ComPDFKit.PDFDocument;
 using ComPDFKit.Controls.Helper;
 using ComPDFKit.Controls.PDFControl;
+using ComPDFKitViewer;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,6 @@ using ComPDFKit.Controls.Measure;
 using ComPDFKit.Tool;
 using static ComPDFKit.Controls.Helper.PanelState;
 using System.Reflection;
-using ComPDFKitViewer;
 
 namespace Measure
 {
@@ -147,7 +147,7 @@ namespace Measure
 
         private void LoadDefaultDocument()
         {
-            string defaultFilePath = "ComPDFKit_Measurement_Sample_File.pdf";
+            string defaultFilePath = "PDF32000_2008.pdf";
             pdfViewControl = new PDFViewControl();
             pdfViewControl.InitDocument(defaultFilePath);
             LoadDocument();

@@ -338,7 +338,7 @@ namespace ComPDFKit.Tool.DrawTool
                         DrawText();
                         break;
                     case C_ANNOTATION_TYPE.C_ANNOTATION_LINE:
-                        if ((cPDFAnnotation as CPDFLineAnnotation).IsMersured())
+                        if ((cPDFAnnotation as CPDFLineAnnotation).IsMeasured())
                         {
                             DrawLineMeasure(drawDC);
                         }
@@ -859,7 +859,7 @@ namespace ComPDFKit.Tool.DrawTool
             Pen DrawPen = new Pen(new SolidColorBrush(color), polyLine.GetBorderWidth());
             SolidColorBrush TextBrush = Brushes.Red;
 
-            if (polyLine.IsMersured())
+            if (polyLine.IsMeasured())
             {
                 CPDFPerimeterMeasure measureInfo = polyLine.GetPerimeterMeasure();
                 if (measureInfo != null && measureInfo.TextAttribute != null && measureInfo.TextAttribute.FontColor != null && measureInfo.TextAttribute.FontColor.Length >= 3)
@@ -1042,7 +1042,7 @@ namespace ComPDFKit.Tool.DrawTool
             Pen EndDrawPen = new Pen(Brushes.Black, polyLine.GetBorderWidth());
             SolidColorBrush TextBrush = Brushes.Red;
 
-            if (polyLine.IsMersured())
+            if (polyLine.IsMeasured())
             {
                 CPDFAreaMeasure measureInfo = polyLine.GetAreaMeasure();
                 if (measureInfo != null && measureInfo.TextAttribute != null && measureInfo.TextAttribute.FontColor != null && measureInfo.TextAttribute.FontColor.Length >= 3)
@@ -1106,7 +1106,7 @@ namespace ComPDFKit.Tool.DrawTool
                 }
                 else
                 {
-                    //加入移动过程中的当前点
+                    //Add the current point during the movement.
                     polySegment.Points.Add(checkPoint);
                 }
 
@@ -1119,10 +1119,10 @@ namespace ComPDFKit.Tool.DrawTool
                     drawPath.Figures.Add(drawFigure);
                 }
 
-                //绘制线段
+                //Draw the line segment.
                 drawingContext?.DrawGeometry(null, DrawPen, drawPath);
 
-                //绘制开始点与结束点相连的示例线
+                //Draw the example line connected by the start point and the end point.
                 if (points.Count > 1)
                 {
                     if (defaultSettingParam.IsCreateSquarePolygonMeasure)
@@ -1134,7 +1134,8 @@ namespace ComPDFKit.Tool.DrawTool
                         drawingContext?.DrawLine(EndDrawPen, points[0], polySegment.Points.Last());
                     }
                 }
-                //计算长度
+
+                //Calculate the length.
                 double totalInch = 0;
                 if (points.Count > 1)
                 {
@@ -1169,7 +1170,7 @@ namespace ComPDFKit.Tool.DrawTool
                    16,
                  TextBrush);
 
-                //判断文字显示形式
+                //Judge the text display form.
                 if (movevector.Length > moveText.Width + textPadding || defaultSettingParam.IsCreateSquarePolygonMeasure)
                 {
                     if (checkPoint.X >= closePoint.X)
@@ -1306,7 +1307,7 @@ namespace ComPDFKit.Tool.DrawTool
             Pen DrawPen = new Pen(new SolidColorBrush(color), polyLine.GetBorderWidth());
             SolidColorBrush TextBrush = Brushes.Red;
 
-            if (polyLine.IsMersured())
+            if (polyLine.IsMeasured())
             {
                 CPDFDistanceMeasure measureInfo = polyLine.GetDistanceMeasure();
                 if (measureInfo != null && measureInfo.TextAttribute != null && measureInfo.TextAttribute.FontColor != null && measureInfo.TextAttribute.FontColor.Length >= 3)
@@ -1492,7 +1493,7 @@ namespace ComPDFKit.Tool.DrawTool
 
                     string fontName = string.Empty;
                     string fontFamily = string.Empty;
-                    CPDFFont.GetFamlyStyleName(annotFreeText.FreeTextDa.FontName, ref fontFamily, ref fontName);
+                    CPDFFont.GetFamilyStyleName(annotFreeText.FreeTextDa.FontName, ref fontFamily, ref fontName);
                     textui.FontFamily = new FontFamily(fontFamily);
 
                     textui.AcceptsReturn = true;
@@ -1719,7 +1720,7 @@ namespace ComPDFKit.Tool.DrawTool
 
                     string fontName = string.Empty;
                     string fontFamily = string.Empty;
-                    CPDFFont.GetFamlyStyleName(annotFreeText.FreeTextDa.FontName, ref fontFamily, ref fontName);
+                    CPDFFont.GetFamilyStyleName(annotFreeText.FreeTextDa.FontName, ref fontFamily, ref fontName);
                     lastTextui.FontFamily = new FontFamily(fontFamily);
 
                     lastTextui.FontWeight = IsBold(textAttribute.FontName) ? FontWeights.Bold : FontWeights.Normal;

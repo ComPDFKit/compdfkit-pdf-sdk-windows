@@ -7,13 +7,15 @@
              xmlns:pdftoolsui="clr-namespace:ComPDFKit.Controls.PDFControlUI"
              xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Width="260"
+             d:DesignHeight="720" d:DesignWidth="280" Width="260"
              Background="#ffffff">
     <UserControl.Resources>
         <ResourceDictionary>
             <common:CommonResourceConverter x:Key="CommonResourceConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -34,4 +36,5 @@
                 </StackPanel> 
         </Border>
     </Grid>
+    </ScrollViewer>
 </UserControl>

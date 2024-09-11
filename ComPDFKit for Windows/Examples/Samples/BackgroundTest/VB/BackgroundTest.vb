@@ -10,7 +10,7 @@ Module BackgroundTest
 
     Sub Main()
         ' Preparation work
-        Console.WriteLine("Running Background test sample..." & Environment.NewLine)
+        Console.WriteLine("Running Watermark test sample..." & Environment.NewLine)
         SDKLicenseHelper.LicenseVerify()
         Dim document As CPDFDocument = CPDFDocument.InitWithFilePath("CommonFivePage.pdf")
         If Not Directory.Exists(outputPath) Then

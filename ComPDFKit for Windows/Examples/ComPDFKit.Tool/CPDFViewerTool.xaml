@@ -13,8 +13,6 @@
     <ScrollViewer Focusable="False" CanContentScroll="True"
                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                   MouseUp="ScrollViewer_MouseUp" MouseDown="ScrollViewer_MouseDown">
-        <compdfkitviewer:CPDFViewer x:Name="PDFViewer">
-
-        </compdfkitviewer:CPDFViewer>
+        <compdfkitviewer:CPDFViewer x:Name="PDFViewer"></compdfkitviewer:CPDFViewer>
     </ScrollViewer>
 </UserControl>

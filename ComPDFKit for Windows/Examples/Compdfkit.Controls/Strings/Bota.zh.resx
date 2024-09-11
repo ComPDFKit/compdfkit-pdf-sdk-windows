@@ -249,4 +249,67 @@
   <data name="Button_Search" xml:space="preserve">
     <value>搜索</value>
   </data>
+  <data name="Menu_DelAllAnnot" xml:space="preserve">
+    <value>删除所有注释</value>
+  </data>
+  <data name="Menu_DelAllReply" xml:space="preserve">
+    <value>删除所有回复</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Menu_ExpandAllAnnot" xml:space="preserve">
+    <value>展开所有注释</value>
+  </data>
+  <data name="Menu_ExpandAllReply" xml:space="preserve">
+    <value>展开所有回复</value>
+  </data>
+  <data name="Menu_FoldAllAnnot" xml:space="preserve">
+    <value>收起所有注释</value>
+  </data>
+  <data name="Menu_FoldAllReply" xml:space="preserve">
+    <value>收起所有回复</value>
+  </data>
+  <data name="Tooltip_More" xml:space="preserve">
+    <value>更多</value>
+  </data>
+  <data name="Button_Reply" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Holder_Reply" xml:space="preserve">
+    <value>请输入回复内容</value>
+  </data>
+  <data name="Menu_AddReply" xml:space="preserve">
+    <value>新增回复</value>
+  </data>
+  <data name="Menu_DelAnnot" xml:space="preserve">
+    <value>删除注释</value>
+  </data>
+  <data name="Menu_ExpandReply" xml:space="preserve">
+    <value>展开回复</value>
+  </data>
+  <data name="Menu_FoldReply" xml:space="preserve">
+    <value>收起回复</value>
+  </data>
+  <data name="Status_Accepted" xml:space="preserve">
+    <value>已接受</value>
+  </data>
+  <data name="Status_Cancelled" xml:space="preserve">
+    <value>已取消</value>
+  </data>
+  <data name="Status_Completed" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="Status_Marked" xml:space="preserve">
+    <value>已标记</value>
+  </data>
+  <data name="Status_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>已拒绝</value>
+  </data>
+  <data name="Status_Unmarked" xml:space="preserve">
+    <value>未标记</value>
+  </data>
 </root>

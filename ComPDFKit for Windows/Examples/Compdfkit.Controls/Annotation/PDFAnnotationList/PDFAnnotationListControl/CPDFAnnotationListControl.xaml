@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cpdftoolsui="clr-namespace:ComPDFKit.Controls.PDFControlUI"
+             xmlns:cpdftools="clr-namespace:ComPDFKit.Controls.PDFControl"
              xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
              mc:Ignorable="d" 
               d:DesignHeight="800" d:DesignWidth="300" Background="#fff">
@@ -11,6 +12,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../../../Asset/Styles/MenuItemStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <common:BotaResourceConverter x:Key="BotaResourceConverter"></common:BotaResourceConverter>
         </ResourceDictionary>
@@ -25,6 +27,7 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Title_Annot}"  FontSize="14" Foreground="#42464D" Margin="16,0,0,0" VerticalAlignment="Center"></TextBlock>
             <Button x:Name="ExportBtn" Width="40" Height="40" Click="ExportBtn_Click" Style="{StaticResource TransparentButtonStyle}" Grid.Column="1" VerticalAlignment="Center" Margin="8,0,8,0"
@@ -37,7 +40,68 @@
                 <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="#43474D"
                       Data="M9.56181 13.8733C9.85977 14.1611 10.3429 14.1611 10.6408 13.8733L14.7421 9.91282C15.0401 9.62509 15.0401 9.15858 14.7421 8.87085C14.4442 8.58311 13.9611 8.58311 13.6631 8.87085L10.75 11.6839L10.75 4C10.75 3.58579 10.4142 3.25 10 3.25C9.58581 3.25 9.25002 3.58579 9.25002 4L9.25003 11.4883L6.53951 8.87085C6.24155 8.58311 5.75846 8.58311 5.46049 8.87085C5.16253 9.15858 5.16253 9.62509 5.46049 9.91282L9.56181 13.8733ZM4 15.7543C3.58579 15.7543 3.25 16.0901 3.25 16.5043C3.25 16.9185 3.58579 17.2543 4 17.2543H16C16.4142 17.2543 16.75 16.9185 16.75 16.5043C16.75 16.0901 16.4142 15.7543 16 15.7543H4Z"></Path>
             </Button>
+            <Menu Background="Transparent" BorderThickness="0" Width="40" Height="40" Grid.Column="3">
+                <Menu.ToolTip>
+                    <Binding Converter="{StaticResource BotaResourceConverter}" ConverterParameter="Tooltip_More"></Binding>
+                </Menu.ToolTip>
+                <MenuItem  BorderThickness="0" Width="40" Height="40" Padding="0">
+                    <MenuItem.Header>
+                        <Canvas Width="40" Height="40"  VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Path Data="M10 5.5C10.8284 5.5 11.5 4.82843 11.5 4C11.5 3.17157 10.8284 2.5 10 2.5C9.17157 2.5 8.5 3.17157 8.5 4C8.5 4.82843 9.17157 5.5 10 5.5ZM11.5 10C11.5 10.8284 10.8284 11.5 10 11.5C9.17157 11.5 8.5 10.8284 8.5 10C8.5 9.17157 9.17157 8.5 10 8.5C10.8284 8.5 11.5 9.17157 11.5 10ZM11.5 16C11.5 16.8284 10.8284 17.5 10 17.5C9.17157 17.5 8.5 16.8284 8.5 16C8.5 15.1716 9.17157 14.5 10 14.5C10.8284 14.5 11.5 15.1716 11.5 16Z" 
+                                              Fill="#43474D" Margin="10,10,0,0"/>
+                        </Canvas>
+                    </MenuItem.Header>
+                    <MenuItem Header="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Menu_ExpandAllAnnot}" Style="{StaticResource Sub_MenuItem}">
+                        <MenuItem.Command>
+                            <cpdftools:ExpandAnnotListCommand/>
+                        </MenuItem.Command>
+                        <MenuItem.CommandParameter>
+                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type cpdftools:CPDFAnnotationListControl}}"/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Menu_FoldAllAnnot}" Style="{StaticResource Sub_MenuItem}">
+                        <MenuItem.Command>
+                            <cpdftools:FoldAnnotListCommand/>
+                        </MenuItem.Command>
+                        <MenuItem.CommandParameter>
+                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type cpdftools:CPDFAnnotationListControl}}"/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Menu_ExpandAllReply}" Style="{StaticResource Sub_MenuItem}">
+                        <MenuItem.Command>
+                            <cpdftools:ExpandAllReplyCommand/>
+                        </MenuItem.Command>
+                        <MenuItem.CommandParameter>
+                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type cpdftools:CPDFAnnotationListControl}}"/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Menu_FoldAllReply}" Style="{StaticResource Sub_MenuItem}">
+                        <MenuItem.Command>
+                            <cpdftools:FoldAllReplyCommand/>
+                        </MenuItem.Command>
+                        <MenuItem.CommandParameter>
+                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type cpdftools:CPDFAnnotationListControl}}"/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Menu_DelAllAnnot}" Style="{StaticResource Sub_MenuItem}">
+                        <MenuItem.Command>
+                            <cpdftools:DeleteAllAnnotCommand/>
+                        </MenuItem.Command>
+                        <MenuItem.CommandParameter>
+                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type cpdftools:CPDFAnnotationListControl}}"/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Menu_DelAllReply}" Style="{StaticResource Sub_MenuItem}">
+                        <MenuItem.Command>
+                            <cpdftools:DeleteAllReplyCommand/>
+                        </MenuItem.Command>
+                        <MenuItem.CommandParameter>
+                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type cpdftools:CPDFAnnotationListControl}}"/>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
         </Grid>
-        <cpdftoolsui:CPDFAnnoationListUI x:Name="AnnotationList" Grid.Row="1" Loaded="AnnotationList_Loaded" Unloaded="AnnotationList_Unloaded"></cpdftoolsui:CPDFAnnoationListUI>
+        <cpdftoolsui:CPDFAnnotationListUI x:Name="AnnotationList" Grid.Row="1" Loaded="AnnotationList_Loaded" Unloaded="AnnotationList_Unloaded"></cpdftoolsui:CPDFAnnotationListUI>
     </Grid>
 </UserControl>

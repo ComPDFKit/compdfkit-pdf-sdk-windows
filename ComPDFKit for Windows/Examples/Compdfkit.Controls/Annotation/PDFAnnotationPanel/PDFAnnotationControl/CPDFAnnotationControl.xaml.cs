@@ -12,7 +12,6 @@ using ComPDFKit.Controls.Annotation.PDFAnnotationUI;
 using Microsoft.Win32;
 using System.Windows.Media;
 using ComPDFKit.Controls.Properties;
-using static ComPDFKit.Tool.CPDFToolManager;
 using ComPDFKit.PDFAnnotation;
 using ComPDFKit.Tool;
 using ComPDFKit.Tool.Help;
@@ -101,7 +100,6 @@ namespace ComPDFKit.Controls.PDFControl
         {
             if (e.IsCreate)
             {
-                pdfViewerControl.UpdateAnnotFrame();
                 if (currentAnnotationType == CPDFAnnotationType.Image || currentAnnotationType == CPDFAnnotationType.Stamp || currentAnnotationType == CPDFAnnotationType.Signature)
                 {
                     pdfViewerControl.SetToolType(ToolType.Pan);
@@ -278,7 +276,6 @@ namespace ComPDFKit.Controls.PDFControl
                         ParamConverter.ParseDashStyle(squareData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
                         (annotHandlerEventArgs as SquareParam).LineDash = LineDash;
                         (annotHandlerEventArgs as SquareParam).BorderStyle = BorderStyle;
-
                         (annotHandlerEventArgs as SquareParam).Author = CPDFMarkupData.Author;
                         (annotHandlerEventArgs as SquareParam).Content = squareData.Note;
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE);
@@ -409,6 +406,7 @@ namespace ComPDFKit.Controls.PDFControl
                         PDFHelp.ImageStreamToByte(stampParam.ImageStream, ref imageData, ref imageWidth, ref imageHeight);
                         if (imageData != null && imageWidth > 0 && imageHeight > 0)
                         {
+                            pdfViewerControl.PDFViewTool.GetCPDFViewer().SetMouseImageMaxSize(200, 300);
                             pdfViewerControl.SetStampMouseImage(imageData, imageWidth, imageHeight);
                         }
 
@@ -434,6 +432,7 @@ namespace ComPDFKit.Controls.PDFControl
                                     PDFHelp.ImageStreamToByte(stampParam.ImageStream, ref imageData, ref imageWidth, ref imageHeight);
                                     if (imageData != null && imageWidth > 0 && imageHeight > 0)
                                     {
+                                        pdfViewerControl.PDFViewTool.GetCPDFViewer().SetMouseImageMaxSize(200, 300);
                                         pdfViewerControl.SetStampMouseImage(imageData, imageWidth, imageHeight);
                                         pdfViewerControl.SetIsVisibleCustomMouse(true);
                                         pdfViewerControl.SetIsShowStampMouse(true);
@@ -446,6 +445,7 @@ namespace ComPDFKit.Controls.PDFControl
                                     WriteableBitmap writeableBitmap = CreateInkImage(signatureParam as InkParam);
                                     byte[] imageArray = new byte[writeableBitmap.PixelWidth * writeableBitmap.PixelHeight * 4];
                                     writeableBitmap.CopyPixels(imageArray, writeableBitmap.PixelWidth * 4, 0);
+                                    pdfViewerControl.PDFViewTool.GetCPDFViewer().SetMouseImageMaxSize(writeableBitmap.PixelWidth, writeableBitmap.PixelHeight);
                                     pdfViewerControl.SetStampMouseImage(imageArray, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight);
                                     pdfViewerControl.SetIsVisibleCustomMouse(true);
                                     pdfViewerControl.SetIsShowStampMouse(true);
@@ -484,6 +484,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 return null;
             }
+
             if (inkParam.InkPath != null && inkParam.InkPath.Count > 0)
             {
                 GeometryGroup PaintGeomtry = new GeometryGroup();
@@ -514,10 +515,10 @@ namespace ComPDFKit.Controls.PDFControl
                         }
                     }
                 }
+
                 if (minLeft >= 0 && maxLeft > minLeft && minTop >= 0 && maxTop > minTop)
                 {
                     List<List<CPoint>> points = new List<List<CPoint>>();
-
                     foreach (List<CPoint> Item in inkParam.InkPath)
                     {
                         PathGeometry PaintPath = new PathGeometry();
@@ -548,13 +549,13 @@ namespace ComPDFKit.Controls.PDFControl
                             points.Add(changeList);
                         }
                     }
+
                     int drawWidth = (int)DpiHelper.PDFNumToStandardNum(maxLeft - minLeft);
                     int drawHeight = (int)DpiHelper.PDFNumToStandardNum(maxTop - minTop);
 
                     inkParam.InkPath = points;
                     DefaultSettingParam defaultSettingParam = pdfViewerControl.PDFViewTool.GetDefaultSettingParam();
                     defaultSettingParam.SetAnnotParam(inkParam);
-
                     DrawingVisual copyVisual = new DrawingVisual();
                     DrawingContext copyContext = copyVisual.RenderOpen();
 
@@ -588,7 +589,7 @@ namespace ComPDFKit.Controls.PDFControl
                         annotParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_STAMP;
                         (annotParam as StampParam).Transparency = 255;
                         (annotParam as StampParam).StampType = C_STAMP_TYPE.IMAGE_STAMP;
-                        if (!string.IsNullOrEmpty(stamp.SourcePath))
+                        if (!string.IsNullOrEmpty(stamp.SourcePath) && File.Exists(stamp.SourcePath))
                         {
                             BitmapImage image = new BitmapImage(new Uri(stamp.SourcePath));
                             PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -895,6 +896,8 @@ namespace ComPDFKit.Controls.PDFControl
                                     {
                                         frame.CopyPixels(imageArray, frame.PixelWidth * 4, 0);
                                     }
+
+                                    pdfViewerControl.PDFViewTool.GetCPDFViewer().SetMouseImageMaxSize(200, 300);
                                     pdfViewerControl.SetStampMouseImage(imageArray, frame.PixelWidth, frame.PixelHeight);
                                 }
 

@@ -75,6 +75,7 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             else
             {
                 FillForm(((sender as ListBoxItem).DataContext as CPDFSignatureData).SourcePath);
+                viewControl.PDFViewTool.IsDocumentModified = true;
             }
         }
 

@@ -143,7 +143,7 @@ namespace ComPDFKit.Tool.UndoManger
             if (MakeAnnotValid(CurrentParam))
             {
                 CPDFLineAnnotation polygonAnnot = Annot as CPDFLineAnnotation;
-                if (polygonAnnot == null || !polygonAnnot.IsValid() || !polygonAnnot.IsMersured())
+                if (polygonAnnot == null || !polygonAnnot.IsValid() || !polygonAnnot.IsMeasured())
                 {
                     return false;
                 }

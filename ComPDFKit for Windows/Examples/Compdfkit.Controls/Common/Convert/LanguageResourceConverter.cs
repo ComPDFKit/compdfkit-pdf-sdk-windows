@@ -6,8 +6,6 @@ using ComPDFKit.Controls.Helper;
 
 namespace ComPDFKit.Controls.Common
 {
-
-
     public class BotaResourceConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -22,7 +20,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
 
@@ -40,7 +38,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
 
@@ -58,7 +56,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
 
@@ -76,7 +74,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
 
@@ -94,7 +92,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
     
@@ -112,7 +110,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
     
@@ -130,7 +128,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
     
@@ -148,7 +146,7 @@ namespace ComPDFKit.Controls.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
 }

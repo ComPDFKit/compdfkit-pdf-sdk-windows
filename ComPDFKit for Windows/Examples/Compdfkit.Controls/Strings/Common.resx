@@ -513,4 +513,94 @@
   <data name="FileMenu_Flatten" xml:space="preserve">
     <value>Save as Flattened PDF</value>
   </data>
+  <data name="Printer_ActualSize" xml:space="preserve">
+    <value>Actual Size</value>
+  </data>
+  <data name="Printer_AllPages" xml:space="preserve">
+    <value>All Pages</value>
+  </data>
+  <data name="Printer_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Printer_AutoAdapt" xml:space="preserve">
+    <value>Auto Adapt</value>
+  </data>
+  <data name="Printer_Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Printer_CustomPages" xml:space="preserve">
+    <value>Custom Pages</value>
+  </data>
+  <data name="Printer_CustomScale" xml:space="preserve">
+    <value>Custom Scale</value>
+  </data>
+  <data name="Printer_DaM" xml:space="preserve">
+    <value>Document and Markups</value>
+  </data>
+  <data name="Printer_DaS" xml:space="preserve">
+    <value>Document and Stamp</value>
+  </data>
+  <data name="Printer_Duplex" xml:space="preserve">
+    <value>Duplex</value>
+  </data>
+  <data name="Printer_GrayScale" xml:space="preserve">
+    <value>Gray Scale</value>
+  </data>
+  <data name="Printer_Landscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Printer_LongEdge" xml:space="preserve">
+    <value>Flip On Long Edge</value>
+  </data>
+  <data name="Printer_OnlyD" xml:space="preserve">
+    <value>Document</value>
+  </data>
+  <data name="Printer_OnlyEven" xml:space="preserve">
+    <value>Only Even Pages</value>
+  </data>
+  <data name="Printer_OnlyOdd" xml:space="preserve">
+    <value>Only Odd Pages</value>
+  </data>
+  <data name="Printer_Oritation" xml:space="preserve">
+    <value>Oritation</value>
+  </data>
+  <data name="Printer_PageRange" xml:space="preserve">
+    <value>Page Range</value>
+  </data>
+  <data name="Printer_Paper" xml:space="preserve">
+    <value>Paper</value>
+  </data>
+  <data name="Printer_Portrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="Printer_Printer" xml:space="preserve">
+    <value>Printer</value>
+  </data>
+  <data name="Printer_ReversePage" xml:space="preserve">
+    <value>Reverse Page</value>
+  </data>
+  <data name="Printer_Settings" xml:space="preserve">
+    <value>Printer Settings</value>
+  </data>
+  <data name="Printer_ShortEdge" xml:space="preserve">
+    <value>Flip On Short Edge</value>
+  </data>
+  <data name="Printer_Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Printer_Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="Printer_Borderless" xml:space="preserve">
+    <value>Borderless Printing</value>
+  </data>
+  <data name="Printer_Border" xml:space="preserve">
+    <value>Border</value>
+  </data>
+  <data name="Printer_FitPage" xml:space="preserve">
+    <value>Fit to Page</value>
+  </data>
+  <data name="Printer_FitPrintable" xml:space="preserve">
+    <value>Fit to Printable Area</value>
+  </data>
 </root>

@@ -394,7 +394,7 @@
                                     <Border.Effect>
                                         <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="0" Opacity="0.5"/>
                                     </Border.Effect>
-                                    <ScrollViewer Margin="4,6,4,6" Style="{DynamicResource ScrollViewerStyle}" MaxHeight="{TemplateBinding MaxDropDownHeight}" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                                    <ScrollViewer Margin="0,3,0,6" Style="{DynamicResource ScrollViewerStyle}" MaxHeight="{TemplateBinding MaxDropDownHeight}" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" Background="White"/>
                                     </ScrollViewer>
                                 </Border>

@@ -157,7 +157,7 @@
     <value>技术支持</value>
   </data>
   <data name="Link_CopyRight" xml:space="preserve">
-    <value>@ 2014-2024 PDF Technologies, Inc. All Rights Reserved.</value>
+    <value>@ 2014-2023 PDF Technologies, Inc. All Rights Reserved.</value>
   </data>
   <data name="Link_Policy" xml:space="preserve">
     <value>隐私协议</value>
@@ -176,5 +176,11 @@
   </data>
   <data name="Setting_Divisor" xml:space="preserve">
     <value>滚动比例</value>
+  </data>
+  <data name="Setting_Annotator" xml:space="preserve">
+    <value>注释创建者</value>
+  </data>
+  <data name="Setting_FontSubset" xml:space="preserve">
+    <value>字体子集化</value>
   </data>
 </root>

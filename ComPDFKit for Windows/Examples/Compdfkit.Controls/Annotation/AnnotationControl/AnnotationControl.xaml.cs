@@ -18,6 +18,8 @@ using ComPDFKit.Tool;
 using ComPDFKit.PDFPage;
 using ComPDFKitViewer.Widget;
 using ComPDFKit.Tool.Help;
+using ComPDFKit.Tool.DrawTool;
+using System.Collections.Generic;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -319,11 +321,23 @@ baseWidget.GetAnnotData().Annot);
             System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var image = PDFViewControl.FocusPDFViewTool.GetSelectImage();
+                PageImageItem image = null;
+                Dictionary<int, List<PageImageItem>> pageImageDict = PDFViewControl.FocusPDFViewTool.GetSelectImageItems();
+                if (pageImageDict != null && pageImageDict.Count > 0)
+                {
+                    foreach (int pageIndex in pageImageDict.Keys)
+                    {
+                        List<PageImageItem> imageItemList = pageImageDict[pageIndex];
+                        image = imageItemList[0];
+                        break;
+                    }
+                }
+
                 if (image == null)
                 {
                     return;
                 }
+
                 CPDFPage page = PDFViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
                 string savePath = Path.Combine(folderDialog.SelectedPath, Guid.NewGuid() + ".jpg");
                 string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
@@ -337,11 +351,23 @@ baseWidget.GetAnnotData().Annot);
 
         private void CopyImage_Click(object sender, RoutedEventArgs e)
         {
-            var image = PDFViewControl.FocusPDFViewTool.GetSelectImage();
+            PageImageItem image = null;
+            Dictionary<int, List<PageImageItem>> pageImageDict = PDFViewControl.FocusPDFViewTool.GetSelectImageItems();
+            if (pageImageDict != null && pageImageDict.Count > 0)
+            {
+                foreach (int pageIndex in pageImageDict.Keys)
+                {
+                    List<PageImageItem> imageItemList = pageImageDict[pageIndex];
+                    image = imageItemList[0];
+                    break;
+                }
+            }
+
             if (image == null)
             {
                 return;
             }
+
             CPDFPage page = PDFViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
             string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
             page.GetImgSelection().GetImgBitmap(image.ImageIndex, tempPath);

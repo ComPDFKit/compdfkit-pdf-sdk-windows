@@ -14,14 +14,12 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using ComPDFKit.Controls.PDFControlUI;
-using static ComPDFKit.Tool.CPDFToolManager;
 
 namespace PDFViewer
 {
@@ -183,9 +181,15 @@ namespace PDFViewer
                 CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfviewer.GetZoom() * 100)));
 
                 botaBarControl.AddBOTAContent(new[] { BOTATools.Thumbnail, BOTATools.Outline, BOTATools.Bookmark, BOTATools.Annotation, BOTATools.Search });
+                botaBarControl.ViewCertificateEvent -= digitalSignatureControl.ViewCertificateEvent;
+                botaBarControl.ViewCertificateEvent += digitalSignatureControl.ViewCertificateEvent;
+                botaBarControl.ViewSignatureEvent -= digitalSignatureControl.ViewSignatureEvent;
+                botaBarControl.ViewSignatureEvent += digitalSignatureControl.ViewSignatureEvent;
+                botaBarControl.DeleteSignatureEvent -= BotaBarControl_DeleteSignatureEvent;
+                botaBarControl.DeleteSignatureEvent += BotaBarControl_DeleteSignatureEvent;
                 botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
                 ViewSettingBtn.IsChecked = false;
-                botaBarControl.InitWithPDFViewer(viewControl);
+                botaBarControl.InitWithPDFViewer(viewControl); 
                 botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
                 displaySettingsControl.InitWithPDFViewer(viewControl);
                 LoadCustomControl();
@@ -199,8 +203,15 @@ namespace PDFViewer
 
                 pdfviewer.SetLinkHighlight(Properties.Settings.Default.IsHighlightLinkArea);
                 pdfviewer.SetFormFieldHighlight(Properties.Settings.Default.IsHighlightFormArea);
+                pdfviewer.GetDocument().FontSubset = Properties.Settings.Default.FontSubsetting;    
                 pdfviewer.ScrollStride = Properties.Settings.Default.Divisor;
             }
+        }
+
+        private void BotaBarControl_DeleteSignatureEvent(object sender, EventArgs e)
+        {
+            viewControl.PDFViewTool.IsDocumentModified = true;
+            DigitalSignatureControl_OnSignatureStatusChanged(sender, e);
         }
 
         private void PDFToolManager_MouseLeftButtonDownHandler(object sender, MouseEventObject e)
@@ -728,6 +739,16 @@ namespace PDFViewer
 
             CPDFTitleBarControl.FlattenEvent -= CPDFTitleBarControl_FlattenEvent;
             CPDFTitleBarControl.FlattenEvent += CPDFTitleBarControl_FlattenEvent;
+
+            CPDFTitleBarControl.PrintEvent -= CPDFTitleBarControl_PrintEvent;
+            CPDFTitleBarControl.PrintEvent += CPDFTitleBarControl_PrintEvent;
+        }
+
+        private void CPDFTitleBarControl_PrintEvent(object sender, EventArgs e)
+        { 
+            PrinterDialog printerDialog = new PrinterDialog();  
+            printerDialog.Document = viewControl.GetCPDFViewer().GetDocument();
+            printerDialog.ShowDialog();
         }
 
         private void CPDFTitleBarControl_FlattenEvent(object sender, EventArgs e)
@@ -944,6 +965,20 @@ namespace PDFViewer
                 }
             }
         }
+
+        public void CloseFile()
+        {
+            if (viewControl != null && viewControl.PDFViewTool != null)
+            {
+                CPDFViewer pdfviewer = viewControl.PDFViewTool.GetCPDFViewer();
+                CPDFDocument pdfDoc = pdfviewer?.GetDocument();
+                if(pdfDoc !=null)
+                {
+                    pdfDoc.Release();
+                }    
+            }
+        }
+
         #endregion
 
         #region Command Binding

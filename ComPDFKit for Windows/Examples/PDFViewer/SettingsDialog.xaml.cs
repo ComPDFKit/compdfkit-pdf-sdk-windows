@@ -31,8 +31,8 @@ namespace PDFViewer
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             Properties.Settings.Default.Divisor = GetDivisor();
-            Properties.Settings.Default.Save();
-            ComPDFKit.Controls.Data.CPDFAnnotationData.Author = Properties.Settings.Default.DocumentAuthor;
+            Properties.Settings.Default.Save(); 
+            ComPDFKit.Controls.Data.CPDFAnnotationData.Author = Properties.Settings.Default.AnnotationAuthor;
         }
 
         private void EventSetter_ClickHandler(object sender, RoutedEventArgs e)
@@ -57,7 +57,9 @@ namespace PDFViewer
         {
             HighlightFormTog.IsChecked = Properties.Settings.Default.IsHighlightFormArea;
             HighlightLinkTog.IsChecked = Properties.Settings.Default.IsHighlightLinkArea;
+            FontSubsettingTog.IsChecked = Properties.Settings.Default.FontSubsetting;
             AuthorTxb.Text = Properties.Settings.Default.DocumentAuthor;
+            AnnotatorTxb.Text = Properties.Settings.Default.AnnotationAuthor;
             SelectCurrentLanguage();
             DivisorTxb.Text = Properties.Settings.Default.Divisor.ToString();
         }
@@ -111,6 +113,16 @@ namespace PDFViewer
             {
                 SelectCurrentLanguage();
             }
+        }
+
+        private void AnnotatorTxb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Properties.Settings.Default.AnnotationAuthor = AnnotatorTxb.Text;
+        }
+
+        private void FontSubsettingTog_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.FontSubsetting = FontSubsettingTog.IsChecked.Value;
         }
     }
 }

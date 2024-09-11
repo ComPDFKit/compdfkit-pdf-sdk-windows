@@ -16,7 +16,7 @@ namespace InteractiveFormsTest
 {
     internal class InteractiveFormsTest
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
           
         static void Main(string[] args)
         {
@@ -49,7 +49,7 @@ namespace InteractiveFormsTest
         {
             CPDFPage page = document.PageAtIndex(0);
             CPDFTextWidget textField = page.CreateWidget(C_WIDGET_TYPE.WIDGET_TEXTFIELD) as CPDFTextWidget;
-            textField.SetRect(new CRect( 28, 75, 235, 32));
+            textField.SetRect(new CRect( 28, 32, 235, 75));
             textField.SetWidgetBorderRGBColor(new byte[] { 0, 0, 0 });
             textField.SetWidgetBgRGBColor(new byte[] {240,255,240});
         }
@@ -184,7 +184,7 @@ namespace InteractiveFormsTest
             CreateRadioButton(document);
 
             // Save to pointed path so you can observe the effect.
-            string path = Path.Combine(outputPath, "CreateFormsTest.pdf");
+            string path = outputPath + "\\CreateFormsTest.pdf";
 
             if (!document.WriteToFilePath(path)) 
             {

@@ -31,7 +31,7 @@ namespace ComPDFKit.Controls.Common
                 var _fontFamilyName = string.Empty;
                 var _fontStyleName = string.Empty;
                 _postScriptName = value;
-                CPDFFont.GetFamlyStyleName(_postScriptName, ref _fontFamilyName, ref _fontStyleName);
+                CPDFFont.GetFamilyStyleName(_postScriptName, ref _fontFamilyName, ref _fontStyleName);
                 FontFamilyValue = _fontFamilyName;
                 FontStyleValue = _fontStyleName;
             }

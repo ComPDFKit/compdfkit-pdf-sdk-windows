@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -44,7 +45,7 @@ namespace ComPDFKit.Tool
         /// <returns>
         /// X Y direction distance required for alignment of the source rectangle
         /// </returns>
-        public static Point SetAlignHorizonCenter (Rect src, Rect dst)
+        public static Point SetAlignHorizonCenter(Rect src, Rect dst)
         {
             Point movePoint = new Point((dst.Left + dst.Right - src.Left - src.Right) / 2, 0);
             return movePoint;
@@ -209,6 +210,143 @@ namespace ComPDFKit.Tool
             {
                 int index = Leftlist.IndexOf(datalist[i]);
                 Point movePoint = new Point(0, startY + i * interval - src[index].Top - src[index].Height / 2);
+                dictionary.Add(src[index], movePoint);
+            }
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Set the source rectangle to a horizontal distribution and align it within the target rectangle to maintain consistent gaps
+        /// </summary>
+        /// <param name="src">
+        /// Array of source rectangles needed
+        /// </param>
+        /// <param name="dst">
+        /// Target rectangle
+        /// </param>
+        /// <returns>
+        /// Dictionary of XY direction distance required for alignment of each source rectangle
+        /// </returns>
+        public static Dictionary<Rect, Point> SetGapDistributeHorizontal(List<Rect> src, Rect dst)
+        {
+            Dictionary<Rect, Point> dictionary = new Dictionary<Rect, Point>();
+            List<double> Leftlist = new List<double>();
+
+            // Sort the data according to the leftmost position of each rectangle, not the array order
+            double weight = 0;
+            foreach (Rect srcRect in src)
+            {
+                double left = srcRect.Left;
+                if (Leftlist.Contains(left))
+                {
+                    left += src.IndexOf(srcRect) * 0.01;
+                }
+                Leftlist.Add(left);
+                weight += srcRect.Width;
+            }
+            double[] datalist = Leftlist.ToArray();
+            Sort(datalist, 0, Leftlist.Count - 1);
+
+            double startX = dst.Left;
+            double endX = dst.Right;
+            double interval = ((endX - startX) - weight) / (Leftlist.Count - 1);
+            for (int i = 0; i < datalist.Count(); i++)
+            {
+                int index = Leftlist.IndexOf(datalist[i]);
+                Point movePoint = new Point();
+                if (i == 0 || i == datalist.Count() - 1)
+                {
+                    movePoint = new Point(0, 0);
+                }
+                else
+                {
+                    double width = 0;
+                    for (int f = 0; f < i; f++)
+                    {
+                        int index2 = 0;
+                        if (f != 0)
+                        {
+                            index2 = Leftlist.IndexOf(datalist[i - 1]);
+                            width += src[index2].Width;
+                        }
+                        int index0 = Leftlist.IndexOf(datalist[0]);
+                        if (f == 0)
+                        {
+                            width += src[index0].Right;
+                        }
+                        width += interval;
+
+                    }
+                    movePoint = new Point(width - src[index].X , 0);
+                }
+                dictionary.Add(src[index], movePoint);
+            }
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Vertically distribute source rectangles within the target rectangle to maintain consistent gaps (sorted by the leftmost position of each rectangle, rather than array order)
+        /// </summary>
+        /// <param name="src">
+        /// Array of source rectangles needed
+        /// </param>
+        /// <param name="dst">
+        /// Target rectangle
+        /// </param>
+        /// <returns>
+        /// Dictionary of XY direction distance required for alignment of each source rectangle
+        /// </returns>
+        public static Dictionary<Rect, Point> SetGapDistributeVertical(List<Rect> src, Rect dst)
+        {
+            Dictionary<Rect, Point> dictionary = new Dictionary<Rect, Point>();
+            List<double> Leftlist = new List<double>();
+
+            // Sort the data according to the leftmost position of each rectangle, not the array order
+            double tall = 0;
+            foreach (Rect srcRect in src)
+            {
+                double top = srcRect.Top;
+                if (Leftlist.Contains(top)) {
+                    top += src.IndexOf(srcRect)*0.01;
+                }
+                Leftlist.Add(top);
+                tall += srcRect.Height;
+            }
+            double[] datalist = Leftlist.ToArray();
+            Sort(datalist, 0, Leftlist.Count - 1);
+
+            double startY = dst.Top;
+            double endY = dst.Bottom;
+            double interval = ((endY - startY) - tall) / (Leftlist.Count - 1);
+            for (int i = 0; i < datalist.Count(); i++)
+            {
+                int index = Leftlist.IndexOf(datalist[i]);
+                Point movePoint = new Point();
+                if (i == 0 || i == datalist.Count() - 1)
+                {
+                    movePoint = new Point(0, 0);
+                }
+                else
+                {
+                    double height = 0;
+                    for (int f = 0; f < i; f++)
+                    {
+                        int index2 = 0;
+                        if (f != 0)
+                        {
+                            index2 = Leftlist.IndexOf(datalist[i - 1]);
+                            height += src[index2].Height;
+                        }
+                        int index0 = Leftlist.IndexOf(datalist[0]);
+                        if (f == 0)
+                        {
+                            height += src[index0].Bottom;
+                        }
+                        height +=interval;
+
+                    }
+                    movePoint = new Point(0, height - src[index].Y);
+                }
                 dictionary.Add(src[index], movePoint);
             }
             return dictionary;

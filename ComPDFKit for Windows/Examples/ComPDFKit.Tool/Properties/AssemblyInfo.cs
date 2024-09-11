@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Windows;
 
 [assembly: AssemblyTitle("ComPDFKit.Tool")]
 [assembly: AssemblyDescription("")]
@@ -15,12 +13,7 @@ using System.Windows;
 
 [assembly: ComVisible(false)]
 
+[assembly: Guid("a061ee7a-6704-4bd9-86ee-48ed5df75e2f")]
 
-
-[assembly: ThemeInfo(
-    ResourceDictionaryLocation.None,
-    ResourceDictionaryLocation.SourceAssembly 
-)]
-
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.1.3.0")]
+[assembly: AssemblyFileVersion("2.1.3.0")]

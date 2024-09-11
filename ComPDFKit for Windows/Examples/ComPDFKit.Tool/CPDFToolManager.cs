@@ -70,6 +70,23 @@ namespace ComPDFKit.Tool
         /// </summary>
         private string createImagePath = string.Empty;
 
+        private bool isActiveCropping = true;
+
+        /// <summary>
+        ///  add TextEdit Cursor
+        /// </summary>
+        private Cursor addTextEditCursor = Cursors.IBeam;
+
+        /// <summary>
+        /// add ImageEdit Cursor 
+        /// </summary>
+        private Cursor addImageEditCursor = Cursors.Arrow;
+
+        public void SetActiveCropping(bool isActiveCropping)
+        {
+            this.isActiveCropping = isActiveCropping;
+        }
+
         public CPDFToolManager(CPDFViewerTool cPDFTool) : base()
         {
             viewerTool = cPDFTool;
@@ -322,17 +339,15 @@ namespace ComPDFKit.Tool
                 default:
                     break;
             }
+
             if (oldToolType == ToolType.ContentEdit)
             {
-                viewerTool.GetCPDFViewer().GetDocument().ReleasePages();
-
-                viewerTool.GetCPDFViewer().UndoManager.RemoveRedoHistoryForType(typeof(PDFEditHistory));
-                viewerTool.GetCPDFViewer().UndoManager.RemoveUndoHistoryForType(typeof(PDFEditHistory));
+                viewerTool.GetCPDFViewer().GetDocument()?.ReleasePages();
+                //Undo delete logic
+                viewerTool.GetCPDFViewer().UndoManager.ClearHistory();
+                // viewerTool.GetCPDFViewer().UndoManager.RemoveRedoHistoryForType(typeof(PDFEditHistory));
+                //viewerTool.GetCPDFViewer().UndoManager.RemoveUndoHistoryForType(typeof(PDFEditHistory));
                 viewerTool.GetCPDFViewer().UpdateVirtualNodes();
-                viewerTool.GetCPDFViewer().UpdateRenderFrame();
-            }
-            else
-            {
                 viewerTool.GetCPDFViewer().UpdateRenderFrame();
             }
         }
@@ -349,6 +364,37 @@ namespace ComPDFKit.Tool
                 pageIndex = editAreaObject.PageIndex;
             }
             return editAreaObject?.cPDFEditArea;
+        }
+
+        /// <summary>
+        /// Get the index of the multi choice comment list
+        /// </summary>
+        /// <param name="pageIndexs"></param>
+        /// <returns></returns>
+        public List<CPDFEditArea> GetSelectedEditAreaListObject(ref List<int> pageIndexs)
+        {
+            List<CPDFEditArea> editAreaObjectlist = new List<CPDFEditArea>();
+            MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(viewerTool.PDFViewer.GetViewForTag(viewerTool.MultiSelectedRectViewTag));
+            if (multiSelectedRect != null && multiSelectedRect.Children.Count > 0)
+            {
+                foreach (SelectedRect selectedRect in multiSelectedRect.Children)
+                {
+                    EditAreaObject editAreaObject = viewerTool.GetEditAreaObjectListForRect(selectedRect);
+                    if (editAreaObject == null)
+                    {
+                        //pageIndexs.Add(-1);
+                    }
+                    else
+                    {
+                        if (!editAreaObjectlist.Contains(editAreaObject?.cPDFEditArea))
+                        {
+                            pageIndexs.Add(editAreaObject.PageIndex);
+                            editAreaObjectlist.Add(editAreaObject?.cPDFEditArea);
+                        }
+                    }
+                }
+            }
+            return editAreaObjectlist;
         }
 
         public CPDFAnnotation GetCPDFAnnotation()
@@ -431,20 +477,20 @@ namespace ComPDFKit.Tool
             {
                 case C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET:
                     {
-                    currentParam = ParamConverter.WidgetConverter(viewerTool.GetCPDFViewer().GetDocument(), e.annotData.Annot);
-                    (e.annotData.Annot as CPDFWidget).UpdateFormAp();
-                    break;
+                        currentParam = ParamConverter.WidgetConverter(viewerTool.GetCPDFViewer().GetDocument(), e.annotData.Annot);
+                        (e.annotData.Annot as CPDFWidget).UpdateFormAp();
+                        break;
                     }
 
                 default:
                     {
-                    currentParam = ParamConverter.AnnotConverter(viewerTool.GetCPDFViewer().GetDocument(), e.annotData.Annot);
+                        currentParam = ParamConverter.AnnotConverter(viewerTool.GetCPDFViewer().GetDocument(), e.annotData.Annot);
                         if (e.annotData.AnnotType != C_ANNOTATION_TYPE.C_ANNOTATION_SOUND)
                         {
-                    e.annotData.Annot.UpdateAp();
+                            e.annotData.Annot.UpdateAp();
                         }
-                    break;
-            }
+                        break;
+                    }
             }
 
             annotHistory.PreviousParam = previousParam;
@@ -452,7 +498,7 @@ namespace ComPDFKit.Tool
             annotHistory.CurrentParam = currentParam;
             annotHistory.Action = HistoryAction.Update;
             viewerTool.GetCPDFViewer().UndoManager.AddHistory(annotHistory);
-            viewerTool.GetCPDFViewer().UpdateRenderFrame();
+            viewerTool.GetCPDFViewer().UpdateAnnotFrame();
             AnnotDefaultEditedHandler?.Invoke(this, e);
         }
 
@@ -484,8 +530,9 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = viewerTool.GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(e.PageIndex);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
-            List<CPDFEditArea> cPDFEditAreas = cPDFEditPage.GetEditAreaList(true);
+            //cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            List<CPDFEditArea> cPDFEditAreas = cPDFEditPage.GetEditAreaList(false);
+            float zoom = (float)viewerTool.PDFViewer.GetZoom();
             for (int i = 0; i < e.MultiObjectIndex.Count; i++)
             {
                 if (e.MultiObjectIndex[i] < cPDFEditAreas.Count)
@@ -494,20 +541,66 @@ namespace ComPDFKit.Tool
                     pDFEditHistory.PageIndex = e.PageIndex;
                     pDFEditHistory.EditPage = cPDFEditPage;
                     CRect cRect = cPDFEditAreas[e.MultiObjectIndex[i]].GetFrame();
+                    if (cPDFEditAreas[e.MultiObjectIndex[i]].Type == CPDFEditType.EditImage)
+                    {
+                        cRect = (cPDFEditAreas[e.MultiObjectIndex[i]] as CPDFEditImageArea).GetClipRect();
+                    }
                     Point point = DpiHelper.StandardPointToPDFPoint(e.MoveOffset);
-                    cRect.left += (float)point.X;
-                    cRect.right += (float)point.X;
-                    cRect.top += (float)point.Y;
-                    cRect.bottom += (float)point.Y;
+                    point.X = point.X / zoom;
+                    point.Y = point.Y / zoom;
+                    if (point.X != 0 && point.Y != 0 && e.ZoomX == 1 && e.ZoomY == 1)
+                    {
+                        cRect.left += (float)point.X;
+                        cRect.right += (float)point.X;
+                        cRect.top += (float)point.Y;
+                        cRect.bottom += (float)point.Y;
+                    }
+                    else
+                    {
+                        //Mobile scaling ratio logic
+                        if ((float)point.X == 0)
+                        {
+                            cRect.left += (float)point.X;
+                            cRect.right = cRect.left + (cRect.right - cRect.left) + (float)DpiHelper.StandardNumToPDFNum(e.ChangeX) / zoom;
+                        }
+                        else
+                        {
+                            cRect.left += (float)point.X;
+                            if (e.ZoomX == 1)
+                            {
+                                cRect.right += (float)point.X;
+                            }
+                        }
+                        if ((float)point.Y == 0)
+                        {
+                            cRect.top += (float)point.Y;
+                            cRect.bottom = cRect.top + (cRect.bottom - cRect.top) + (float)DpiHelper.StandardNumToPDFNum(e.ChangeY) / zoom;
+                        }
+                        else
+                        {
 
-                    cRect.right = cRect.right * e.ZoomX;
-                    cRect.bottom = cRect.bottom * e.ZoomY;
+                            cRect.top += (float)point.Y;
+                            if (e.ZoomY == 1)
+                            {
+                                cRect.bottom += (float)point.Y;
+                            }
+                        }
+                    }
+                    //Original Logic
+                    //cRect.left += (float)point.X;
+                    //cRect.right += (float)point.X;
+                    //cRect.top += (float)point.Y;
+                    //cRect.bottom += (float)point.Y;
+
+                    //cRect.right = cRect.right* e.ZoomX;
+                    //cRect.bottom = cRect.bottom * e.ZoomY;
                     cPDFEditAreas[e.MultiObjectIndex[i]].SetFrame(cRect);
                     groupHistory.Histories.Add(pDFEditHistory);
                 }
             }
+            //Add end edit
+            cPDFEditPage.EndEdit();
             viewerTool.GetCPDFViewer().UndoManager.AddHistory(groupHistory);
-
             viewerTool.GetCPDFViewer().UpdateRenderFrame();
         }
 
@@ -542,7 +635,7 @@ namespace ComPDFKit.Tool
             switch (e.annotData.AnnotType)
             {
                 case C_ANNOTATION_TYPE.C_ANNOTATION_LINE:
-                    if ((e.annotData.Annot as CPDFLineAnnotation).IsMersured())
+                    if ((e.annotData.Annot as CPDFLineAnnotation).IsMeasured())
                     {
                         List<Point> cPoints = new List<Point>();
                         for (int i = 0; i < e.Points.Count; i++)
@@ -607,7 +700,7 @@ namespace ComPDFKit.Tool
                         }
                         lineMeasure.UpdateAnnotMeasure();
                         annotLine.UpdateAp();
-                        if (annotLine.IsMersured())
+                        if (annotLine.IsMeasured())
                         {
                             PostMeasureInfo(this, annotLine);
                         }
@@ -657,7 +750,7 @@ namespace ComPDFKit.Tool
                             (float)top));
                         annotLine.GetAreaMeasure().UpdateAnnotMeasure();
                         annotLine.UpdateAp();
-                        if (annotLine.IsMersured())
+                        if (annotLine.IsMeasured())
                         {
                             PostMeasureInfo(this, annotLine);
                         }
@@ -689,7 +782,7 @@ namespace ComPDFKit.Tool
 
                         annotLine.GetPerimeterMeasure().UpdateAnnotMeasure();
                         annotLine.UpdateAp();
-                        if (annotLine.IsMersured())
+                        if (annotLine.IsMeasured())
                         {
                             PostMeasureInfo(this, annotLine);
                         }
@@ -724,7 +817,14 @@ namespace ComPDFKit.Tool
             annotHistory.CurrentParam = currentParam;
             annotHistory.Action = HistoryAction.Update;
             viewerTool.GetCPDFViewer().UndoManager.AddHistory(annotHistory);
-            viewerTool.GetCPDFViewer().UpdateRenderFrame();
+            if (e.annotData.Annot.IsMeasured())
+            {
+                viewerTool.GetCPDFViewer().UpdateRenderFrame();
+            }
+            else
+            {
+                viewerTool.GetCPDFViewer().UpdateAnnotFrame();
+            }
         }
 
         private void ViewerTool_MouseLeftButtonUpHandler(object sender, MouseEventObject e)
@@ -735,7 +835,7 @@ namespace ComPDFKit.Tool
             viewerTool.DrawEndSelectedMultiRect();
             viewerTool.DrawEndPageSelectedRect();
             if (currentToolType != ToolType.SelectedPage &&
-                viewerTool.IsCanSave()&&
+                viewerTool.IsCanSave() &&
                 cPDFAnnotation?.Type != C_ANNOTATION_TYPE.C_ANNOTATION_FREETEXT)
             {
                 viewerTool.PDFViewer.EnableZoom(true);
@@ -748,9 +848,9 @@ namespace ComPDFKit.Tool
             {
                 viewerTool.PDFViewer.Cursor = viewerTool.Cursor = Cursors.IBeam;
             }
-            else if(currentToolType == ToolType.ContentEdit)
+            else if (currentToolType == ToolType.ContentEdit)
             {
-                if(createContentEditType == CPDFEditType.EditText)
+                if (createContentEditType == CPDFEditType.EditText)
                     viewerTool.PDFViewer.Cursor = viewerTool.Cursor = Cursors.IBeam;
                 else
                     viewerTool.PDFViewer.Cursor = viewerTool.Cursor = viewerTool.DrawMoveTest(viewerTool.GetLastSelectedRect());
@@ -759,7 +859,7 @@ namespace ComPDFKit.Tool
             {
                 viewerTool.PDFViewer.Cursor = viewerTool.Cursor = Cursors.Arrow;
             }
-            
+
             if (currentToolType == ToolType.Customize)
             {
                 viewerTool.CleanCustomizeTool();
@@ -807,7 +907,7 @@ namespace ComPDFKit.Tool
                             annotHistory.CurrentParam = annotParam;
                             annotHistory.PDFDoc = cPDFDocument;
                             viewerTool.GetCPDFViewer().UndoManager.AddHistory(annotHistory);
-                            viewerTool.GetCPDFViewer().UpdateRenderFrame();
+                            viewerTool.GetCPDFViewer().UpdateAnnotFrame();
                             e.annotType = cPDFAnnotation.Type;
                             e.IsCreate = true;
                             dynamic expandData = new ExpandoObject();
@@ -823,7 +923,21 @@ namespace ComPDFKit.Tool
                     {
                         if (viewerTool.GetLastSelectedRect() != null)
                         {
-                            viewerTool.DrawEndTextEdit(viewerTool.GetLastSelectedRect());
+                            //Crop Save Processing
+                            if (!viewerTool.GetIsCropMode())
+                            {
+                                viewerTool.DrawEndTextEdit(viewerTool.GetLastSelectedRect());
+                            }
+                            else
+                            {
+                                if (isActiveCropping)
+                                {
+                                    CropSelectRect();
+                                    viewerTool.SetClipThickness();
+                                }
+                                //Originally saved cropping logic
+                            }
+
                             editSelected = false;
                         }
                         else
@@ -868,10 +982,17 @@ namespace ComPDFKit.Tool
                             }
                             else if (createContentEditType == CPDFEditType.EditText)
                             {
-                                e.IsCreate = viewerTool.DrawEndTest();
+                                if (viewerTool.CanAddTextEdit)
+                                {
+                                    e.IsCreate = viewerTool.DrawEndTest();
+                                }
                             }
                             else
                             {
+                                //Draw a box to select multiple boxes
+                                Rect rectFrameSelect = viewerTool.DrawEndFrameSelect();
+                                viewerTool.FrameSelectAddRect(rectFrameSelect);
+
                                 e.IsCreate = true;
                             }
                         }
@@ -888,6 +1009,25 @@ namespace ComPDFKit.Tool
 
             viewerTool.DrawEndSelectText();
             MouseLeftButtonUpHandler?.Invoke(this, e);
+            if (viewerTool.IsCanSave())
+            {
+                cPDFAnnotation = null;
+            }
+        }
+
+        /// <summary>
+        /// Create cropping logic
+        /// </summary>
+        public void CropSelectRect()
+        {
+            if (viewerTool.GetLastSelectedRect() != null)
+            {
+                if (viewerTool.GetIsCropMode())
+                {
+                    viewerTool.DrawEndTextEdit(viewerTool.GetLastSelectedRect());
+                }
+            }
+            viewerTool.DrawEndSelectText();
             if (viewerTool.IsCanSave())
             {
                 cPDFAnnotation = null;
@@ -928,7 +1068,7 @@ namespace ComPDFKit.Tool
                             annotHistory.CurrentParam = annotParam;
                             annotHistory.PDFDoc = cPDFDocument;
                             viewerTool.GetCPDFViewer().UndoManager.AddHistory(annotHistory);
-                            viewerTool.GetCPDFViewer().UpdateRenderFrame();
+                            viewerTool.GetCPDFViewer().UpdateAnnotFrame();
                             e.annotType = cPDFAnnotation.Type;
                             e.IsCreate = true;
                             dynamic expandData = new ExpandoObject();
@@ -964,7 +1104,7 @@ namespace ComPDFKit.Tool
                 {
                     case C_ANNOTATION_TYPE.C_ANNOTATION_LINE:
                         {
-                            if ((cPDFAnnotation as CPDFLineAnnotation).IsMersured())
+                            if ((cPDFAnnotation as CPDFLineAnnotation).IsMeasured())
                             {
                                 MeasureSetting measureSetting = viewerTool.GetMeasureSetting();
                                 if (viewerTool.GetMoveLength() > measureSetting.MoveDetectionLength)
@@ -975,7 +1115,7 @@ namespace ComPDFKit.Tool
                         }
                         break;
                     case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
-                        if ((cPDFAnnotation as CPDFPolygonAnnotation).IsMersured())
+                        if ((cPDFAnnotation as CPDFPolygonAnnotation).IsMeasured())
                         {
                             DefaultSettingParam defSetting = viewerTool.GetDefaultSettingParam();
                             if (defSetting.IsCreateSquarePolygonMeasure)
@@ -1025,7 +1165,7 @@ namespace ComPDFKit.Tool
                         e.IsCreate = true;
                         e.annotType = C_ANNOTATION_TYPE.C_ANNOTATION_INK;
                         e.Data = GetAnnotExpandObject(annotation);
-                        if (e.mouseButtonEventArgs!=null)
+                        if (e.mouseButtonEventArgs != null)
                         {
                             MouseLeftButtonUpHandler?.Invoke(this, e);
                         }
@@ -1042,7 +1182,7 @@ namespace ComPDFKit.Tool
                         return;
                     case C_ANNOTATION_TYPE.C_ANNOTATION_LINE:
                         {
-                            if ((annotation as CPDFLineAnnotation).IsMersured())
+                            if ((annotation as CPDFLineAnnotation).IsMeasured())
                             {
                                 if (measurepoints.Count > 1)
                                 {
@@ -1086,7 +1226,7 @@ namespace ComPDFKit.Tool
                         break;
                     case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
                         {
-                            if ((annotation as CPDFPolygonAnnotation).IsMersured())
+                            if ((annotation as CPDFPolygonAnnotation).IsMeasured())
                             {
                                 List<CPoint> cPoints = new List<CPoint>();
                                 foreach (Point item in measurepoints)
@@ -1101,7 +1241,7 @@ namespace ComPDFKit.Tool
                         break;
                     case C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE:
                         {
-                            if ((annotation as CPDFPolylineAnnotation).IsMersured())
+                            if ((annotation as CPDFPolylineAnnotation).IsMeasured())
                             {
                                 List<CPoint> cPoints = new List<CPoint>();
                                 foreach (Point item in measurepoints)
@@ -1172,7 +1312,7 @@ namespace ComPDFKit.Tool
                                     }
                                 }
 
-                                if(createAnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_REDACT && textSelectInfo.PageSelectPointList.Count ==0)
+                                if (createAnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_REDACT && textSelectInfo.PageSelectPointList.Count == 0)
                                 {
                                     viewerTool.GetCPDFViewer().UpdateAnnotFrame();
                                 }
@@ -1310,7 +1450,8 @@ namespace ComPDFKit.Tool
                 viewerTool.GetCPDFViewer().UndoManager.AddHistory(annotHistory);
 
                 viewerTool.ClearDrawAnnot();
-                viewerTool.GetCPDFViewer().UpdateRenderFrame();
+                viewerTool.GetCPDFViewer().UpdateAnnotFrame();
+
                 {
                     e.annotType = annotation.Type;
                     e.IsCreate = true;
@@ -1334,7 +1475,7 @@ namespace ComPDFKit.Tool
                 if (rawAnnot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
                 {
                     CPDFLineAnnotation lineAnnot = rawAnnot as CPDFLineAnnotation;
-                    if (lineAnnot.IsMersured() && lineAnnot.Points != null && lineAnnot.Points.Count() == 2)
+                    if (lineAnnot.IsMeasured() && lineAnnot.Points != null && lineAnnot.Points.Count() == 2)
                     {
                         CPDFDistanceMeasure lineMeasure = lineAnnot.GetDistanceMeasure();
                         CPDFMeasureInfo measureInfo = lineMeasure.MeasureInfo;
@@ -1367,7 +1508,7 @@ namespace ComPDFKit.Tool
                 if (rawAnnot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE)
                 {
                     CPDFPolylineAnnotation polylineAnnot = rawAnnot as CPDFPolylineAnnotation;
-                    if (polylineAnnot.IsMersured() && polylineAnnot.Points != null && polylineAnnot.Points.Count() >= 2)
+                    if (polylineAnnot.IsMeasured() && polylineAnnot.Points != null && polylineAnnot.Points.Count() >= 2)
                     {
                         double totalInch = 0;
                         for (int i = 0; i < polylineAnnot.Points.Count - 1; i++)
@@ -1407,7 +1548,7 @@ namespace ComPDFKit.Tool
                 if (rawAnnot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON)
                 {
                     CPDFPolygonAnnotation polygonAnnot = rawAnnot as CPDFPolygonAnnotation;
-                    if (polygonAnnot.IsMersured() && polygonAnnot.Points != null && polygonAnnot.Points.Count() >= 2)
+                    if (polygonAnnot.IsMeasured() && polygonAnnot.Points != null && polygonAnnot.Points.Count() >= 2)
                     {
                         double totalInch = 0;
                         for (int i = 0; i < polygonAnnot.Points.Count - 1; i++)
@@ -1618,7 +1759,7 @@ namespace ComPDFKit.Tool
                 }
             }
             viewerTool.ClearDrawAnnot();
-            viewerTool.GetCPDFViewer().UpdateRenderFrame();
+            viewerTool.GetCPDFViewer().UpdateAnnotFrame();
             InkAnnotHistory inkAnnotHistory = new InkAnnotHistory();
             AnnotParam annotParam = ParamConverter.AnnotConverter(viewerTool.PDFViewer.GetDocument(), cPDFAnnotation);
             annotParam.AnnotIndex = cPDFAnnotation.Page.GetAnnotCount() - 1;
@@ -1629,6 +1770,26 @@ namespace ComPDFKit.Tool
         }
 
         #endregion
+
+        /// <summary>
+        /// Set mouse pattern when creating content editing
+        /// </summary>
+        /// <param name="AddTextEditCursor">add text</param>
+        /// <param name="AddImageEditCursor">add image</param>
+        public void SetAddContentEditCursor(Cursor AddTextEditCursor, Cursor AddImageEditCursor)
+        {
+            if (AddTextEditCursor == null)
+            {
+                AddTextEditCursor = Cursors.IBeam;
+            }
+            if (AddImageEditCursor == null)
+            {
+                AddImageEditCursor = Cursors.Arrow;
+            }
+            this.addTextEditCursor = AddTextEditCursor;
+            this.addImageEditCursor = AddImageEditCursor;
+
+        }
 
         private void ViewerTool_MouseMoveHandler(object sender, MouseEventObject e)
         {
@@ -1684,7 +1845,7 @@ namespace ComPDFKit.Tool
                     if (currentToolType == ToolType.CreateAnnot)
                     {
                         if (!viewerTool.PDFViewer.GetIsShowStampMouse())
-                        { 
+                        {
                             // Annotation drawing only occurs if the mouse is not set to stamp/data application mode.// Annotation drawing only occurs if the mouse is not set to stamp/data application mode.
                             viewerTool.MoveDrawAnnot();
                         }
@@ -1744,12 +1905,14 @@ namespace ComPDFKit.Tool
                 if (createContentEditType != CPDFEditType.EditImage)
                 {
                     Cursor cursor = Cursors.Arrow;
+                    MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(viewerTool.PDFViewer.GetViewForTag(viewerTool.MultiSelectedRectViewTag));
+
                     if (viewerTool.GetLastSelectedRect() != null)
                     {
                         if (editSelected)
                         {
                             viewerTool.DrawMoveTextEdit(viewerTool.GetLastSelectedRect(), clickEditSelected);
-                            if(clickEditSelected)
+                            if (clickEditSelected)
                                 cursor = Cursors.IBeam;
                             else
                                 cursor = viewerTool.DrawMoveTest(viewerTool.GetLastSelectedRect());
@@ -1761,7 +1924,47 @@ namespace ComPDFKit.Tool
                     }
                     else
                     {
-                        viewerTool.HideDrawSelectedMultiRect();
+                        cursor = viewerTool.DrawMoveTest(viewerTool.GetLastSelectedRect());
+                        if (multiSelectedRect == null || multiSelectedRect.Children.Count == 0)
+                        {
+                            //Selection of mobile drawing logic
+                            if (e.mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed && createContentEditType == CPDFEditType.None)
+                            {
+                                viewerTool.DrawMoveFrameSelect();
+                            }
+                        }
+
+                    }
+
+                    if (cursor == Cursors.Arrow && createContentEditType == CPDFEditType.EditText)
+                    {
+                        cursor = addTextEditCursor;
+                    }
+                    viewerTool.Cursor = cursor;
+                    viewerTool.PDFViewer.Cursor = cursor;
+                }
+                else
+                {
+                    Cursor cursor = Cursors.Arrow;
+                    MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(viewerTool.PDFViewer.GetViewForTag(viewerTool.MultiSelectedRectViewTag));
+
+                    if (viewerTool.GetLastSelectedRect() != null)
+                    {
+                        if (editSelected)
+                        {
+                            viewerTool.DrawMoveTextEdit(viewerTool.GetLastSelectedRect(), clickEditSelected);
+                            if (clickEditSelected)
+                                cursor = Cursors.IBeam;
+                            else
+                                cursor = viewerTool.DrawMoveTest(viewerTool.GetLastSelectedRect());
+                        }
+                        else
+                        {
+                            cursor = viewerTool.DrawMoveTest(viewerTool.GetLastSelectedRect());
+                        }
+                    }
+                    else
+                    {
                         cursor = viewerTool.DrawMoveTest(viewerTool.GetLastSelectedRect());
                     }
 
@@ -1769,11 +1972,12 @@ namespace ComPDFKit.Tool
                     {
                         cursor = Cursors.IBeam;
                     }
+                    if (cursor == Cursors.Arrow && createContentEditType == CPDFEditType.EditImage)
+                    {
+                        cursor = addImageEditCursor;
+                    }
                     viewerTool.Cursor = cursor;
                     viewerTool.PDFViewer.Cursor = cursor;
-                }
-                else
-                {
                     //viewerTool.Cursor = Cursors.None;
                     //viewerTool.PDFViewer.Cursor = Cursors.None;
                 }
@@ -1829,7 +2033,7 @@ namespace ComPDFKit.Tool
                                                     CPDFLineAnnotation LineAnnotation = (cPDFAnnotation as CPDFLineAnnotation);
                                                     if (LineAnnotation != null)
                                                     {
-                                                        if (LineAnnotation.IsMersured())
+                                                        if (LineAnnotation.IsMeasured())
                                                         {
                                                             cansave = false;
                                                         }
@@ -1841,10 +2045,10 @@ namespace ComPDFKit.Tool
                                                 {
                                                     bool cansave = true;
                                                     CPDFPolygonAnnotation PolyAnnotation = (cPDFAnnotation as CPDFPolygonAnnotation);
-                                                    PolyAnnotation?.IsMersured();
+                                                    PolyAnnotation?.IsMeasured();
                                                     if (PolyAnnotation != null)
                                                     {
-                                                        if (PolyAnnotation.IsMersured())
+                                                        if (PolyAnnotation.IsMeasured())
                                                         {
                                                             cansave = false;
                                                         }
@@ -1856,10 +2060,10 @@ namespace ComPDFKit.Tool
                                                 {
                                                     bool cansave = true;
                                                     CPDFPolylineAnnotation PolyAnnotation = (cPDFAnnotation as CPDFPolylineAnnotation);
-                                                    PolyAnnotation?.IsMersured();
+                                                    PolyAnnotation?.IsMeasured();
                                                     if (PolyAnnotation != null)
                                                     {
-                                                        if (PolyAnnotation.IsMersured())
+                                                        if (PolyAnnotation.IsMeasured())
                                                         {
                                                             cansave = false;
                                                         }
@@ -1874,7 +2078,7 @@ namespace ComPDFKit.Tool
                                     else
                                     {
                                         viewerTool.MultipleClick();
-                                        e.IsDrawing=true;
+                                        e.IsDrawing = true;
                                     }
                                     break;
                                 case 2:
@@ -1940,7 +2144,7 @@ namespace ComPDFKit.Tool
                         if (list.Contains(e.annotType))
                         {
                             viewerTool.CleanSelectedRect();
-                            if (!e.IsMersured||!list.Contains(createAnnotType))
+                            if (!e.IsMersured || !list.Contains(createAnnotType))
                             {
                                 viewerTool.StartDrawEditAnnot();
                             }
@@ -1978,6 +2182,15 @@ namespace ComPDFKit.Tool
                         clickEditSelected = true;
                         switch ((e.mouseButtonEventArgs as MouseButtonEventArgs).ClickCount)
                         {
+                            case 1:
+                                if (viewerTool.GetIsCropMode())
+                                {
+                                    //Preconditions for determining crop acquisition points
+                                    viewerTool.HandleTextSelectClick(viewerTool.GetLastSelectedRect(), true);
+                                    clickEditSelected = false;
+                                    MouseLeftButtonDownHandler?.Invoke(this, e);
+                                }
+                                break;
                             case 2:
                                 viewerTool.HandleTextSelectClick(viewerTool.GetLastSelectedRect(), true);
                                 clickEditSelected = false;
@@ -1996,8 +2209,19 @@ namespace ComPDFKit.Tool
                         viewerTool.HideDrawSelectedMultiRect();
                         if (viewerTool.GetLastSelectedRect() != null)
                         {
+                            viewerTool.DrawEndFrameSelect();
                             Point point = Mouse.GetPosition(viewerTool);
-                            PointControlType pointControlType = viewerTool.GetLastSelectedRect().GetHitControlIndex(point);
+                            PointControlType pointControlType = PointControlType.None;
+                            if (viewerTool.GetIsCropMode())
+                            {
+                                //Crop acquisition point judgment
+                                pointControlType = viewerTool.GetLastSelectedRect().GetHitCropControlIndex(point);
+                            }
+                            else
+                            {
+                                pointControlType = viewerTool.GetLastSelectedRect().GetHitControlIndex(point);
+                            }
+
                             EditAreaObject editAreaObject = viewerTool.GetEditAreaObjectForRect(viewerTool.GetLastSelectedRect());
                             if (pointControlType != PointControlType.None &&
                                 (editAreaObject.cPDFEditArea.Type == CPDFEditType.EditImage || pointControlType != PointControlType.Body))
@@ -2027,12 +2251,23 @@ namespace ComPDFKit.Tool
                                     default:
                                         break;
                                 }
-                                viewerTool.DrawStartTextEdit(viewerTool.GetLastSelectedRect());
+                                if (e.mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
+                                {
+                                    viewerTool.DrawStartTextEdit(viewerTool.GetLastSelectedRect(), editAreaObject);
+                                }
+
                                 clickEditSelected = false;
                             }
                         }
                         else
                         {
+                            //If it is multiple selection, do not create a new input box
+                            MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(viewerTool.PDFViewer.GetViewForTag(viewerTool.MultiSelectedRectViewTag));
+                            if (multiSelectedRect != null && multiSelectedRect.Children.Count > 0)
+                            {
+                                viewerTool.PDFViewer.UpdateRenderFrame();
+                                return;
+                            }
                             Point point = Mouse.GetPosition(viewerTool);
                             viewerTool.GetCPDFViewer().GetPointPageInfo(point, out int index, out Rect paintRect, out Rect pageBound);
                             if (index < 0)
@@ -2042,7 +2277,18 @@ namespace ComPDFKit.Tool
                             }
                             if (createContentEditType == CPDFEditType.EditText)
                             {
-                                viewerTool.DrawTest(pageBound, index);
+                                if (viewerTool.CanAddTextEdit)
+                                {
+                                    viewerTool.DrawTest(pageBound, index);
+                                }
+                            }
+                            if (createContentEditType == CPDFEditType.None)
+                            {
+                                viewerTool.DrawFrameSelect();
+                            }
+                            else
+                            {
+                                viewerTool.DrawEndFrameSelect();
                             }
                             clickEditSelected = false;
                         }

@@ -5,11 +5,8 @@ using ComPDFKit.PDFPage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 
@@ -150,104 +147,96 @@ namespace ComPDFKit.Tool
             searchResult.StartPage = startPage;
             searchResult.EndPage = endPage;
             double searchPercent = 100;
-            try
-            {
 
-                mSearchDocument = CPDFDocument.InitWithFilePath(TextSearchDocument.FilePath);
-                if (password != null && password != string.Empty)
-                {
-                    mSearchDocument.UnlockWithPassword(password);
-                }
-                password = string.Empty;
-            }
-            catch (Exception ex)
+            mSearchDocument = CPDFDocument.InitWithFilePath(TextSearchDocument.FilePath);
+            if (mSearchDocument.IsLocked && !string.IsNullOrEmpty(password))
             {
+                mSearchDocument.UnlockWithPassword(password);
+            }
 
-            }
-            if (mSearchDocument != null)
+            if (mSearchDocument != null && !mSearchDocument.IsLocked)
             {
-                try
+                int pageMaxCount = 0;
+                int recordCount = 0;
+                searchPercent = 0;
+                for (int i = startPage; i <= endPage; i++)
                 {
-                    int pageMaxCount = 0;
-                    int recordCount = 0;
-                    searchPercent = 0;
-                    for (int i = startPage; i <= endPage; i++)
+                    CPDFTextSearcher mPDFTextSearcher = new CPDFTextSearcher();
+                    CPDFPage pageCore = mSearchDocument.PageAtIndex(i);
+                    if(pageCore == null)
                     {
-                        CPDFTextSearcher mPDFTextSearcher = new CPDFTextSearcher();
-                        CPDFPage pageCore = mSearchDocument.PageAtIndex(i);
-                        CPDFTextPage textPage = pageCore.GetTextPage();
-                        int startIndex = 0;
+                        continue;
+                    }   
 
-                        List<TextSearchItem> textSearchItems = new List<TextSearchItem>();
-                        if (mPDFTextSearcher.FindStart(textPage, searchKeywords, searchOption, startIndex))
+                    CPDFTextPage textPage = pageCore.GetTextPage();
+                    int startIndex = 0;
+                    List<TextSearchItem> textSearchItems = new List<TextSearchItem>();
+                    if (mPDFTextSearcher.FindStart(textPage, searchKeywords, searchOption, startIndex))
+                    {
+                        CRect textRect = new CRect();
+                        string textContent = "";
+                        while (mPDFTextSearcher.FindNext(pageCore, textPage, ref textRect, ref textContent, ref startIndex))
                         {
-                            CRect textRect = new CRect();
-                            string textContent = "";
-                            while (mPDFTextSearcher.FindNext(pageCore, textPage, ref textRect, ref textContent, ref startIndex))
+                            if (textContent == "")
                             {
-                                if (textContent == "")
-                                {
-                                    textContent = searchKeywords;
-                                }
-                                textSearchItems.Add(new TextSearchItem()
-                                {
-                                    PageIndex = i,
-                                    TextRect = new Rect(textRect.left, textRect.top, textRect.width(), textRect.height()),
-                                    TextContent = textContent,
-                                    PageRotate = pageCore.Rotation
-                                });
-                                var matchResult = Regex.Matches(textContent, searchKeywords, RegexOptions.IgnoreCase);
-                                if (matchResult != null)
-                                {
-                                    recordCount += matchResult.Count;
-                                }
+                                textContent = searchKeywords;
+                            }
+
+                            textSearchItems.Add(new TextSearchItem()
+                            {
+                                PageIndex = i,
+                                TextRect = new Rect(textRect.left, textRect.top, textRect.width(), textRect.height()),
+                                TextContent = textContent,
+                                PageRotate = pageCore.Rotation
+                            });
+
+                            var matchResult = Regex.Matches(textContent, searchKeywords, RegexOptions.IgnoreCase);
+                            if (matchResult != null)
+                            {
+                                recordCount += matchResult.Count;
                             }
                         }
-                        mPDFTextSearcher.FindClose();
-                        if (textSearchItems.Count > 0)
-                        {
-                            searchResult.Items.Add(i, textSearchItems);
-                        }
-                        pageMaxCount = Math.Max(pageMaxCount, textSearchItems.Count);
-                        searchResult.TotalCount = recordCount;
-                        searchResult.PageMaxCount = pageMaxCount;
-                        if (SearchPercentHandler != null)
-                        {
-                            searchPercent = (int)((i + 1 - startPage) * 100 / (endPage + 1 - startPage));
-                            searchResult.Percent = searchPercent;
-                            searchResult.CurrentPage = i;
-                            SearchPercentHandler.Invoke(this, searchResult);
-                        }
-                        mSearchDocument.ReleasePages(i);
-                        if (isCancel)
-                        {
-                            break;
-                        }
                     }
-                    searchPercent = 100;
-                }
-                catch (Exception ex)
-                {
 
+                    mPDFTextSearcher.FindClose();
+                    if (textSearchItems.Count > 0)
+                    {
+                        searchResult.Items.Add(i, textSearchItems);
+                    }
+
+                    pageMaxCount = Math.Max(pageMaxCount, textSearchItems.Count);
+                    searchResult.TotalCount = recordCount;
+                    searchResult.PageMaxCount = pageMaxCount;
+                    if (SearchPercentHandler != null)
+                    {
+                        searchPercent = (int)((i + 1 - startPage) * 100 / (endPage + 1 - startPage));
+                        searchResult.Percent = searchPercent;
+                        searchResult.CurrentPage = i;
+                        SearchPercentHandler.Invoke(this, searchResult);
+                    }
+
+                    mSearchDocument.ReleasePages(i);
+                    if (isCancel)
+                    {
+                        break;
+                    }
                 }
+
+                searchPercent = 100;
                 mSearchDocument.Release();
             }
-            try
-            {
-                if (SearchCompletedHandler != null && !isCancel)
-                {
-                    searchResult.Percent = searchPercent;
-                    SearchCompletedHandler.Invoke(this, searchResult);
-                }
-                if (SearchCancelHandler != null && isCancel)
-                {
-                    SearchCancelHandler.Invoke(this, searchResult);
-                }
-            }
-            catch (Exception ex)
-            {
 
+            if (SearchCompletedHandler != null && !isCancel)
+            {
+                searchResult.Percent = searchPercent;
+                SearchCompletedHandler.Invoke(this, searchResult);
             }
+
+            if (SearchCancelHandler != null && isCancel)
+            {
+                SearchCancelHandler.Invoke(this, searchResult);
+            }
+
             CanDoSearch = true;
             isCancel = false;
         }

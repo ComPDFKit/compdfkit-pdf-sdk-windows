@@ -19,7 +19,8 @@ namespace ComPDFKit.Controls.PDFControl
         public event EventHandler SaveFileEvent;
         public event EventHandler SaveAsFileEvent;
         public event EventHandler FlattenEvent; 
-
+        public event EventHandler PrintEvent;
+           
         public CPDFTitleBarControl()
         {
             InitializeComponent();
@@ -78,6 +79,11 @@ namespace ComPDFKit.Controls.PDFControl
         private void FlattenItem_Click(object sender, RoutedEventArgs e)
         {
             FlattenEvent?.Invoke(sender, RoutedEventArgs.Empty);
+        }
+
+        private void PrintItem_Click(object sender, RoutedEventArgs e)
+        {
+            PrintEvent?.Invoke(sender, RoutedEventArgs.Empty);
         }
     }
 }

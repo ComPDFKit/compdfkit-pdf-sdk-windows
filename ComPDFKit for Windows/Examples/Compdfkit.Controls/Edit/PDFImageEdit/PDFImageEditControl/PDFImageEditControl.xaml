@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ComPDFKit.Controls.Edit"
              xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
              mc:Ignorable="d" 
-             d:DesignHeight="480" d:DesignWidth="800" MinWidth="260" Padding="10"
+             d:DesignHeight="720" d:DesignWidth="280" MinWidth="260" Padding="10"
              Background="#FAFCFF">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -18,48 +18,41 @@
             <common:CommonResourceConverter x:Key="CommonResourceConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-        <Border Background="White" Height="36">
-            <TextBlock FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#42464D" VerticalAlignment="Center" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_ImageProperty}"></TextBlock>
-        </Border>
+        <StackPanel>
 
-        <Border Name="ImageThumbBorder" Background="White" Grid.Row="1" MinHeight="100" CornerRadius="5" Margin="0,16,0,0" BorderThickness="1" BorderBrush="#E2E3E6">
-            <Image Name="ImageThumbUI" MaxHeight="80" MaxWidth="230" Stretch="Uniform"></Image>
-        </Border>
-         
-        <StackPanel Grid.Row="2"  Margin="0,33,0,0" >
-            <local:CPDFImageRotateUI x:Name="RotateUI" FontSize="16"></local:CPDFImageRotateUI>
-            <Grid Margin="0,10,0,0">
-                <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Rotation}" FontFamily="Microsoft YaHei" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
-                <TextBox Padding="5,0,5,0" x:Name="RotationTxb" HorizontalAlignment="Right" VerticalContentAlignment="Center" Width="110" Height="32" LostFocus="RotationTxb_LostFocus" PreviewKeyDown="RotationTxb_PreviewKeyDown"></TextBox>
-            </Grid>
-        </StackPanel>
-        
-        <local:CPDFImageFlipUI x:Name="FlipUI" Grid.Row="3" FontSize="16" Margin="0,10,0,0"></local:CPDFImageFlipUI>
-         
-        <Grid Grid.Row="4" Margin="0,20,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-            </Grid.RowDefinitions>
+            <Border Background="White" Height="36">
+                <TextBlock FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#42464D" VerticalAlignment="Center" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_ImageProperty}"></TextBlock>
+            </Border>
 
-            <TextBlock FontSize="14" Foreground="#43474D" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Opacity}"></TextBlock>
+            <Border Name="ImageThumbBorder" Background="White" Grid.Row="1" MinHeight="100" CornerRadius="5" Margin="0,16,0,0" BorderThickness="1" BorderBrush="#E2E3E6" Visibility="{Binding OnlySingleVisible}">
+                <Image Name="ImageThumbUI" MaxHeight="80" MaxWidth="230" Stretch="Uniform"></Image>
+            </Border>
 
-            <Slider Style="{StaticResource SliderStyle}" Grid.Row="1" Width="148" Height="28"
+            <StackPanel Grid.Row="2"  >
+                <local:CPDFImageRotateUI x:Name="RotateUI" FontSize="16"></local:CPDFImageRotateUI>
+                <Grid Margin="0,10,0,0">
+                    <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Rotation}" FontFamily="Microsoft YaHei" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
+                    <TextBox Padding="5,0,5,0" x:Name="RotationTxb" HorizontalAlignment="Right" VerticalContentAlignment="Center" Width="110" Height="32" LostFocus="RotationTxb_LostFocus" PreviewKeyDown="RotationTxb_PreviewKeyDown"></TextBox>
+                </Grid>
+            </StackPanel>
+
+            <local:CPDFImageFlipUI x:Name="FlipUI" Grid.Row="3" FontSize="16" Margin="0,10,0,0"></local:CPDFImageFlipUI>
+
+            <Grid Grid.Row="4" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock FontSize="14" Foreground="#43474D" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Opacity}"></TextBlock>
+
+                <Slider Style="{StaticResource SliderStyle}" Grid.Row="1" Width="148" Height="28"
                     Name="ImasgeOpacitySlider" 
                     Value="14"  
                     IsSelectionRangeEnabled="True" 
@@ -75,81 +68,82 @@
                     Tag="true"
                     />
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,0">
-                <ComboBox Name="OpacityComboBox" VerticalContentAlignment="Center" Width="72" Height="28" Foreground="#43474D" FontSize="14"
+                <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,0">
+                    <ComboBox Name="OpacityComboBox" VerticalContentAlignment="Center" Width="72" Height="28" Foreground="#43474D" FontSize="14"
                               SelectionChanged="OpacityComboBox_SelectionChanged" BorderBrush="#1E000000">
-                    <ComboBoxItem>25%</ComboBoxItem>
-                    <ComboBoxItem>50%</ComboBoxItem>
-                    <ComboBoxItem>75%</ComboBoxItem>
-                    <ComboBoxItem>100%</ComboBoxItem>
-                </ComboBox>
-                <TextBox Name="OpacityTextBox" IsHitTestVisible="False" Width="72" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                        <ComboBoxItem>25%</ComboBoxItem>
+                        <ComboBoxItem>50%</ComboBoxItem>
+                        <ComboBoxItem>75%</ComboBoxItem>
+                        <ComboBoxItem>100%</ComboBoxItem>
+                    </ComboBox>
+                    <TextBox Name="OpacityTextBox" IsHitTestVisible="False" Width="72" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                              IsReadOnly="True" Background="White" Padding="0,0,15,0" FontSize="14">100%</TextBox>
-                <Path Fill="#43474D" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" IsHitTestVisible="False">
-                    <Path.Data>
-                        M0.5 0.510248L4.5041 5.5L8.5 0.5L0.5 0.510248Z
-                    </Path.Data>
-                </Path>
+                    <Path Fill="#43474D" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" IsHitTestVisible="False">
+                        <Path.Data>
+                            M0.5 0.510248L4.5041 5.5L8.5 0.5L0.5 0.510248Z
+                        </Path.Data>
+                    </Path>
+                </Grid>
             </Grid>
-        </Grid>
-    
-        <Grid Grid.Row="5" Margin="0,20,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBlock VerticalAlignment="Center" FontSize="14" Foreground="#43474D" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Tool}"></TextBlock>
 
-            <Border  Grid.Row="1" BorderThickness="1" BorderBrush="#E1E3E5"  Margin="0,14,0,0" HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal">
-                    <Button Name="ImageReplaceBtn" Width="40" Height="25" BorderThickness="0" Click="ImageReplaceBtn_Click" Background="White" Style="{StaticResource LightButtonStyle}"
+            <Grid  Margin="0,20,0,0" Visibility="{Binding OnlySingleVisible}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock VerticalAlignment="Center" FontSize="14" Foreground="#43474D" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Tool}"></TextBlock>
+
+                <Border  Grid.Row="1" BorderThickness="1" BorderBrush="#E1E3E5"  Margin="0,14,0,0" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Name="ImageReplaceBtn" Width="40" Height="25" BorderThickness="0" Click="ImageReplaceBtn_Click" Background="White" Style="{StaticResource LightButtonStyle}"
                             ToolTip="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Menu_Replace}">
-                        <Button.Content>
-                            <Path Fill="#43474D">
-                                <Path.Data>
-                                    M1.12988 1.88037H0.379883V2.63037V14.3971V15.1471H1.12988H4.47057V16.2589V17.7589H5.97057H11.9871V16.915L11.9995 16L8.64639 
+                            <Button.Content>
+                                <Path Fill="#43474D">
+                                    <Path.Data>
+                                        M1.12988 1.88037H0.379883V2.63037V14.3971V15.1471H1.12988H4.47057V16.2589V17.7589H5.97057H11.9871V16.915L11.9995 16L8.64639 
                                 14.3971L5.97057 15.9838V7.49225H18.0035V12.7161H19.5035V7.49225V5.99225H18.0035H16.9129V2.63037V1.88037H16.1629H1.12988ZM15.4129 
                                 5.99225V3.38037H1.87988V13.6471H4.47057V7.49225V5.99225H5.97057H15.4129ZM14.6574 10.5265C15.2097 10.5265 15.6574 10.0759 15.6574 
                                 9.5201C15.6574 8.9643 15.2097 8.51373 14.6574 8.51373C14.1051 8.51373 13.6574 8.9643 13.6574 9.5201C13.6574 10.0759 14.1051 10.5265 
                                 14.6574 10.5265ZM15.3635 12.4771L14.8863 11.8985L16.0436 10.9442L16.5208 11.5229L17.9828 13.2959L18.9947 
                                 14.5231H17.4042H12.9994H12.2494V13.0231H12.9994H15.8136L15.3635 12.4771ZM15.8007 17.2959L16.2779 17.8746L15.1206 18.8289L14.6434 
                                 18.2502L13.1814 16.4771L12.1695 15.25H13.76H18.1648H18.9148V16.75H18.1648H15.3506L15.8007 17.2959Z
-                                </Path.Data>
-                            </Path>
-                        </Button.Content>
-                    </Button>
- 
-                    <Button Grid.Column="1" Width="40" Height="25" BorderThickness="0" Click="ImageExportBtn_Click" Background="White" Style="{StaticResource LightButtonStyle}"
+                                    </Path.Data>
+                                </Path>
+                            </Button.Content>
+                        </Button>
+
+                        <Button Grid.Column="1" Width="40" Height="25" BorderThickness="0" Click="ImageExportBtn_Click" Background="White" Style="{StaticResource LightButtonStyle}"
                             ToolTip="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Menu_Export}">
-                        <Button.Content>
-                            <Path Fill="#43474D">
-                                <Path.Data>
-                                    M12.3597 7.35973L8.75 10.9694L8.75 1V0.25H7.25V1L7.25 10.9694L3.6403 7.35973L3.10997 6.8294L2.04931 7.89006L2.57964 8.42039L7.46967 
+                            <Button.Content>
+                                <Path Fill="#43474D">
+                                    <Path.Data>
+                                        M12.3597 7.35973L8.75 10.9694L8.75 1V0.25H7.25V1L7.25 10.9694L3.6403 7.35973L3.10997 6.8294L2.04931 7.89006L2.57964 8.42039L7.46967 
                                     13.3104C7.76256 13.6033 8.23744 13.6033 8.53033 13.3104L13.4204 8.42039L13.9507 7.89006L12.89 6.8294L12.3597 7.35973ZM1 
                                     15.1538H0.25V16.6538H1H15.3077H16.0577V15.1538H15.3077H1Z
-                                </Path.Data>
-                            </Path>
-                        </Button.Content>
-                    </Button>
+                                    </Path.Data>
+                                </Path>
+                            </Button.Content>
+                        </Button>
 
-                    <Button Name="ImageClipBtn" Grid.Column="1" Width="40" Height="25" BorderThickness="0" Click="ImageClipBtn_Click" Background="White" Style="{StaticResource LightButtonStyle}"
+                        <Button Name="ImageClipBtn" Grid.Column="1" Width="40" Height="25" BorderThickness="0" Click="ImageClipBtn_Click" Background="White" Style="{StaticResource LightButtonStyle}"
                             ToolTip="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Menu_Crop}">
-                        <Button.Content>
-                            <Path Fill="#43474D">
-                                <Path.Data>
-                                    M4.75 15.75V4.25H14.4074L13.9517 4.73826L15.0483 5.76174L15.25 5.54562V15.75H4.75ZM3.25 
+                            <Button.Content>
+                                <Path Fill="#43474D">
+                                    <Path.Data>
+                                        M4.75 15.75V4.25H14.4074L13.9517 4.73826L15.0483 5.76174L15.25 5.54562V15.75H4.75ZM3.25 
                                 16.5V4.25H0V2.75H3.25V0.5H4.75V2.75H16H16.75V3.5V15.75H20V17.25H16.75V19.5H15.25V17.25H4H3.25V16.5ZM17.8483 2.76174L18.5483 
                                 2.01174L17.4517 0.988261L16.7517 1.73826L17.8483 2.76174ZM12.2483 8.76174L13.6483 7.26174L12.5517 6.23826L11.1517 7.73826L12.2483 
                                 8.76174ZM9.44829 11.7617L10.8483 10.2617L9.75171 9.23826L8.35171 10.7383L9.44829 11.7617ZM6.64829 14.7617L8.04829 13.2617L6.95171 
                                 12.2383L5.55171 13.7383L6.64829 14.7617Z
-                                </Path.Data>
-                            </Path>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
-            </Border>
-          
-        </Grid>
-     
-    </Grid>
+                                    </Path.Data>
+                                </Path>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

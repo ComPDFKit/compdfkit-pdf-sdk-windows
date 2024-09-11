@@ -214,7 +214,9 @@ namespace ComPDFKit.Controls.PDFControl
 
         private void PDFViewControl_MouseLeftButtonDownHandler(object sender, MouseEventObject e)
         {
-            if (PDFViewControl.PDFViewTool.GetToolType() == ToolType.WidgetEdit && e.annotType== C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET)
+            if (PDFViewControl.PDFViewTool.GetToolType() == ToolType.Viewer
+                || PDFViewControl.PDFViewTool.GetToolType() == ToolType.Pan 
+                && e.annotType== C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET)
             {
                 BaseWidget baseWidget = PDFViewControl.GetCacheHitTestWidget();
                 if(baseWidget == null)

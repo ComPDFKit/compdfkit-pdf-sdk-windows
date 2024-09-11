@@ -5,7 +5,6 @@ using ComPDFKit.Tool;
 using ComPDFKit.Tool.SettingParam;
 using ComPDFKit.Tool.UndoManger;
 using ComPDFKit.Viewer.Helper;
-using ComPDFKit.Controls.PDFControl;
 using ComPDFKitViewer;
 using System;
 using System.Collections.Generic;
@@ -13,22 +12,48 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Linq;
+
 namespace ComPDFKit.Controls.Edit
 {
-    public partial class PDFTextEditControl : UserControl
+    public partial class PDFTextEditControl : UserControl, INotifyPropertyChanged
     {
         #region Property
         public CPDFViewerTool ToolView { get; private set; }
-        public TextEditParam EditEvent { get; set; }
+        public List<TextEditParam> EditEvents { get; set; }
 
-        //public List<PDFEditEvent> EditMultiEvents { get; set; }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool _isMultiSelected = true;
+        public bool IsMultiSelected
+        {
+            get => _isMultiSelected;
+            set
+            {
+                UpdateProper(ref _isMultiSelected, value);
+            }
+        }
+
+        private bool _showBorder;
+        public bool ShowBorder
+        {
+            get => _showBorder;
+            set
+            {
+                UpdateProper(ref _showBorder, value);
+            }
+        }
         #endregion 
 
         public PDFTextEditControl()
         {
+            DataContext = this;
             InitializeComponent();
             Loaded += PDFTextEditControl_Loaded;
+
         }
 
         #region Init PDFView
@@ -39,23 +64,18 @@ namespace ComPDFKit.Controls.Edit
         #endregion
 
         #region UI
-        public void SetPDFTextEditData(TextEditParam newEvent)
+        public void SetPDFTextEditData(List<TextEditParam> newEvents)
         {
-            if (newEvent.EditIndex<0)
+            EditEvents = newEvents.Where(newEvent => newEvent.EditIndex >= 0 && newEvent.EditType == CPDFEditType.EditText).ToList();
+            TextEditParam defaultEvent = EditEvents.FirstOrDefault();
+            if (EditEvents.Count > 0)
             {
-                EditEvent = null;
-            }
-            else
-            {
-                EditEvent = newEvent;
-            }
-            if (newEvent != null && newEvent.EditType == CPDFEditType.EditText)
-            {
-                GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
+                GetTextArea(out List<CPDFEditTextArea> textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
+
                 List<string> sysfontList = new List<string>();
                 if (textArea != null)
                 {
-                    sysfontList = textArea.GetFontList();
+                    sysfontList = textArea.FirstOrDefault().GetFontList();
                 }
                 if (sysfontList.Count == 0)
                 {
@@ -63,28 +83,26 @@ namespace ComPDFKit.Controls.Edit
                     sysfontList.Add("Courier New");
                     sysfontList.Add("Times New Roman");
                 }
-                if (sysfontList.Contains(newEvent.FontName) == false && string.IsNullOrEmpty(newEvent.FontName) == false)
+                if (sysfontList.Contains(defaultEvent.FontName) == false && string.IsNullOrEmpty(defaultEvent.FontName) == false)
                 {
-                    sysfontList.Add(newEvent.FontName);
+                    sysfontList.Add(defaultEvent.FontName);
                 }
 
                 TextStyleUI.SetFontNames(sysfontList);
-                TextStyleUI.SelectFontName(newEvent.FontName);
-                TextStyleUI.SetFontStyle(newEvent.IsBold, newEvent.IsItalic);
-                TextStyleUI.SetFontSize(newEvent.FontSize);
-                OpacityTextBox.Text = string.Format("{0}%", (int)(Math.Ceiling(newEvent.Transparency * 100 / 255D)));
-                FontOpacitySlider.Value = ((int)(Math.Ceiling(newEvent.Transparency * 100 / 255D))) / 100D;
-                TextAlignUI.SetFontAlign(newEvent.TextAlign);
-                if (newEvent.FontColor != null && newEvent.FontColor.Length == 3)
+                TextStyleUI.SelectFontName(defaultEvent.FontName);
+                TextStyleUI.SetFontStyle(defaultEvent.IsBold, defaultEvent.IsItalic);
+                TextStyleUI.SetFontSize(defaultEvent.FontSize);
+                OpacityTextBox.Text = string.Format("{0}%", (int)(Math.Ceiling(defaultEvent.Transparency * 100 / 255D)));
+                FontOpacitySlider.Value = ((int)(Math.Ceiling(defaultEvent.Transparency * 100 / 255D))) / 100D;
+                TextAlignUI.SetFontAlign(defaultEvent.TextAlign);
+                if (defaultEvent.FontColor != null && defaultEvent.FontColor.Length == 3)
                 {
                     FontColorUI.SetCheckedForColor(Color.FromRgb(
-                        newEvent.FontColor[0],
-                        newEvent.FontColor[1],
-                        newEvent.FontColor[2]));
+                        defaultEvent.FontColor[0],
+                        defaultEvent.FontColor[1],
+                        defaultEvent.FontColor[2]));
                 }
-
             }
-            EditEvent = newEvent;
         }
 
         //public void SetPDFTextMultiEditData(List<PDFEditEvent> editEvents)
@@ -122,47 +140,6 @@ namespace ComPDFKit.Controls.Edit
         //    EditMultiEvents=editEvents;
 
         //}
-        private void Slider_DragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            Slider slider = sender as Slider;
-            if (slider != null)
-            {
-                slider.Tag = "true";
-            }
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
-            {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontSize((float)slider.Value, false))
-                {
-                    PDFEditHistory editHistory = new PDFEditHistory();
-                    editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
-                }
-            }
-            if (EditEvent != null && textArea == null)
-            {
-                EditEvent.FontSize = slider.Value;
-                DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
-            }
-
-            //if (EditMultiEvents != null)
-            //{
-            //    foreach (PDFEditEvent editEvent in EditMultiEvents)
-            //    {
-            //        editEvent.FontSize = slider.Value;
-            //    }
-            //    PDFEditEvent.UpdatePDFEditList(EditMultiEvents);
-            //}
-        }
 
         private void SliderOpacity_DragCompleted(object sender, DragCompletedEventArgs e)
         {
@@ -171,28 +148,64 @@ namespace ComPDFKit.Controls.Edit
             {
                 slider.Tag = "true";
             }
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontTransparency((byte)(FontOpacitySlider.Value * 255)))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(fontName, fontSize, fontColor[0], fontColor[1], fontColor[2], (byte)(FontOpacitySlider.Value * 255), isBold, isItalic);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontTransparency((byte)(FontOpacitySlider.Value * 255));
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.Transparency = (byte)(FontOpacitySlider.Value * 255);
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontTransparency((byte)(FontOpacitySlider.Value * 255)))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().Transparency = (byte)(FontOpacitySlider.Value * 255);
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
         }
 
@@ -208,28 +221,64 @@ namespace ComPDFKit.Controls.Edit
             {
                 return;
             }
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontTransparency((byte)(FontOpacitySlider.Value * 255)))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(fontName, fontSize, fontColor[0], fontColor[1], fontColor[2], (byte)(FontOpacitySlider.Value * 255), isBold, isItalic);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontTransparency((byte)(FontOpacitySlider.Value * 255));
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.Transparency = (byte)(FontOpacitySlider.Value * 255);
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontTransparency((byte)(FontOpacitySlider.Value * 255)))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents?.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().Transparency = (byte)(FontOpacitySlider.Value * 255);
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
         }
 
@@ -241,49 +290,6 @@ namespace ComPDFKit.Controls.Edit
                 slider.Tag = "false";
             }
         }
-
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            Slider slider = sender as Slider;
-            if (slider != null && slider.Tag != null && slider.Tag.ToString() == "false")
-            {
-                return;
-            }
-
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
-            {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontSize((float)slider.Value, false))
-                {
-                    PDFEditHistory editHistory = new PDFEditHistory();
-                    editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
-                }
-            }
-            if (EditEvent != null && textArea == null)
-            {
-                EditEvent.FontSize = slider.Value;
-                DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
-            }
-
-            //if (EditMultiEvents != null)
-            //{
-            //    foreach (PDFEditEvent editEvent in EditMultiEvents)
-            //    {
-            //        editEvent.FontSize = slider.Value;
-            //    }
-            //    PDFEditEvent.UpdatePDFEditList(EditMultiEvents);
-            //}
-        }
-
         #endregion
 
         #region Loaded
@@ -303,6 +309,9 @@ namespace ComPDFKit.Controls.Edit
             TextStyleUI.TextSizeChanged += TextStyleUI_TextSizeChanged;
             TextAlignUI.TextAlignChanged += TextAlignUI_TextAlignChanged;
             FontColorUI.ColorChanged += FontColorUI_ColorChanged;
+
+            IsMultiSelected = ToolView.GetIsMultiSelected();
+            ShowBorder = ToolView.GetEditPen() == null || ToolView.GetEditPen().Thickness != 0;
         }
 
         #endregion
@@ -311,28 +320,63 @@ namespace ComPDFKit.Controls.Edit
 
         private void TextStyleUI_TextSizeChanged(object sender, double e)
         {
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontSize((float)e, false))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(fontName, (float)e, fontColor[0], fontColor[1], fontColor[2], transparency, isBold, isItalic);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontSize((float)e, true);
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.FontSize = e;
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontSize((float)e, true))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().FontSize = e;
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
 
             //if (EditMultiEvents != null)
@@ -348,69 +392,132 @@ namespace ComPDFKit.Controls.Edit
         private void FontColorUI_ColorChanged(object sender, EventArgs e)
         {
             SolidColorBrush newBrush = FontColorUI.Brush as SolidColorBrush;
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null && newBrush != null)
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontColor(newBrush.Color.R, newBrush.Color.G, newBrush.Color.B))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(fontName, fontSize, newBrush.Color.R, newBrush.Color.G, newBrush.Color.B, transparency, isBold, isItalic);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontColor(newBrush.Color.R, newBrush.Color.G, newBrush.Color.B);
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null && newBrush != null)
+            else
+            {
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontColor(newBrush.Color.R, newBrush.Color.G, newBrush.Color.B))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+
+                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                    ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+                }
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && newBrush != null)
             {
                 byte[] Color = new byte[3];
                 Color[0] = newBrush.Color.R;
                 Color[1] = newBrush.Color.G;
                 Color[2] = newBrush.Color.B;
-                EditEvent.FontColor = Color;
+                EditEvents.FirstOrDefault().FontColor = Color;
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
         }
 
         private void TextAlignUI_TextAlignChanged(object sender, TextAlignType e)
         {
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                bool result = false;
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SelectLineRects != null && textArea.SelectLineRects.Count > 0)
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (textAreas[0].SelectLineRects != null && textAreas[0].SelectLineRects.Count > 0)
                 {
-                    result = textArea.SetTextRangeAlign(e);
+                    result = textAreas[0].SetTextRangeAlign(e);
                 }
                 else
                 {
-                    result = textArea.SetTextAreaAlign(e);
+                    result = textAreas[0].SetTextAreaAlign(e);
                 }
+
                 if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.TextAlign = e;
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    bool result;
+                    if (textArea.SelectLineRects != null && textArea.SelectLineRects.Count > 0)
+                    {
+                        result = textArea.SetTextRangeAlign(e);
+                    }
+                    else
+                    {
+                        result = textArea.SetTextAreaAlign(e);
+                    }
+
+                    if (result)
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().TextAlign = e;
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
 
             //if (EditMultiEvents != null)
@@ -425,28 +532,63 @@ namespace ComPDFKit.Controls.Edit
 
         private void TextStyleUI_TextItalicChanged(object sender, bool e)
         {
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontItalic(e))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(fontName, fontSize, fontColor[0], fontColor[1], fontColor[2], transparency, isBold, e);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontItalic(e);
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.IsItalic = e;
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontItalic(e))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().IsItalic = e;
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
 
             //if (EditMultiEvents != null)
@@ -461,28 +603,63 @@ namespace ComPDFKit.Controls.Edit
 
         private void TextStyleUI_TextBoldChanged(object sender, bool e)
         {
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontBold(e))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(fontName, fontSize, fontColor[0], fontColor[1], fontColor[2], transparency, e, isItalic);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontBold(e);
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.IsBold = e;
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontBold(e))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().IsBold = e;
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
 
             //if (EditMultiEvents != null)
@@ -492,33 +669,68 @@ namespace ComPDFKit.Controls.Edit
             //        editEvent.IsBold = e;
             //    }
             //    PDFEditEvent.UpdatePDFEditList(EditMultiEvents);
-            //}
+            //}        
         }
 
         private void TextStyleUI_TextFontChanged(object sender, string e)
         {
-            GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage);
-            if (textArea != null)
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
             {
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-                if (textArea.SetCharsFontName(e))
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (string.IsNullOrEmpty(textAreas[0].SelectText))
+                {
+                    string fontName = "Helvetica";
+                    float fontSize = 14;
+                    byte[] fontColor = { 0, 0, 0 };
+                    byte transparency = 255;
+                    bool isBold = false;
+                    bool isItalic = false;
+                    textAreas[0].GetTextStyle(ref fontName, ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+                    result = textAreas[0].SetCurTextStyle(e, fontSize, fontColor[0], fontColor[1], fontColor[2], transparency, isBold, isItalic);
+                }
+                else
+                {
+                    result = textAreas[0].SetCharsFontName(e);
+                }
+
+                if (result)
                 {
                     PDFEditHistory editHistory = new PDFEditHistory();
                     editHistory.EditPage = editPage;
-                    if (pdfPage != null)
-                    {
-                        editHistory.PageIndex = pdfPage.PageIndex;
-                    }
-                    ToolView.GetCPDFViewer()?.UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, textArea);
-                    editPage.EndEdit();
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
                 }
             }
-            if (EditEvent != null && textArea == null)
+            else
             {
-                EditEvent.FontName = e;
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    if (textArea.SetCharsFontName(e))
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+            if (EditEvents.Count > 0 && textAreas.Count > 0)
+            {
+                EditEvents.FirstOrDefault().FontName = e;
                 DefaultSettingParam defaultSettingParam = ToolView.GetDefaultSettingParam();
-                defaultSettingParam.SetPDFEditParamm(EditEvent);
+                defaultSettingParam.SetPDFEditParamm(EditEvents.FirstOrDefault());
             }
 
             //if (EditMultiEvents != null)
@@ -547,27 +759,30 @@ namespace ComPDFKit.Controls.Edit
         #endregion
 
         #region Text Edit
-        private void GetTextArea(out CPDFEditTextArea textArea, out CPDFPage pdfPage, out CPDFEditPage editPage)
+        private void GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage)
         {
-            textArea = null;
+            textAreas = new List<CPDFEditTextArea>();
             editPage = null;
             pdfPage = null;
             if (ToolView == null)
             {
                 return;
             }
-            if (EditEvent != null)
+            if (EditEvents != null && EditEvents.Count>0 )
             {
                 try
                 {
                     CPDFViewer pdfViewer = ToolView.GetCPDFViewer();
                     CPDFDocument pdfDoc = pdfViewer.GetDocument();
-                    pdfPage = pdfDoc.PageAtIndex(EditEvent.PageIndex);
+                    pdfPage = pdfDoc.PageAtIndex(EditEvents.FirstOrDefault().PageIndex);
                     editPage = pdfPage.GetEditPage();
                     List<CPDFEditArea> editAreas = editPage.GetEditAreaList();
-                    if (editAreas != null && editAreas.Count > EditEvent.EditIndex)
+                    foreach (TextEditParam editEvent in EditEvents)
                     {
-                        textArea = editAreas[EditEvent.EditIndex] as CPDFEditTextArea;
+                        if (editAreas != null && editAreas.Count > editEvent.EditIndex)
+                        {
+                            textAreas.Add(editAreas[editEvent.EditIndex] as CPDFEditTextArea);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -586,5 +801,46 @@ namespace ComPDFKit.Controls.Edit
             }
         }
         #endregion
+
+        private void chkMulti_Click(object sender, RoutedEventArgs e)
+        {
+            ToolView.SetIsMultiSelected((e.Source as CheckBox).IsChecked.GetValueOrDefault());
+        }
+
+        private void chkEditPen_Click(object sender, RoutedEventArgs e)
+        {
+            if ((e.Source as CheckBox).IsChecked.GetValueOrDefault())
+            {
+                ToolView.SetEditPen(null);
+            }
+            else
+            {
+                ToolView.SetEditPen(new Pen()
+                {
+                    Brush = new SolidColorBrush(Colors.Black),
+                    Thickness = 0
+                });
+            }
+            ShowBorder = ToolView.GetEditPen() == null || ToolView.GetEditPen().Thickness != 0;
+
+            ToolView.GetCPDFViewer().UpdateRenderFrame();
+        }
+
+        protected bool UpdateProper<T>(ref T properValue,
+                               T newValue,
+                               [CallerMemberName] string properName = "")
+        {
+            if (object.Equals(properValue, newValue))
+                return false;
+
+            properValue = newValue;
+            OnPropertyChanged(properName);
+            return true;
+        }
+
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
+

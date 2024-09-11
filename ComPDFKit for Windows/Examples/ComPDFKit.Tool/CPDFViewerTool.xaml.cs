@@ -1,4 +1,5 @@
-﻿using ComPDFKit.PDFAnnotation;
+﻿using ComPDFKit.Import;
+using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFDocument.Action;
 using ComPDFKit.PDFPage;
@@ -87,6 +88,8 @@ namespace ComPDFKit.Tool
             InsertMultiSelectedRectView();
             InsertCustomizeToolView();
             InsertSelectTextView();
+            //Frame Select
+            InsertFrameSelectToolView();
             InsertTextEditView();
             InsertPageSelectedRectView();
         }
@@ -122,6 +125,33 @@ namespace ComPDFKit.Tool
         private bool isMultiSelected;
         private bool isDocumentModified = false;
 
+
+
+        public bool CanAddTextEdit = true;
+
+        protected bool isContinueCreateTextEdit = false;
+
+        public bool GetIsMultiSelected()
+        {
+            return isMultiSelected;
+        }
+
+        /// <summary>
+        /// Set whether continuous text editing is required
+        /// </summary>
+        /// <param name="isContinueCreateTextEdit"></param>
+        public void SetContinueCreateTextEdit(bool isContinueCreateTextEdit)
+        {
+
+            this.isContinueCreateTextEdit = isContinueCreateTextEdit;
+            CanAddTextEdit = true;
+        }
+
+
+        /// <summary>
+        ///  Does it support multiple selection
+        /// </summary>
+        /// <param name="isMulti">true Can MultiSelected</param>
         public void SetIsMultiSelected(bool isMulti)
         {
             isMultiSelected = isMulti;
@@ -135,6 +165,22 @@ namespace ComPDFKit.Tool
         public DefaultDrawParam GetDefaultDrawParam()
         {
             return defaultDrawParam;
+        }
+
+        /// <summary>
+        /// Set default painting parameters
+        /// </summary>
+        /// <param name="defaultDrawParam"></param>
+        public void SetDefaultDrawParam(DefaultDrawParam defaultDrawParam = null)
+        {
+            if (defaultDrawParam == null)
+            {
+                this.defaultDrawParam = new DefaultDrawParam();
+            }
+            else
+            {
+                this.defaultDrawParam = defaultDrawParam;
+            }
         }
 
         public MeasureSetting GetMeasureSetting()
@@ -274,10 +320,24 @@ namespace ComPDFKit.Tool
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
+            if (isContinueCreateTextEdit)
+            {
+
+                if (lastSelectedRect != null)
+                {
+                    CanAddTextEdit = false;
+                }
+                else
+                {
+                    CanAddTextEdit = true;
+                }
+            }
+
             if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null)
             {
                 return;
             }
+
             if (!HitTestBorder())
             {
                 RemovePopTextUI();
@@ -302,7 +362,7 @@ namespace ComPDFKit.Tool
                         BuildPopTextUI(cacheHitTestAnnot);
                         isDrawSelectRect = false;
                         mouseEventObject.annotType = cacheHitTestAnnot.GetAnnotData().AnnotType;
-                        mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMersured();
+                        mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMeasured();
                         MouseLeftButtonDownHandler?.Invoke(this, mouseEventObject);
                         return;
                     }
@@ -316,7 +376,7 @@ namespace ComPDFKit.Tool
                 {
                     mouseEventObject.hitTestType = MouseHitTestType.SelectRect;
                     mouseEventObject.annotType = cacheHitTestAnnot.GetAnnotData().AnnotType;
-                    mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMersured();
+                    mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMeasured();
                     MouseLeftButtonDownHandler?.Invoke(this, mouseEventObject);
                     return;
                 }
@@ -333,7 +393,7 @@ namespace ComPDFKit.Tool
                 {
                     mouseEventObject.hitTestType = MouseHitTestType.SelectRect;
                     mouseEventObject.annotType = cacheHitTestAnnot.GetAnnotData().AnnotType;
-                    mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMersured();
+                    mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMeasured();
                     MouseLeftButtonDownHandler?.Invoke(this, mouseEventObject);
                     return;
                 }
@@ -365,7 +425,7 @@ namespace ComPDFKit.Tool
                         };
                         if (cacheHitTestAnnot != null && list.Contains(cacheHitTestAnnot.CurrentType))
                         {
-                            mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMersured();
+                            mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMeasured();
                             SetEditAnnotObject();
                         }
                         else
@@ -430,6 +490,30 @@ namespace ComPDFKit.Tool
 
                 if (lastSelectedRect != null)
                 {
+                    //Multi selection processing optimization, other click effects
+                    DrawEndFrameSelect();
+                    if (!Keyboard.IsKeyDown(multiKey) || !isMultiSelected)
+                    {
+                        CleanSelectedMultiRect();
+                        OpenSelectedMulti(false);
+                        if (PDFViewer.CurrentRenderFrame != null)
+                        {
+                            currentZoom = PDFViewer.CurrentRenderFrame.ZoomFactor;
+                            if (PDFViewer.CurrentRenderFrame.IsCacheEditPage == true && currentModel == ToolType.ContentEdit)
+                            {
+                                SetEditTextRect(PDFViewer.CurrentRenderFrame);
+                                if (selectedEditPageIndex != -1 && selectedEditAreaIndex != -1)
+                                {
+                                    DrawSelectedEditAreaForIndex();
+                                }
+                            }
+                        }
+                        ReDrawSelectedMultiRect();
+                    }
+                    if (lastSelectedRect == null)
+                    {
+                        return;
+                    }
                     SelectedMultiRect(lastSelectedRect.GetRect(), lastSelectedRect.GetMaxRect(), SelectedType.PDFEdit);
                     HideDrawSelectedMultiRect();
                     lastSelectedRect.DataChanged -= SelectedRect_DataChanged;
@@ -437,14 +521,38 @@ namespace ComPDFKit.Tool
                 }
                 else
                 {
+                    if (Keyboard.IsKeyDown(multiKey) && isMultiSelected)
+                    {
+                        DelMultiSelectRect();
+                    }
+
                     if (HitTestMultiSelectedRect())
                     {
                         mouseEventObject.hitTestType = MouseHitTestType.MultiTextEdit;
                     }
                     else
                     {
-                        CleanSelectedMultiRect();
+                        //Clear the currently selected object
+                        startSelectedRect = null;
+                        startSelectedIndex = -1;
+                        startSelectedPageIndex = -1;
+                        startSelectedEditAreaObject = null;
 
+                        CleanSelectedMultiRect();
+                        OpenSelectedMulti(false);
+                        if (PDFViewer.CurrentRenderFrame != null)
+                        {
+                            currentZoom = PDFViewer.CurrentRenderFrame.ZoomFactor;
+                            if (PDFViewer.CurrentRenderFrame.IsCacheEditPage == true && currentModel == ToolType.ContentEdit)
+                            {
+                                SetEditTextRect(PDFViewer.CurrentRenderFrame);
+                                if (selectedEditPageIndex != -1 && selectedEditAreaIndex != -1)
+                                {
+                                    DrawSelectedEditAreaForIndex();
+                                }
+                            }
+                        }
+                        ReDrawSelectedMultiRect();
                     }
                 }
             }
@@ -471,6 +579,7 @@ namespace ComPDFKit.Tool
             {
                 return;
             }
+
             MouseEventObject mouseEventObject = new MouseEventObject
             {
                 mouseButtonEventArgs = e,
@@ -478,6 +587,7 @@ namespace ComPDFKit.Tool
                 annotType = C_ANNOTATION_TYPE.C_ANNOTATION_NONE,
                 IsCreate = false
             };
+
             if (isDrawSelectRect || IsDrawEditAnnot)
             {
                 mouseEventObject.hitTestType = MouseHitTestType.SelectRect;
@@ -550,7 +660,7 @@ namespace ComPDFKit.Tool
                     }
 
                     mouseEventObject.annotType = caheMoveAnnot.GetAnnotData().AnnotType;
-                    mouseEventObject.IsMersured = caheMoveAnnot.GetAnnotData().Annot.IsMersured();
+                    mouseEventObject.IsMersured = caheMoveAnnot.GetAnnotData().Annot.IsMeasured();
                 }
                 else
                 {
@@ -598,7 +708,7 @@ namespace ComPDFKit.Tool
                     if (cacheHitTestAnnot != null)
                     {
                         mouseEventObject.annotType = cacheHitTestAnnot.GetAnnotData().AnnotType;
-                        mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMersured();
+                        mouseEventObject.IsMersured = cacheHitTestAnnot.GetAnnotData().Annot.IsMeasured();
                     }
                     else
                     {
@@ -754,7 +864,7 @@ namespace ComPDFKit.Tool
                             default:
                                 break;
                         }
-                    }
+                    } 
                 }
             }
             else
@@ -785,6 +895,8 @@ namespace ComPDFKit.Tool
                 {
                     lastSelectedRect.SetCurrentDrawPointType(DrawPointType.Crop);
                     ignoreList.Add(PointControlType.Body);
+                    // Initialize ClipRect
+                    ClipThickness = new Thickness(0, 0, 0, 0);
                     if (editArea.TryGetValue(lastSelectedRect, out EditAreaObject editAreaObject))
                     {
                         cropIndex = editAreaObject.EditAreaIndex;

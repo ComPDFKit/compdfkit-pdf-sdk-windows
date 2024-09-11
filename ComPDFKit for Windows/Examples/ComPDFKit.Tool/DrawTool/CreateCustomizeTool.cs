@@ -272,6 +272,7 @@ namespace ComPDFKit.Tool.DrawTool
             GroupHistory historyGroup=new GroupHistory();
             CPDFDocument pdfDoc = PDFViewer?.GetDocument();
             List<AnnotParam> paramList = new List<AnnotParam>();
+            List<AnnotParam> paramNewList = new List<AnnotParam>();
             foreach (var item in annotControlList)
             {
                 InkAnnot ink = item as InkAnnot;
@@ -281,9 +282,11 @@ namespace ComPDFKit.Tool.DrawTool
                     CPDFAnnotation delAnnot = item.GetAnnotData().Annot;
                     AnnotHistory annotHistory = ParamConverter.CreateHistory(delAnnot);
                     AnnotParam annotParam = null;
+                    AnnotParam annotNewParam = null; 
                     if (pdfDoc != null)
                     {
                         annotParam = ParamConverter.CPDFDataConverterToAnnotParam(pdfDoc, delAnnot.Page.PageIndex, delAnnot);
+                        annotNewParam= ParamConverter.CPDFDataConverterToAnnotParam(pdfDoc, delAnnot.Page.PageIndex, delAnnot);
                         annotHistory.CurrentParam = annotParam;
                         annotHistory.Action=HistoryAction.Remove;
                         annotHistory.PDFDoc=pdfDoc;
@@ -295,6 +298,8 @@ namespace ComPDFKit.Tool.DrawTool
                         if(annotParam != null)
                         {
                             paramList.Add(annotParam);
+                            
+                            paramNewList.Add(annotNewParam);
                         }
                         historyGroup.Histories.Add(annotHistory);
                     }
@@ -307,7 +312,7 @@ namespace ComPDFKit.Tool.DrawTool
             }
             if(paramList.Count > 0)
             {
-                DeleteChanged?.Invoke(this, paramList);
+                DeleteChanged?.Invoke(this, paramNewList);
             }
         }
     }

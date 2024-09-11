@@ -22,9 +22,6 @@ using CFontNameHelper = ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 
 namespace ComPDFKit.Controls.Measure.Property
 {
-    /// <summary>
-    /// MultilineProperty.xaml 的交互逻辑
-    /// </summary>
     public partial class MultilineProperty : UserControl
     {
         //private AnnotAttribEvent MultilineEvent { get; set; }

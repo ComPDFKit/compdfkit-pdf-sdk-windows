@@ -38,8 +38,7 @@ DependencyProperty.Register("Password", typeof(string), typeof(PasswordBoxContro
             set { SetValue(PasswordProperty, value); }
         }
 
-        #region - 用于绑定ViewModel部分 -
-
+        #region - Used to bind ViewModel part. -
         public ICommand Command
         {
             get { return (ICommand)GetValue(CommandProperty); }

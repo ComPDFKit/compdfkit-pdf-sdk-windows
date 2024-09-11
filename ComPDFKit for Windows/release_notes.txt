@@ -1,6 +1,15 @@
+*** Release Date: Aug 6,  2024***
+Version 2.1.0
+- New Features
+1. Added annotation reply functionality.
+2. Optimized text aggregation logic for content editing.
+3. Optimized UX for content editing.
+4. Added font subsetting.
+
+
 *** Release Date: Mar, 27, 2024 ***
 Version 2.0.0
-New Features
+- New Features
 1. Upgraded underlying libraries to improve rendering speed and stability.
 2. Restructured SDK, providing more customizable interactions.
 3. Added font management functionality, enabling the use of local fonts in annotations, forms, watermarks, and other features.

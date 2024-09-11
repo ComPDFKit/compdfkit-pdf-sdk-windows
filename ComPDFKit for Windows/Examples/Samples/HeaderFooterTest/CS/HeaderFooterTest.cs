@@ -7,7 +7,7 @@ namespace HeaderFooterTest
 {
     internal class HeaderFooterTest
     {
-        private static string outputPath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        private static string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
 
         private static Dictionary<int, string> IntToLocationDic = new Dictionary<int, string>()
         {
@@ -107,7 +107,7 @@ namespace HeaderFooterTest
 
             headerFooter.Update();
 
-            string addHeaderFooterPath = Path.Combine(outputPath, "AddCommonHeaderFooterTest.pdf");
+            string addHeaderFooterPath = outputPath + "\\AddCommonHeaderFooterTest.pdf";
 
             if (!document.WriteToFilePath(addHeaderFooterPath))
             {
@@ -138,7 +138,7 @@ namespace HeaderFooterTest
 
             headerFooter.Update();
 
-            string addHeaderFooterPath = Path.Combine(outputPath, "AddPageHeaderFooterTest.pdf");
+            string addHeaderFooterPath = outputPath + "\\AddPageHeaderFooterTest.pdf";
 
             if (document.WriteToFilePath(addHeaderFooterPath))
             {
@@ -175,7 +175,7 @@ namespace HeaderFooterTest
 
             Console.WriteLine("Change head and footer 0 succeeded, new text is {0}", headerFooter.GetText(0));
 
-            string editHeaderFooterPath = Path.Combine(outputPath, "EditHeaderFooterTest.pdf");
+            string editHeaderFooterPath = outputPath + "\\EditHeaderFooterTest.pdf";
 
             if (document.WriteToFilePath(editHeaderFooterPath))
             {
@@ -194,7 +194,7 @@ namespace HeaderFooterTest
 
             headerFooter.Clear();
 
-            string clearHeaderFooterPath = Path.Combine(outputPath, "ClearHeaderFooterTest.pdf");
+            string clearHeaderFooterPath = outputPath + "\\ClearHeaderFooterTest.pdf";
 
             if (document.WriteToFilePath(clearHeaderFooterPath))
             {

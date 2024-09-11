@@ -1112,6 +1112,14 @@ namespace ComPDFKit.Tool.SettingParam
             get { return pDFEditMovePen.Clone(); }
             set { pDFEditMovePen = value; }
         }
+        private Pen pDFEditMoveRectPen;
+
+        public Pen PDFEditMoveRectPen
+        {
+            get { return pDFEditMoveRectPen.Clone(); }
+            set { pDFEditMoveRectPen = value; }
+        }
+
 
         #region Not selected state
 
@@ -1329,6 +1337,14 @@ namespace ComPDFKit.Tool.SettingParam
         {
             get { return pDFEditMultiMovePen.Clone(); }
             set { pDFEditMultiMovePen = value; }
+        }
+
+        private Pen pDFEditMultiMoveRectPen;
+
+        public Pen PDFEditMultiMoveRectPen
+        {
+            get { return pDFEditMultiMoveRectPen.Clone(); }
+            set { pDFEditMultiMoveRectPen = value; }
         }
 
         #region Not selected state
@@ -1620,6 +1636,7 @@ namespace ComPDFKit.Tool.SettingParam
             CaretBrush = new SolidColorBrush(Color.FromArgb(0x46, 0x46, 0x82, 0xB4));
             CaretPen = new Pen(Brushes.Black, 1);
             PDFEditMovePen = new Pen(new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x00)), 2);
+            PDFEditMoveRectPen = new Pen(new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x00)), 2);
             PDFEditMoveBrush = new SolidColorBrush(Color.FromArgb(0x46, 0x46, 0x82, 0xB4));
 
 
@@ -1657,6 +1674,7 @@ namespace ComPDFKit.Tool.SettingParam
             ViewerImageBackgroundBrush = new SolidColorBrush(Color.FromArgb(0x46, 0x46, 0x82, 0xB4));
 
             //PDFEditMultiSelected
+            PDFEditMultiMoveRectPen = new Pen(new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x00)), 2);
             PDFEditMultiMovePen = new Pen(new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x00)), 2);
             PDFEditMultiMoveBrush = new SolidColorBrush(Color.FromArgb(0x46, 0x46, 0x82, 0xB4));
 

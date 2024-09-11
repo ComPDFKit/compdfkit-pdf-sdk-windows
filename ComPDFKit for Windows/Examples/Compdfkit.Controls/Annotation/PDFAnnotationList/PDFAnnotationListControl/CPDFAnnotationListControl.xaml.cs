@@ -6,19 +6,20 @@ using ComPDFKit.Tool.Help;
 using ComPDFKitViewer;
 using ComPDFKitViewer.BaseObject;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Windows;
-using System.Windows.Annotations;
 using System.Windows.Controls;
-using ComPDFKit.Controls.Helper;
-using static ComPDFKit.Controls.PDFControlUI.CPDFAnnoationListUI;
+using static ComPDFKit.Controls.PDFControlUI.CPDFAnnotationListUI;
+using ComPDFKit.Controls.PDFControlUI;
+using System.Windows.Input;
+using System;
+using System.Linq;
 
 namespace ComPDFKit.Controls.PDFControl
 {
     public partial class CPDFAnnotationListControl : UserControl
     {
-        private List<C_ANNOTATION_TYPE> OmitList = new List<C_ANNOTATION_TYPE> 
+        private List<C_ANNOTATION_TYPE> OmitList = new List<C_ANNOTATION_TYPE>
         {
             C_ANNOTATION_TYPE.C_ANNOTATION_UNKOWN,
             C_ANNOTATION_TYPE.C_ANNOTATION_LINK,
@@ -43,6 +44,52 @@ namespace ComPDFKit.Controls.PDFControl
         {
             AnnotationList.DeleteItemHandler -= AnnotationList_DeleteItemHandler;
             AnnotationList.DeleteItemHandler += AnnotationList_DeleteItemHandler;
+            AnnotationList.ReplyStatusChanged -= AnnotationList_ReplyStatusChanged;
+            AnnotationList.ReplyStatusChanged += AnnotationList_ReplyStatusChanged;
+            AnnotationReplyListControl.ReplyListChanged -= AnnotationReplyListControl_ReplyListChanged;
+            AnnotationReplyListControl.ReplyListChanged += AnnotationReplyListControl_ReplyListChanged;
+        }
+
+        private void AnnotationList_ReplyStatusChanged(object sender, CPDFAnnotationState e)
+        {
+            if (sender is ReplyStatusControl replyStatusControl)
+            {
+                if (replyStatusControl.DataContext is AnnotationBindData data)
+                {
+                    if (pdfViewer != null)
+                    {
+                        CPDFAnnotation annot = data.BindProperty.Annotation;
+                        if (annot != null)
+                        {
+                            annot.SetState(e);
+                            pdfViewer.PDFViewTool.GetCPDFViewer().UpdateAnnotFrame();
+                            pdfViewer.PDFViewTool.IsDocumentModified = true;
+                        }
+                    }
+                }
+            }
+            else if (sender is CheckBox checkBox)
+            {
+                if (checkBox.DataContext is AnnotationBindData data)
+                {
+                    if (pdfViewer != null)
+                    {
+                        CPDFAnnotation annot = data.BindProperty.Annotation;
+                        if (annot != null)
+                        {
+                            annot.SetMarkedAnnotState(checkBox.IsChecked == true ? CPDFAnnotationState.C_ANNOTATION_MARKED : CPDFAnnotationState.C_ANNOTATION_UNMARKED, "");
+                            pdfViewer.PDFViewTool.GetCPDFViewer().UpdateAnnotFrame();
+                            pdfViewer.PDFViewTool.IsDocumentModified = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AnnotationReplyListControl_ReplyListChanged(object sender, System.EventArgs e)
+        {
+            pdfViewer.PDFViewTool.IsDocumentModified = true;
+            pdfViewer.PDFViewTool.GetCPDFViewer().UpdateAnnotFrame();
         }
 
         private void AnnotationList_DeleteItemHandler(object sender, Dictionary<int, List<int>> e)
@@ -71,9 +118,9 @@ namespace ComPDFKit.Controls.PDFControl
             }
             else
             {
-                BaseAnnot baseAnnot= pdfViewer.PDFToolManager.GetCacheHitTestAnnot();
+                BaseAnnot baseAnnot = pdfViewer.PDFToolManager.GetCacheHitTestAnnot();
                 AnnotData annotData = baseAnnot?.GetAnnotData();
-                if(annotData != null)
+                if (annotData != null)
                 {
                     AnnotationList.SelectAnnotationChanged(annotData.PageIndex, annotData.AnnotIndex);
                 }
@@ -95,21 +142,49 @@ namespace ComPDFKit.Controls.PDFControl
 
             List<BindAnnotationResult> bindAnnotationResults = new List<BindAnnotationResult>();
 
+            pdfViewer.UpdateAnnotFrame();
             for (int i = 0; i < pageCount; i++)
             {
-
                 List<AnnotParam> annotList = GetAnnotCommentList(i, pdfViewer.PDFViewTool.GetCPDFViewer().GetDocument());
-                if (annotList != null&& annotList.Count>0)
+                List<CPDFAnnotation> annotCoreList = pdfViewer?.GetCPDFViewer()?.GetDocument()?.PageAtIndex(i, false)?.GetAnnotations();
+                if (annotList != null && annotList.Count > 0)
                 {
                     Dispatcher.Invoke(() =>
                     {
                         foreach (AnnotParam annot in annotList)
                         {
-                            bindAnnotationResults.Add(new BindAnnotationResult
+                            CPDFAnnotation annotCore = annotCoreList[annot.AnnotIndex];
+                            if (annotCore == null || annotCore.IsReplyAnnot() || annotCore.Type == C_ANNOTATION_TYPE.C_ANNOTATION_LINK)
+                            {
+                                continue;
+                            }
+
+                            var bindResult = new BindAnnotationResult
                             {
                                 PageIndex = i,
-                                annotationData = annot
-                            });
+                                annotationData = annot,
+                                pdfViewer = pdfViewer,
+                                ReplyState = annotCore.GetState(),
+                                IsMarkState = annotCore.IsMarkedStateAnnot()
+                            };
+
+                            List<CPDFTextAnnotation> replyAnnotations = annotCore?.GetReplies();
+                            if (replyAnnotations != null && replyAnnotations.Count > 0)
+                            { 
+                                foreach (CPDFTextAnnotation replyAnnot in replyAnnotations)
+                                {
+                                    if (replyAnnot == null || replyAnnot.IsMarkedStateAnnot())
+                                    {
+                                        continue;
+                                    }
+
+                                    bindResult.ReplyList.Add(new ReplyData
+                                    {
+                                        ReplyAnnotation = replyAnnot,
+                                    });
+                                }
+                            }
+                            bindAnnotationResults.Add(bindResult);
                         }
                     });
                 }
@@ -135,12 +210,12 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 foreach (CPDFAnnotation annotation in docAnnots)
                 {
-                    if (annotation==null|| OmitList.Contains(annotation.Type))
+                    if (annotation == null || OmitList.Contains(annotation.Type))
                     {
                         continue;
                     }
-                    AnnotParam annotParam= ParamConverter.CPDFDataConverterToAnnotParam(currentDoc,pageIndex,annotation);
-                    if (annotParam!=null)
+                    AnnotParam annotParam = ParamConverter.CPDFDataConverterToAnnotParam(currentDoc, pageIndex, annotation);
+                    if (annotParam != null)
                     {
                         annotList.Add(annotParam);
                     }
@@ -177,8 +252,8 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 Directory.CreateDirectory(tempPath);
             }
-            pdfViewer.PDFToolManager.GetDocument().ImportAnnotationFromXFDFPath(selectedPath,tempPath);
-                
+            pdfViewer.PDFToolManager.GetDocument().ImportAnnotationFromXFDFPath(selectedPath, tempPath);
+
             LoadAnnotationList();
             pdfViewer.PDFViewTool.GetCPDFViewer().UpdateVirtualNodes();
             pdfViewer.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
@@ -194,11 +269,122 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 Directory.CreateDirectory(tempPath);
             }
-
             if (pdfViewer.PDFToolManager.GetDocument().ExportAnnotationToXFDFPath(selectedPath, tempPath))
             {
                 System.Diagnostics.Process.Start("explorer.exe", "/select," + selectedPath);
             }
         }
     }
+
+    public class ExpandAllReplyCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter is CPDFAnnotationListControl annotationListControl)
+            {
+                annotationListControl.AnnotationList.ExpandAllReply(true);
+            }
+        }
+    }
+
+    public class FoldAllReplyCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter is CPDFAnnotationListControl annotationListControl)
+            {
+                annotationListControl.AnnotationList.ExpandAllReply(false);
+            }
+        }
+    }
+
+    public class DeleteAllAnnotCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter is CPDFAnnotationListControl annotationListControl)
+            {
+                annotationListControl.AnnotationList.DeleteAllReply();
+                annotationListControl.LoadAnnotationList();
+                annotationListControl.AnnotationList.DeleteAllAnnot();
+            }
+        }
+    }
+
+    public class DeleteAllReplyCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter is CPDFAnnotationListControl annotationListControl)
+            {
+                annotationListControl.AnnotationList.DeleteAllReply();
+                annotationListControl.LoadAnnotationList();
+            }
+        }
+    }
+
+    public class ExpandAnnotListCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter is CPDFAnnotationListControl annotationListControl)
+            {
+                annotationListControl.AnnotationList.ExpandAnnotList(true);
+            }
+        }
+    }
+
+    public class FoldAnnotListCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (parameter is CPDFAnnotationListControl annotationListControl)
+            {
+                annotationListControl.AnnotationList.ExpandAnnotList(false);
+            }
+        }
+    }
+
 }

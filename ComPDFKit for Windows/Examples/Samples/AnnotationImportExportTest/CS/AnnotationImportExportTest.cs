@@ -13,7 +13,7 @@ namespace AnnotationImportExportTest
         static void Main(string[] args)
         {
 
-            Console.WriteLine("Running header and footer test sample…" + Environment.NewLine);
+            Console.WriteLine("Running annotation import export test sample…" + Environment.NewLine);
 
             #region Preparation work
 

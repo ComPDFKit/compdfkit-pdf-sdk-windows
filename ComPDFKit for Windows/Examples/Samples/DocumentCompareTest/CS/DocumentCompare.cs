@@ -7,7 +7,7 @@ namespace DocumentCompareTest
 {
     internal class DocumentCompare
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
 
         static void Main(string[] args)
         {
@@ -59,7 +59,7 @@ namespace DocumentCompareTest
             CPDFCompareOverlay compareOverlay = new CPDFCompareOverlay(document1, "1-5", document2, "1-5");
             compareOverlay.Compare();
             CPDFDocument comparisonDocument = compareOverlay.ComparisonDocument();
-            string path = Path.Combine(outputPath, "CompareDocumentTest.pdf");
+            string path = outputPath + "\\CompareDocumentTest.pdf";
             if (!comparisonDocument.WriteToFilePath(path))
             {
                 return false;

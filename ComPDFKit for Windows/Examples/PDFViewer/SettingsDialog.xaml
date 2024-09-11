@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PDFViewer"
         xmlns:common="clr-namespace:ComPDFKit.Controls.Common;assembly=ComPDFKit.Controls"
         mc:Ignorable="d"
-        Title="Settings" Height="580" Width="440"
+        Title="Settings" Height="700" Width="440"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -103,8 +103,8 @@
     </Window.Resources>
     <Grid Margin="24,0,24,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="106"></RowDefinition>
-            <RowDefinition Height="150"></RowDefinition>
+            <RowDefinition Height="166"></RowDefinition>
+            <RowDefinition Height="190"></RowDefinition>
             <RowDefinition Height="35"></RowDefinition>
             <RowDefinition Height="45"/>
             <RowDefinition Height="180"></RowDefinition>
@@ -114,6 +114,11 @@
             <Grid Margin="0,10,0,8" Height="32">
                 <TextBlock Text="{Binding  ConverterParameter=Setting_Author, Converter={StaticResource ResourceConverter}}" FontSize="14" FontWeight="DemiBold" FontFamily="Microsoft YaHei" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
                 <TextBox x:Name="AuthorTxb" Padding="5,0,5,0" TextChanged="AuthorTxb_TextChanged"  HorizontalAlignment="Right" VerticalContentAlignment="Center" Width="130">
+                </TextBox>
+            </Grid>
+            <Grid Margin="0,0,0,8" Height="32">
+                <TextBlock Text="{Binding  ConverterParameter=Setting_Annotator, Converter={StaticResource ResourceConverter}}" FontSize="14" FontWeight="DemiBold" FontFamily="Microsoft YaHei" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
+                <TextBox x:Name="AnnotatorTxb" Padding="5,0,5,0" TextChanged="AnnotatorTxb_TextChanged"  HorizontalAlignment="Right" VerticalContentAlignment="Center" Width="130">
                 </TextBox>
             </Grid>
             <Grid Height="32">
@@ -133,6 +138,10 @@
                 <Grid Margin="0,0,0,8" Height="32">
                     <TextBlock Text="{Binding  ConverterParameter=Setting_HighlightForms, Converter={StaticResource ResourceConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
                     <ToggleButton x:Name="HighlightFormTog" Click="HighlightFormTog_Click" Style="{StaticResource SliderSwitchToggleButtonStyle}" Height="32" HorizontalAlignment="Right"></ToggleButton>
+                </Grid>
+                <Grid Margin="0,0,0,8" Height="32">
+                    <TextBlock Text="{Binding ConverterParameter=Setting_FontSubset, Converter={StaticResource ResourceConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
+                    <ToggleButton x:Name="FontSubsettingTog" Click="FontSubsettingTog_Click" Style="{StaticResource SliderSwitchToggleButtonStyle}" Height="32" HorizontalAlignment="Right"></ToggleButton>
                 </Grid>
                 <Grid Margin="0,0,0,8" Height="32">
                     <TextBlock Text="{Binding  ConverterParameter=Setting_Divisor, Converter={StaticResource ResourceConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>

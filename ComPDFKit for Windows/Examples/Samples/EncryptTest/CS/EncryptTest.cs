@@ -10,7 +10,7 @@ namespace EncryptTest
 {
     internal class EncryptTest
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
         static private string userPassword = string.Empty;
         static private string ownerPassword = string.Empty;
 
@@ -125,7 +125,7 @@ namespace EncryptTest
         {
             CPDFDocumentEncryptionLevel encryptionLevel = CPDFDocumentEncryptionLevel.CPDFDocumentEncryptionLevelRC4;
             document.Encrypt(userPassword, ownerPassword, permissionsInfo, encryptionLevel);
-            string encryptPath = Path.Combine(outputPath, "EncryptUseRC4Test.pdf");
+            string encryptPath = outputPath + "\\EncryptUseRC4Test.pdf";
             if (!document.WriteToFilePath(encryptPath))
             {
                 return false;
@@ -151,7 +151,7 @@ namespace EncryptTest
         {
             CPDFDocumentEncryptionLevel encryptionLevel = CPDFDocumentEncryptionLevel.CPDFDocumentEncryptionLevelAES128;
             document.Encrypt(userPassword, ownerPassword, permissionsInfo, encryptionLevel);
-            string encryptPath = Path.Combine(outputPath, "EncryptUseAES128Test.pdf");
+            string encryptPath = outputPath + "\\EncryptUseAES128Test.pdf";
             if (!document.WriteToFilePath(encryptPath))
             {
                 return false;
@@ -177,7 +177,7 @@ namespace EncryptTest
         {
             CPDFDocumentEncryptionLevel encryptionLevel = CPDFDocumentEncryptionLevel.CPDFDocumentEncryptionLevelAES256;
             document.Encrypt(userPassword, ownerPassword, permissionsInfo, encryptionLevel);
-            string encryptPath = Path.Combine(outputPath, "EncryptUseAES256Test.pdf");
+            string encryptPath = outputPath + "\\EncryptUseAES256Test.pdf";
             if (!document.WriteToFilePath(encryptPath))
             {
                 return false;
@@ -203,7 +203,7 @@ namespace EncryptTest
         {
             CPDFDocumentEncryptionLevel encryptionLevel = CPDFDocumentEncryptionLevel.CPDFDocumentEncryptionLevelNoEncryptAlgo;
             document.Encrypt(userPassword, ownerPassword, permissionsInfo, encryptionLevel);
-            string encryptPath = Path.Combine(outputPath, "EncryptUseNoEncryptAlgoTest.pdf");
+            string encryptPath = outputPath + "\\EncryptUseNoEncryptAlgoTest.pdf";
             if (!document.WriteToFilePath(encryptPath))
             {
                 return false;
@@ -295,7 +295,7 @@ namespace EncryptTest
             permissionsInfo.AllowsCopying = false;
             CPDFDocumentEncryptionLevel encryptionLevel = CPDFDocumentEncryptionLevel.CPDFDocumentEncryptionLevelRC4;
             document.Encrypt(userPassword, ownerPassword, permissionsInfo, encryptionLevel);
-            string encryptPath = Path.Combine(outputPath, "EncryptByOwnerPasswordTest.pdf");
+            string encryptPath = outputPath + "\\EncryptByOwnerPasswordTest.pdf";
             if (!document.WriteToFilePath(encryptPath))
             {
                 return false;
@@ -331,7 +331,7 @@ namespace EncryptTest
             permissionsInfo.AllowsCopying = false;
             CPDFDocumentEncryptionLevel encryptionLevel = CPDFDocumentEncryptionLevel.CPDFDocumentEncryptionLevelRC4;
             document.Encrypt(userPassword, ownerPassword, permissionsInfo, encryptionLevel);
-            string encryptPath = Path.Combine(outputPath, "EncryptByAllPasswordsTest.pdf");
+            string encryptPath = outputPath + "\\EncryptByAllPasswordsTest.pdf";
             if (!document.WriteToFilePath(encryptPath))
             {
                 return false;
@@ -396,7 +396,7 @@ namespace EncryptTest
         {
             userPassword = "User";
             ownerPassword = "Owner";
-            string decryptPath = Path.Combine(outputPath, "DecryptTest.pdf");
+            string decryptPath = outputPath + "\\DecryptTest.pdf";
             document.UnlockWithPassword(userPassword);
             if (!document.Decrypt(decryptPath))
             {

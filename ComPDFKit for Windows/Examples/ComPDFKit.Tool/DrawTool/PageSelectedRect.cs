@@ -886,6 +886,11 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 TmpDown = maxRect.Bottom;
             }
+
+            if (TmpRight - TmpLeft < 0.0 || TmpDown - TmpUp < 0.0)
+            {
+                return false;
+            }
             drawRect = new Rect(TmpLeft, TmpUp, TmpRight - TmpLeft, TmpDown - TmpUp);
             moveOffset = new Point(drawRect.X - cacheRect.X, drawRect.Y - cacheRect.Y);
             return true;
@@ -1001,72 +1006,80 @@ namespace ComPDFKit.Tool.DrawTool
         /// </returns>
         public PointControlType GetHitControlIndex(Point point)
         {
-            HitTestResult hitResult = VisualTreeHelper.HitTest(this, point);
-            if (hitResult != null && hitResult.VisualHit is DrawingVisual)
+            try
             {
-                List<PointControlType> ignoreList = GetIgnorePoints();
-
-                List<Point> IgnorePointsList = new List<Point>();
-                foreach (PointControlType type in ignoreList)
+                HitTestResult hitResult = VisualTreeHelper.HitTest(this, point);
+                if (hitResult != null && hitResult.VisualHit is DrawingVisual)
                 {
-                    if ((int)type < controlPoints.Count)
-                    {
-                        IgnorePointsList.Add(controlPoints[(int)type]);
-                    }
-                }
-                for (int i = 0; i < controlPoints.Count; i++)
-                {
-                    Point checkPoint = controlPoints[i];
+                    List<PointControlType> ignoreList = GetIgnorePoints();
 
-                    if (IgnorePointsList.Contains(checkPoint))
+                    List<Point> IgnorePointsList = new List<Point>();
+                    foreach (PointControlType type in ignoreList)
                     {
-                        continue;
-                    }
-                    switch (currentDrawPointType)
-                    {
-                        case DrawPointType.Circle:
-                            Vector checkVector = checkPoint - point;
-                            if (checkVector.Length < pointSize)
-                            {
-                                return (PointControlType)i;
-                            }
-                            break;
-                        case DrawPointType.Square:
-
-                            Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize,0), pointSize * 2, pointSize * 2);
-                            if (checkRect.Contains(point))
-                            {
-                                return (PointControlType)i;
-                            }
-                            break;
-
-                        case DrawPointType.Crop:
-                            Rect cropRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
-                            if (cropRect.Contains(point))
-                            {
-                                return (PointControlType)i;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                if (drawRect.Contains(point))
-                {
-                    Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), drawRect.Width - 2 * rectPadding, drawRect.Height - 2 * rectPadding);
-                    if (rect.Contains(point))
-                    {
-                        if (!ignoreList.Contains(PointControlType.Body))
+                        if ((int)type < controlPoints.Count)
                         {
-                            return PointControlType.Body;
+                            IgnorePointsList.Add(controlPoints[(int)type]);
                         }
                     }
-                    if (!ignoreList.Contains(PointControlType.Body))
+                    for (int i = 0; i < controlPoints.Count; i++)
                     {
-                        return PointControlType.Line;
+                        Point checkPoint = controlPoints[i];
+
+                        if (IgnorePointsList.Contains(checkPoint))
+                        {
+                            continue;
+                        }
+                        switch (currentDrawPointType)
+                        {
+                            case DrawPointType.Circle:
+                                Vector checkVector = checkPoint - point;
+                                if (checkVector.Length < pointSize)
+                                {
+                                    return (PointControlType)i;
+                                }
+                                break;
+                            case DrawPointType.Square:
+
+                                Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
+                                if (checkRect.Contains(point))
+                                {
+                                    return (PointControlType)i;
+                                }
+                                break;
+
+                            case DrawPointType.Crop:
+                                Rect cropRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
+                                if (cropRect.Contains(point))
+                                {
+                                    return (PointControlType)i;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if (drawRect.Contains(point))
+                    {
+                        Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), drawRect.Width - 2 * rectPadding, drawRect.Height - 2 * rectPadding);
+                        if (rect.Contains(point))
+                        {
+                            if (!ignoreList.Contains(PointControlType.Body))
+                            {
+                                return PointControlType.Body;
+                            }
+                        }
+                        if (!ignoreList.Contains(PointControlType.Body))
+                        {
+                            return PointControlType.Line;
+                        }
                     }
                 }
             }
+            catch (Exception ex) 
+            { 
+
+            }
+
             return PointControlType.None;
         }
 

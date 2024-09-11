@@ -8,7 +8,7 @@ namespace OutlineTest
 {
     internal class OutlineTest
     {
-        private static string outputPath =Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) ?? string.Empty, "Output", "CS");
+        static private string outputPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()))) + "\\Output\\CS";
         static private int outlineCounter = 0;
         static private int outlineNumber = 0;
 
@@ -177,7 +177,7 @@ namespace OutlineTest
             CPDFOutline targetOutline = document.GetOutlineList()[1];
             targetOutline.MoveChildAtIndex(document, outline, targetOutline.ChildList.Count);
 
-            string path = Path.Combine(outputPath, "MoveOutlineTest.pdf");
+            string path = outputPath + "\\MoveOutlineTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;
@@ -194,7 +194,7 @@ namespace OutlineTest
         { 
             document.GetOutlineList()[0].RemoveFromParent(document);
 
-            string path = Path.Combine(outputPath, "RemoveOutlineTest.pdf");
+            string path = outputPath + "\\RemoveOutlineTest.pdf";
             if (!document.WriteToFilePath(path))
             {
                 return false;

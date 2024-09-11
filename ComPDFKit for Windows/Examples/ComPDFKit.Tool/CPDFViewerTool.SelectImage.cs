@@ -67,11 +67,11 @@ namespace ComPDFKit.Tool
             (baseLayer as SelectImage).CleanDraw(PDFViewer);
         }
 
-        public PageImageItem GetSelectImage()
-        {
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(selectImageTag);
-            return (baseLayer as SelectImage).GetHoverImageItem();
-        }
+        //public PageImageItem GetSelectImage()
+        //{
+        //    BaseLayer baseLayer = PDFViewer.GetViewForTag(selectImageTag);
+        //    return (baseLayer as SelectImage).GetHoverImageItem();
+        //}
 
         public Dictionary<int, List<PageImageItem>> GetSelectImageItems()
         {

@@ -9,26 +9,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ComPDFKit.PDFPage;
 using ComPDFKit.Tool.Help;
-using ComPDFKit.Viewer.Annot;
 using ComPDFKitViewer.BaseObject;
 using Path = System.IO.Path;
-
+using ComPDFKit.Tool.DrawTool;
 
 namespace ComPDFKit.Controls.Measure
 {
@@ -192,11 +183,23 @@ namespace ComPDFKit.Controls.Measure
             System.Windows.Forms.FolderBrowserDialog folderDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var image = PdfViewControl.FocusPDFViewTool.GetSelectImage();
+                PageImageItem image = null;
+                Dictionary<int, List<PageImageItem>> pageImageDict = PdfViewControl.FocusPDFViewTool.GetSelectImageItems();
+                if (pageImageDict != null && pageImageDict.Count > 0)
+                {
+                    foreach (int pageIndex in pageImageDict.Keys)
+                    {
+                        List<PageImageItem> imageItemList = pageImageDict[pageIndex];
+                        image = imageItemList[0];
+                        break;
+                    }
+                }
+
                 if (image == null)
                 {
                     return;
                 }
+
                 CPDFPage page = PdfViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
                 string savePath = System.IO.Path.Combine(folderDialog.SelectedPath, Guid.NewGuid() + ".jpg");
                 string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid() + ".jpg");
@@ -210,7 +213,18 @@ namespace ComPDFKit.Controls.Measure
 
         private void CopyImage_Click(object sender, RoutedEventArgs e)
         {
-            var image = PdfViewControl.FocusPDFViewTool.GetSelectImage();
+            PageImageItem image = null;
+            Dictionary<int, List<PageImageItem>> pageImageDict = PdfViewControl.FocusPDFViewTool.GetSelectImageItems();
+            if (pageImageDict != null && pageImageDict.Count > 0)
+            {
+                foreach (int pageIndex in pageImageDict.Keys)
+                {
+                    List<PageImageItem> imageItemList = pageImageDict[pageIndex];
+                    image = imageItemList[0];
+                    break;
+                }
+            }
+
             if (image == null)
             {
                 return;
@@ -278,7 +292,7 @@ namespace ComPDFKit.Controls.Measure
                 if (annot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
                 {
                     CPDFLineAnnotation lineAnnot = annot as CPDFLineAnnotation;
-                    if (lineAnnot.IsMersured() && lineAnnot.Points != null && lineAnnot.Points.Count() == 2)
+                    if (lineAnnot.IsMeasured() && lineAnnot.Points != null && lineAnnot.Points.Count() == 2)
                     {
                         InfoPanel.SetMeasureInfo(lineAnnot);
                         SetMeasureInfoType(CPDFMeasureType.CPDF_DISTANCE_MEASURE);
@@ -288,7 +302,7 @@ namespace ComPDFKit.Controls.Measure
                 if (annot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE)
                 {
                     CPDFPolylineAnnotation polylineAnnot = annot as CPDFPolylineAnnotation;
-                    if (polylineAnnot.IsMersured() && polylineAnnot.Points != null && polylineAnnot.Points.Count() >= 2)
+                    if (polylineAnnot.IsMeasured() && polylineAnnot.Points != null && polylineAnnot.Points.Count() >= 2)
                     {
                         InfoPanel.SetMeasureInfo(polylineAnnot);
                         SetMeasureInfoType(CPDFMeasureType.CPDF_PERIMETER_MEASURE);

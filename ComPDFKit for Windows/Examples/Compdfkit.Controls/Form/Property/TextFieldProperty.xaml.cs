@@ -63,7 +63,7 @@ namespace ComPDFKit.Controls.PDFControl
             string familyName = string.Empty;
             string styleName = string.Empty;
 
-            CPDFFont.GetFamlyStyleName(widgetParam.FontName, ref familyName, ref styleName);
+            CPDFFont.GetFamilyStyleName(widgetParam.FontName, ref familyName, ref styleName);
 
             FontCmb.ItemsSource = CPDFFont.GetFontNameDictionary().Keys.ToList();
 

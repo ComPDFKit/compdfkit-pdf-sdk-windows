@@ -1,5 +1,4 @@
-﻿
-namespace Measure.Properties {
+﻿namespace Measure.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

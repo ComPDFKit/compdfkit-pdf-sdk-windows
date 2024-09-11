@@ -341,7 +341,7 @@ namespace ComPDFKit.Controls.PDFControl
             weakReference = new WeakReference(this);
 
             FontFamilyCmb.ItemsSource = CPDFFont.GetFontNameDictionary().Keys;
-            // 如果存在helvetica,arial,times,则默认选择
+            // If there is helvetica,arial,times, then select by default.
             if (FontFamilyCmb.Items.Contains("Helvetica"))
             {
                 FontFamilyCmb.SelectedItem = "Helvetica";

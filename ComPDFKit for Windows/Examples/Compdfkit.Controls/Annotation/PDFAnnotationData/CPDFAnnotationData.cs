@@ -25,7 +25,12 @@ namespace ComPDFKit.Controls.Data
         Signature,
         Link,
         Audio,
-        Image
+        Image,
+        PolyLine,
+        Polygon,
+        LineMeasure,
+        PolyLineMeasure,
+        PolygonMeasure
     }
 
     public enum SignatureType
@@ -96,7 +101,7 @@ namespace ComPDFKit.Controls.Data
     }
 
     /// <summary>
-    /// 用于换算的dash
+    /// The dash data for conversion.
     /// </summary>
     public class CPDFDashData
     {

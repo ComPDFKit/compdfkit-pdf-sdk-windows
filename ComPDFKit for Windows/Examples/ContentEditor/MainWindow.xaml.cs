@@ -267,7 +267,7 @@ namespace ContentEditorViewControl
         private void LeftToolPanelButton_Click(object sender, RoutedEventArgs e)
         {
             panelState.IsLeftPanelExpand = (sender as ToggleButton).IsChecked == true;
-            contentEditControl.PdfViewControl.GetCPDFViewer().GoToPage(1, new Point(100, 100));
+            contentEditControl.PdfViewControl.GetCPDFViewer().GoToPage(pageIndex: 1, new Point(100, 100));
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

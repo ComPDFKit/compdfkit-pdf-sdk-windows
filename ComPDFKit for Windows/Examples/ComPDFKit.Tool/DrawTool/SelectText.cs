@@ -293,7 +293,7 @@ namespace ComPDFKit.Tool.DrawTool
                 renderDatas = cPDFViewer.CurrentRenderFrame.GetRenderDatas();
             }
 
-            foreach (RenderData PaintRange in renderDatas)//一页
+            foreach (RenderData PaintRange in renderDatas)
             {
                 if (SelectTextItem.PageSelectTextRectList.ContainsKey(PaintRange.PageIndex))
                 {

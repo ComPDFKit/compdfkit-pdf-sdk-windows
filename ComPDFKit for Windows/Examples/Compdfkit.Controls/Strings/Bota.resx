@@ -249,4 +249,67 @@
   <data name="Button_Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="Button_Reply" xml:space="preserve">
+    <value>Reply</value>
+  </data>
+  <data name="Holder_Reply" xml:space="preserve">
+    <value>Reply or add thoughts</value>
+  </data>
+  <data name="Menu_AddReply" xml:space="preserve">
+    <value>Add a new reply</value>
+  </data>
+  <data name="Menu_DelAllAnnot" xml:space="preserve">
+    <value>Delete all annotations</value>
+  </data>
+  <data name="Menu_DelAllReply" xml:space="preserve">
+    <value>Delete all replies</value>
+  </data>
+  <data name="Menu_DelAnnot" xml:space="preserve">
+    <value>Delete annotation</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Menu_ExpandAllAnnot" xml:space="preserve">
+    <value>Expand all annotation</value>
+  </data>
+  <data name="Menu_ExpandAllReply" xml:space="preserve">
+    <value>Expand all replies</value>
+  </data>
+  <data name="Menu_ExpandReply" xml:space="preserve">
+    <value>Expand replies</value>
+  </data>
+  <data name="Menu_FoldAllAnnot" xml:space="preserve">
+    <value>Fold all annotation</value>
+  </data>
+  <data name="Menu_FoldAllReply" xml:space="preserve">
+    <value>Fold all replies</value>
+  </data>
+  <data name="Menu_FoldReply" xml:space="preserve">
+    <value>Fold replies</value>
+  </data>
+  <data name="Status_Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Status_Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Status_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Status_Marked" xml:space="preserve">
+    <value>Marked</value>
+  </data>
+  <data name="Status_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Status_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Status_Unmarked" xml:space="preserve">
+    <value>Unmarked</value>
+  </data>
+  <data name="Tooltip_More" xml:space="preserve">
+    <value>More</value>
+  </data>
 </root>

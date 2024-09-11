@@ -10,92 +10,110 @@ namespace ComPDFKit.Tool.DrawTool
         #region Properties
 
         /// <summary>
-        /// 当前控制点的绘制样式
+        /// Current control point drawing style.
         /// </summary>
-        protected DrawPointType currentDrawPointType { get; set; }
+        protected DrawPointType currentDrawPointType
+        {
+            get;
+            set;
+        }
+
 
         /// <summary>
-        /// 当前拖拽的绘制样式
+        /// Current drag drawing style.
         /// </summary>
         protected DrawMoveType currentDrawMoveType { get; set; }
 
         /// <summary>
-        /// 当前点击命中的控制点
+        /// Current click hit control point.
         /// </summary>
         protected PointControlType hitControlType { get; set; }
 
         /// <summary>
-        /// 鼠标按下时记录的位置信息
+        /// Mouse down position information.
         /// </summary>
         protected Point mouseDownPoint { get; set; }
 
         /// <summary>
-        /// 鼠标是否按下
+        /// Whether the mouse is pressed.
         /// </summary>
         protected bool isMouseDown { get; set; }
 
         /// <summary>
-        /// 是否需要等比例缩放
+        /// Whether proportional scaling is required.
         /// </summary>
         protected bool isProportionalScaling { get; set; } = false;
 
         /// <summary>
-        /// 控制点大小
+        /// Current control point size.
         /// </summary>
         protected int pointSize { get; set; } = 4;
 
         /// <summary>
-        /// 矩形的最小宽度
+        /// Rectangular minimum width.
         /// </summary>
         protected int rectMinWidth { get; set; } = 10;
 
         /// <summary>
-        /// 矩形的最小高度
+        /// Rectangular minimum height.
         /// </summary>
         protected int RectMinHeight { get; set; } = 10;
 
         /// <summary>
-        /// 当前设置的忽略点
+        /// Current set of ignore points.
         /// </summary>
         protected List<PointControlType> ignorePoints { get; set; } = new List<PointControlType>();
 
         /// <summary>
-        /// 当前设置的绘制矩形（原始数据）
+        /// Current set of drawing rectangles (original data).
         /// </summary>
         protected Rect SetDrawRect { get; set; } = new Rect(0, 0, 0, 0);
 
         /// <summary>
-        /// 当前绘制的矩形（操作过程中计算得到）
+        /// Current drawing rectangle (calculated during operation).
         /// </summary>
         protected Rect drawRect { get; set; } = new Rect(0, 0, 0, 0);
 
         /// <summary>
-        /// 可绘制的最大范围
+        /// Maximum range that can be drawn.
         /// </summary>
         protected Rect maxRect { get; set; } = new Rect(0, 0, 0, 0);
 
         /// <summary>
-        /// 当前绘制的矩形的中心点
+        /// Current center point of the drawing rectangle.
         /// </summary>
         protected Point drawCenterPoint { get; private set; } = new Point(0, 0);
 
         /// <summary>
-        /// 鼠标按下时缓存的矩形
+        /// When the mouse is pressed, the cached rectangle.
         /// </summary>
         protected Rect cacheRect { get; set; } = new Rect(0, 0, 0, 0);
 
         /// <summary>
-        /// 当前控制点的坐标
+        /// Current control point coordinates.
         /// </summary>
         protected List<Point> controlPoints { get; set; } = new List<Point>();
 
         /// <summary>
-        /// 移动过程中的偏移值
+        /// Move offset during movement.
         /// </summary>
         protected Point moveOffset { get; set; } = new Point(0, 0);
 
         /// <summary>
-        /// 当前PDFVIewer的实际显示宽高
+        /// Current drawing rectangle (calculated during operation).
+        /// </summary>
+        protected Thickness clipThickness = new Thickness(0, 0, 0, 0);
+
+        private Pen editPen { get; set; } = new Pen(new SolidColorBrush(Color.FromRgb(71, 126, 222)), 2) { DashStyle = DashStyles.Dash };
+
+        private Pen editHoverPen { get; set; } = new Pen(new SolidColorBrush(Color.FromRgb(71, 126, 222)), 2) { DashStyle = DashStyles.Dash };
+
+        private bool showCreatTextRect = false;
+
+        protected bool isOutSideScaling = false;
+
+        /// <summary>
+        /// Current actual display width and height of PDFVIewer.
         /// </summary>
         protected double PDFViewerActualWidth { get; set; } = 0;
 
@@ -108,7 +126,6 @@ namespace ComPDFKit.Tool.DrawTool
         protected SelectedAnnotData selectedRectData = new SelectedAnnotData();
 
         protected bool disable = false;
-
 
         #endregion
 
@@ -134,6 +151,24 @@ namespace ComPDFKit.Tool.DrawTool
             controlPoints.Add(new Point(currentRect.Right, centerY));
             controlPoints.Add(new Point(currentRect.Right, currentRect.Top));
             controlPoints.Add(new Point(centerX, currentRect.Top));
+        }
+
+        protected List<Point> GetControlPoint(Rect currentRect)
+        {
+            List<Point> controlCurrentPoints = new List<Point>();
+            controlCurrentPoints.Clear();
+            int centerX = (int)(currentRect.Left + currentRect.Right) / 2;
+            int centerY = (int)(currentRect.Top + currentRect.Bottom) / 2;
+
+            controlCurrentPoints.Add(new Point(currentRect.Left, currentRect.Top));
+            controlCurrentPoints.Add(new Point(currentRect.Left, centerY));
+            controlCurrentPoints.Add(new Point(currentRect.Left, currentRect.Bottom));
+            controlCurrentPoints.Add(new Point(centerX, currentRect.Bottom));
+            controlCurrentPoints.Add(new Point(currentRect.Right, currentRect.Bottom));
+            controlCurrentPoints.Add(new Point(currentRect.Right, centerY));
+            controlCurrentPoints.Add(new Point(currentRect.Right, currentRect.Top));
+            controlCurrentPoints.Add(new Point(centerX, currentRect.Top));
+            return controlCurrentPoints;
         }
 
         /// <summary>
@@ -199,8 +234,21 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 return false;
             }
-            return NormalScaling(mousePoint);
+            if (!isOutSideScaling)
+            {
+                return NormalScaling(mousePoint);
+            }
+            else
+            {
+                return OutSideScaling(mousePoint);
+            }
         }
+
+        public void SetOutSideScaling(bool IsOutSideScaling)
+        {
+            isOutSideScaling = IsOutSideScaling;
+        }
+
 
         private Size GetProportionalScalingSize(double width, double height)
         {
@@ -224,288 +272,605 @@ namespace ComPDFKit.Tool.DrawTool
         }
 
         /// <summary>
-        /// 绘制常规缩放形式的算法（拖拽一个点，只向一个方向缩放）
+        /// Draw the algorithm in the form of normal scaling (drag a point, only scale in one direction).
         /// </summary>
-        /// <param name="mousePoint">当前鼠标所在位置</param>
+        /// <param name="mousePoint">Current mouse position.</param>
         /// <returns></returns>
         protected bool NormalScaling(Point mousePoint)
         {
-            double left = 0, right = 0, top = 0, bottom = 0;
-            double minHeight = RectMinHeight + 2 * rectPadding * currentZoom;
-            double minWidth = rectMinWidth + 2 * rectPadding * currentZoom;
-
-            Point centerPoint = new Point((cacheRect.Right + cacheRect.Left) / 2, (cacheRect.Bottom + cacheRect.Top) / 2);
-            Point moveVector = (Point)(mousePoint - centerPoint);
-            moveVector = ProportionalScalingOffsetPos(moveVector);
-
-            switch (hitControlType)
+            try
             {
-                case PointControlType.LeftTop:
-                    {
-                        left = centerPoint.X + moveVector.X;
-                        right = cacheRect.Right;
-                        top = centerPoint.Y + moveVector.Y;
-                        bottom = cacheRect.Bottom;
-                        if (isProportionalScaling)
-                        {
-                            Size size = GetProportionalScalingSize(right - left, bottom - top);
-                            left = right - size.Width;
-                            top = bottom - size.Height;
-                            if(left < maxRect.Left)
-                            {
-                                double tmpWidth = right - left;
-                                left = maxRect.Left;
-                                double width = right - left;
-                                double height = (bottom - top) * width / tmpWidth;
-                                top = bottom - height;
-                            }
+                double left = 0, right = 0, top = 0, bottom = 0;
+                double minHeight = RectMinHeight + 2 * rectPadding * currentZoom;
+                double minWidth = rectMinWidth + 2 * rectPadding * currentZoom;
 
-                            if (top < maxRect.Top)
+                Point centerPoint = new Point((cacheRect.Right + cacheRect.Left) / 2, (cacheRect.Bottom + cacheRect.Top) / 2);
+                Point moveVector = (Point)(mousePoint - centerPoint);
+                moveVector = ProportionalScalingOffsetPos(moveVector);
+
+                switch (hitControlType)
+                {
+                    case PointControlType.LeftTop:
+                        {
+                            left = centerPoint.X + moveVector.X;
+                            right = cacheRect.Right;
+                            top = centerPoint.Y + moveVector.Y;
+                            bottom = cacheRect.Bottom;
+                            if (isProportionalScaling)
                             {
-                                double tmpHeight = bottom - top;
-                                top = maxRect.Top;
-                                double height = bottom - top;
-                                double width = (right - left) * height / tmpHeight;
-                                left = right - width;
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                left = right - size.Width;
+                                top = bottom - size.Height;
+                                if (left < maxRect.Left)
+                                {
+                                    double tmpWidth = right - left;
+                                    left = maxRect.Left;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    top = bottom - height;
+                                }
+
+                                if (top < maxRect.Top)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    top = maxRect.Top;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    left = right - width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    left = right - minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    top = bottom - minHeight;
+                                }
                             }
                         }
-                        else
+                        break;
+
+                    case PointControlType.LeftMiddle:
                         {
+                            left = centerPoint.X + moveVector.X;
+                            right = cacheRect.Right;
+                            top = cacheRect.Top;
+                            bottom = cacheRect.Bottom;
                             if (left + minWidth > right)
                             {
                                 left = right - minWidth;
                             }
+                        }
+                        break;
 
-                            if (top + minHeight > bottom)
+                    case PointControlType.LeftBottom:
+                        {
+                            left = centerPoint.X + moveVector.X;
+                            right = cacheRect.Right;
+                            top = cacheRect.Top;
+                            bottom = centerPoint.Y + moveVector.Y;
+                            if (isProportionalScaling)
                             {
-                                top = bottom - minHeight;
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                left = right - size.Width;
+                                bottom = top + size.Height;
+                                if (left < maxRect.Left)
+                                {
+                                    double tmpWidth = right - left;
+                                    left = maxRect.Left;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    bottom = top + height;
+                                }
+
+                                if (bottom > maxRect.Bottom)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    bottom = maxRect.Bottom;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    left = right - width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    left = right - minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    bottom = top + minHeight;
+                                }
                             }
                         }
-                    }
-                    break;
+                        break;
 
-                case PointControlType.LeftMiddle:
-                    {
-                        left = centerPoint.X + moveVector.X;
-                        right = cacheRect.Right;
-                        top = cacheRect.Top;
-                        bottom = cacheRect.Bottom;
-                        if (left + minWidth > right)
+                    case PointControlType.MiddlBottom:
                         {
-                            left = right - minWidth;
-                        }
-                    }
-                    break;
-
-                case PointControlType.LeftBottom:
-                    {
-                        left = centerPoint.X + moveVector.X;
-                        right = cacheRect.Right;
-                        top = cacheRect.Top;
-                        bottom = centerPoint.Y + moveVector.Y;
-                        if (isProportionalScaling)
-                        {
-                            Size size = GetProportionalScalingSize(right - left, bottom - top);
-                            left = right - size.Width;
-                            bottom = top + size.Height;
-                            if (left < maxRect.Left)
-                            {
-                                double tmpWidth = right - left;
-                                left = maxRect.Left;
-                                double width = right - left;
-                                double height = (bottom - top) * width / tmpWidth;
-                                bottom = top + height;
-                            }
-
-                            if (bottom > maxRect.Bottom)
-                            {
-                                double tmpHeight = bottom - top;
-                                bottom = maxRect.Bottom;
-                                double height = bottom - top;
-                                double width = (right - left) * height / tmpHeight;
-                                left = right - width;
-                            }
-                        }
-                        else
-                        {
-                            if (left + minWidth > right)
-                            {
-                                left = right - minWidth;
-                            }
-                            
+                            left = cacheRect.Left;
+                            right = cacheRect.Right;
+                            top = cacheRect.Top;
+                            bottom = centerPoint.Y + moveVector.Y;
                             if (top + minHeight > bottom)
                             {
                                 bottom = top + minHeight;
                             }
                         }
-                    }
-                    break;
+                        break;
 
-                case PointControlType.MiddlBottom:
-                    {
-                        left = cacheRect.Left;
-                        right = cacheRect.Right;
-                        top = cacheRect.Top;
-                        bottom = centerPoint.Y + moveVector.Y;
-                        if (top + minHeight > bottom)
+                    case PointControlType.RightBottom:
                         {
-                            bottom = top + minHeight;
-                        }
-                    }
-                    break;
-
-                case PointControlType.RightBottom:
-                    {
-                        left = cacheRect.Left;
-                        right = centerPoint.X + moveVector.X;
-                        top = cacheRect.Top;
-                        bottom = centerPoint.Y + moveVector.Y;
-                        if (isProportionalScaling)
-                        {
-                            Size size = GetProportionalScalingSize(right - left, bottom - top);
-                            right = left + size.Width;
-                            bottom = top + size.Height;
-                            if (right > maxRect.Right)
+                            left = cacheRect.Left;
+                            right = centerPoint.X + moveVector.X;
+                            top = cacheRect.Top;
+                            bottom = centerPoint.Y + moveVector.Y;
+                            if (isProportionalScaling)
                             {
-                                double tmpWidth = right - left;
-                                right = maxRect.Right;
-                                double width = right - left;
-                                double height = (bottom - top) * width / tmpWidth;
-                                bottom = top + height;
-                            }
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                right = left + size.Width;
+                                bottom = top + size.Height;
+                                if (right > maxRect.Right)
+                                {
+                                    double tmpWidth = right - left;
+                                    right = maxRect.Right;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    bottom = top + height;
+                                }
 
-                            if (bottom > maxRect.Bottom)
+                                if (bottom > maxRect.Bottom)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    bottom = maxRect.Bottom;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    right = left + width;
+                                }
+                            }
+                            else
                             {
-                                double tmpHeight = bottom - top;
-                                bottom = maxRect.Bottom;
-                                double height = bottom - top;
-                                double width = (right - left) * height / tmpHeight;
-                                right = left + width;
+                                if (left + minWidth > right)
+                                {
+                                    right = left + minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    bottom = top + minHeight;
+                                }
                             }
                         }
-                        else
+                        break;
+
+                    case PointControlType.RightMiddle:
                         {
+                            left = cacheRect.Left;
+                            right = centerPoint.X + moveVector.X;
+                            top = cacheRect.Top;
+                            bottom = cacheRect.Bottom;
                             if (left + minWidth > right)
                             {
                                 right = left + minWidth;
                             }
+                        }
+                        break;
 
-                            if (top + minHeight > bottom)
+                    case PointControlType.RightTop:
+                        {
+                            left = cacheRect.Left;
+                            right = centerPoint.X + moveVector.X;
+                            top = centerPoint.Y + moveVector.Y;
+                            bottom = cacheRect.Bottom;
+                            if (isProportionalScaling)
                             {
-                                bottom = top + minHeight;
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                right = left + size.Width;
+                                top = bottom - size.Height;
+                                if (right > maxRect.Right)
+                                {
+                                    double tmpWidth = right - left;
+                                    right = maxRect.Right;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    top = bottom - height;
+                                }
+
+                                if (top < maxRect.Top)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    top = maxRect.Top;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    right = left + width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    right = left + minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    top = bottom - minHeight;
+                                }
                             }
                         }
-                    }
-                    break;
+                        break;
 
-                case PointControlType.RightMiddle:
-                    {
-                        left = cacheRect.Left;
-                        right = centerPoint.X + moveVector.X;
-                        top = cacheRect.Top;
-                        bottom = cacheRect.Bottom;
-                        if (left + minWidth > right)
+                    case PointControlType.MiddleTop:
                         {
-                            right = left + minWidth;
-                        }
-                    }
-                    break;
-
-                case PointControlType.RightTop:
-                    {
-                        left = cacheRect.Left;
-                        right = centerPoint.X + moveVector.X;
-                        top = centerPoint.Y + moveVector.Y;
-                        bottom = cacheRect.Bottom;
-                        if (isProportionalScaling)
-                        {
-                            Size size = GetProportionalScalingSize(right - left, bottom - top);
-                            right = left + size.Width;
-                            top = bottom - size.Height;
-                            if (right > maxRect.Right)
-                            {
-                                double tmpWidth = right - left;
-                                right = maxRect.Right;
-                                double width = right - left;
-                                double height = (bottom - top) * width / tmpWidth;
-                                top =  bottom - height;
-                            }
-
-                            if (top < maxRect.Top)
-                            {
-                                double tmpHeight = bottom - top;
-                                top = maxRect.Top;
-                                double height = bottom - top;
-                                double width = (right - left) * height / tmpHeight;
-                                right = left + width;
-                            }
-                        }
-                        else
-                        {
-                            if (left + minWidth > right)
-                            {
-                                right = left + minWidth;
-                            }
-
+                            left = cacheRect.Left;
+                            right = cacheRect.Right;
+                            top = centerPoint.Y + moveVector.Y;
+                            bottom = cacheRect.Bottom;
                             if (top + minHeight > bottom)
                             {
                                 top = bottom - minHeight;
                             }
                         }
-                    }
-                    break;
+                        break;
 
-                case PointControlType.MiddleTop:
-                    {
-                        left = cacheRect.Left;
-                        right = cacheRect.Right;
-                        top = centerPoint.Y + moveVector.Y;
-                        bottom = cacheRect.Bottom;
-                        if (top + minHeight > bottom)
+                    case PointControlType.Body:
+                    case PointControlType.Line:
                         {
-                            top = bottom - minHeight;
+                            Point OffsetPos = CalcMoveBound(cacheRect, ((Point)(mousePoint - mouseDownPoint)), maxRect);
+                            left = cacheRect.Left + OffsetPos.X;
+                            right = cacheRect.Right + OffsetPos.X;
+                            top = cacheRect.Top + OffsetPos.Y;
+                            bottom = cacheRect.Bottom + OffsetPos.Y;
                         }
-                    }
-                    break;
+                        break;
 
-                case PointControlType.Body:
-                case PointControlType.Line:
+                    default:
+                        break;
+                }
+
+                if (left < maxRect.Left)
+                {
+                    left = maxRect.Left;
+                }
+
+                if (top < maxRect.Top)
+                {
+                    top = maxRect.Top;
+                }
+
+                if (right > maxRect.Right)
+                {
+                    right = maxRect.Right;
+                }
+
+                if (bottom > maxRect.Bottom)
+                {
+                    bottom = maxRect.Bottom;
+                }
+
+                drawRect = new Rect(left, top, right - left, bottom - top);
+                moveOffset = new Point(drawRect.X - cacheRect.X, drawRect.Y - cacheRect.Y);
+                return true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Provisional logic, to be further improved, not yet used: Draw the algorithm in the form of normal scaling (drag a point, only scale in one direction).
+        /// </summary>
+        /// <param name="mousePoint">Current mouse position.</param>
+        /// <returns></returns>
+        protected bool OutSideScaling(Point mousePoint)
+        {
+            try
+            {
+                double left = 0, right = 0, top = 0, bottom = 0;
+                double minHeight = RectMinHeight + 2 * rectPadding * currentZoom;
+                double minWidth = rectMinWidth + 2 * rectPadding * currentZoom;
+
+                Point centerPoint = new Point((cacheRect.Right + cacheRect.Left) / 2, (cacheRect.Bottom + cacheRect.Top) / 2);
+                Point moveVector = (Point)(mousePoint - centerPoint);
+                moveVector = ProportionalScalingOffsetPos(moveVector);
+
+                switch (hitControlType)
+                {
+                    case PointControlType.LeftTop:
+                        {
+                            left = centerPoint.X + moveVector.X;
+                            right = cacheRect.Right;
+                            top = centerPoint.Y + moveVector.Y;
+                            bottom = cacheRect.Bottom;
+                            if (isProportionalScaling)
+                            {
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                left = right - size.Width;
+                                top = bottom - size.Height;
+                                if (left < maxRect.Left)
+                                {
+                                    double tmpWidth = right - left;
+                                    left = maxRect.Left;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    top = bottom - height;
+                                }
+
+                                if (top < maxRect.Top)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    top = maxRect.Top;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    left = right - width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    left = right - minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    top = bottom - minHeight;
+                                }
+                            }
+                        }
+                        break;
+
+                    case PointControlType.LeftMiddle:
+                        {
+                            left = centerPoint.X + moveVector.X;
+                            right = cacheRect.Right;
+                            top = cacheRect.Top;
+                            bottom = cacheRect.Bottom;
+                            if (left + minWidth > right)
+                            {
+                                left = right - minWidth;
+                            }
+                        }
+                        break;
+
+                    case PointControlType.LeftBottom:
+                        {
+                            left = centerPoint.X + moveVector.X;
+                            right = cacheRect.Right;
+                            top = cacheRect.Top;
+                            bottom = centerPoint.Y + moveVector.Y;
+                            if (isProportionalScaling)
+                            {
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                left = right - size.Width;
+                                bottom = top + size.Height;
+                                if (left < maxRect.Left)
+                                {
+                                    double tmpWidth = right - left;
+                                    left = maxRect.Left;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    bottom = top + height;
+                                }
+
+                                if (bottom > maxRect.Bottom)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    bottom = maxRect.Bottom;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    left = right - width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    left = right - minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    bottom = top + minHeight;
+                                }
+                            }
+                        }
+                        break;
+
+                    case PointControlType.MiddlBottom:
+                        {
+                            left = cacheRect.Left;
+                            right = cacheRect.Right;
+                            top = cacheRect.Top;
+                            bottom = centerPoint.Y + moveVector.Y;
+                            if (top + minHeight > bottom)
+                            {
+                                bottom = top + minHeight;
+                            }
+                        }
+                        break;
+
+                    case PointControlType.RightBottom:
+                        {
+                            left = cacheRect.Left;
+                            right = centerPoint.X + moveVector.X;
+                            top = cacheRect.Top;
+                            bottom = centerPoint.Y + moveVector.Y;
+                            if (isProportionalScaling)
+                            {
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                right = left + size.Width;
+                                bottom = top + size.Height;
+                                if (right > maxRect.Right)
+                                {
+                                    double tmpWidth = right - left;
+                                    right = maxRect.Right;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    bottom = top + height;
+                                }
+
+                                if (bottom > maxRect.Bottom)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    bottom = maxRect.Bottom;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    right = left + width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    right = left + minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    bottom = top + minHeight;
+                                }
+                            }
+                        }
+                        break;
+
+                    case PointControlType.RightMiddle:
+                        {
+                            left = cacheRect.Left;
+                            right = centerPoint.X + moveVector.X;
+                            top = cacheRect.Top;
+                            bottom = cacheRect.Bottom;
+                            if (left + minWidth > right)
+                            {
+                                right = left + minWidth;
+                            }
+                        }
+                        break;
+
+                    case PointControlType.RightTop:
+                        {
+                            left = cacheRect.Left;
+                            right = centerPoint.X + moveVector.X;
+                            top = centerPoint.Y + moveVector.Y;
+                            bottom = cacheRect.Bottom;
+                            if (isProportionalScaling)
+                            {
+                                Size size = GetProportionalScalingSize(right - left, bottom - top);
+                                right = left + size.Width;
+                                top = bottom - size.Height;
+                                if (right > maxRect.Right)
+                                {
+                                    double tmpWidth = right - left;
+                                    right = maxRect.Right;
+                                    double width = right - left;
+                                    double height = (bottom - top) * width / tmpWidth;
+                                    top = bottom - height;
+                                }
+
+                                if (top < maxRect.Top)
+                                {
+                                    double tmpHeight = bottom - top;
+                                    top = maxRect.Top;
+                                    double height = bottom - top;
+                                    double width = (right - left) * height / tmpHeight;
+                                    right = left + width;
+                                }
+                            }
+                            else
+                            {
+                                if (left + minWidth > right)
+                                {
+                                    right = left + minWidth;
+                                }
+
+                                if (top + minHeight > bottom)
+                                {
+                                    top = bottom - minHeight;
+                                }
+                            }
+                        }
+                        break;
+
+                    case PointControlType.MiddleTop:
+                        {
+                            left = cacheRect.Left;
+                            right = cacheRect.Right;
+                            top = centerPoint.Y + moveVector.Y;
+                            bottom = cacheRect.Bottom;
+                            if (top + minHeight > bottom)
+                            {
+                                top = bottom - minHeight;
+                            }
+                        }
+                        break;
+
+                    case PointControlType.Body:
+                    case PointControlType.Line:
+                        {
+                            double newleft = maxRect.Left - SetDrawRect.Width + 10;
+                            double newright = maxRect.Right + SetDrawRect.Width - 10;
+                            double newtop = maxRect.Top - SetDrawRect.Height + 10;
+                            double newbottom = maxRect.Bottom + SetDrawRect.Height - 10;
+                            if (newleft < 0)
+                            {
+                                newleft = 0;
+                            }
+                            Rect newMaxRect = new Rect(newleft, newtop, newright - newleft, newbottom - newtop);
+
+                            Point OffsetPos = CalcMoveBound(cacheRect, ((Point)(mousePoint - mouseDownPoint)), newMaxRect);
+                            left = cacheRect.Left + OffsetPos.X;
+                            right = cacheRect.Right + OffsetPos.X;
+                            top = cacheRect.Top + OffsetPos.Y;
+                            bottom = cacheRect.Bottom + OffsetPos.Y;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+
+                //if (left < maxRect.Left)
+                //{
+                //    left = maxRect.Left;
+                //}
+
+                //if (top < maxRect.Top)
+                //{
+                //    top = maxRect.Top;
+                //}
+
+                if (right > maxRect.Right + SetDrawRect.Width - 10)
+                {
+                    if (left > maxRect.Right - 10)
                     {
-                        Point OffsetPos = CalcMoveBound(cacheRect, ((Point)(mousePoint - mouseDownPoint)), maxRect);
-                        left = cacheRect.Left + OffsetPos.X;
-                        right = cacheRect.Right + OffsetPos.X;
-                        top = cacheRect.Top + OffsetPos.Y;
-                        bottom = cacheRect.Bottom + OffsetPos.Y;
+                        left = maxRect.Right - 10;
                     }
-                    break;
+                    right = maxRect.Right + SetDrawRect.Width - 10;
+                }
 
-                default:
-                    break;
+                if (bottom > maxRect.Bottom + SetDrawRect.Height - 10)
+                {
+                    if (top > maxRect.Bottom - 10)
+                    {
+                        top = maxRect.Bottom - 10;
+                    }
+                    bottom = maxRect.Bottom + SetDrawRect.Height - 10;
+                }
+
+                drawRect = new Rect(left, top, right - left, bottom - top);
+                moveOffset = new Point(drawRect.X - cacheRect.X, drawRect.Y - cacheRect.Y);
+                return true;
             }
-
-            if (left < maxRect.Left)
+            catch (Exception ex)
             {
-                left = maxRect.Left;
             }
-
-            if (top < maxRect.Top)
-            {
-                top = maxRect.Top;
-            }
-
-            if (right > maxRect.Right)
-            {
-                right = maxRect.Right;
-            }
-
-            if (bottom > maxRect.Bottom)
-            {
-                bottom = maxRect.Bottom;
-            }
-
-            drawRect = new Rect(left, top, right - left, bottom - top);
-            moveOffset = new Point(drawRect.X - cacheRect.X, drawRect.Y - cacheRect.Y);
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -647,63 +1012,80 @@ namespace ComPDFKit.Tool.DrawTool
             }
             drawingContext?.DrawGeometry(BorderBrush, PointPen, controlGroup);
         }
-        
+
         protected void DrawCropPoint(DrawingContext drawingContext, List<PointControlType> ignoreList, int PointSize, Pen PointPen, SolidColorBrush BorderBrush)
         {
-            GeometryGroup controlGroup = new GeometryGroup();
-            controlGroup.FillRule = FillRule.Nonzero;
-            
+            //GeometryGroup controlGroup = new GeometryGroup();
+            //controlGroup.FillRule = FillRule.Nonzero;
+            clipThickness.Left = (SetDrawRect.Left - drawRect.Left)/currentZoom;
+            clipThickness.Top = (SetDrawRect.Top - drawRect.Top) / currentZoom;
+            clipThickness.Right = (SetDrawRect.Right - drawRect.Right) / currentZoom;
+            clipThickness.Bottom = (SetDrawRect.Bottom - drawRect.Bottom) / currentZoom;
+            List<Point> controlCurrentPoints = GetControlPoint(drawRect);
+            CombinedGeometry controlGroup = new CombinedGeometry();
+            RectangleGeometry paintGeometry = new RectangleGeometry();
+            paintGeometry.Rect = SetDrawRect;
+            controlGroup.Geometry1 = paintGeometry;
+            RectangleGeometry moveGeometry = new RectangleGeometry();
+            Rect clippedBorder = drawRect;
+            if (clippedBorder.IsEmpty == false)
+            {
+                moveGeometry.Rect = drawRect;
+            }
+            controlGroup.Geometry2 = moveGeometry;
+            controlGroup.GeometryCombineMode = GeometryCombineMode.Exclude;
             //Left Top Corner
             if (!ignoreList.Contains(PointControlType.LeftTop))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[0].X - PointSize, controlPoints[0].Y - PointSize, PointSize, PointSize * 4));
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[0].X - PointSize, controlPoints[0].Y - PointSize, PointSize * 4, PointSize));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[0].X - PointSize, controlCurrentPoints[0].Y - PointSize, PointSize, PointSize * 4));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[0].X - PointSize, controlCurrentPoints[0].Y - PointSize, PointSize * 4, PointSize));
             }
-            
+
             //Left Center
             if (!ignoreList.Contains(PointControlType.LeftMiddle))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[1].X - PointSize, (controlPoints[1].Y + controlPoints[1].Y - PointSize * 5) / 2, PointSize, PointSize * 5));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[1].X - PointSize, (controlCurrentPoints[1].Y + controlCurrentPoints[1].Y - PointSize * 5) / 2, PointSize, PointSize * 5));
             }
 
             //Left Bottom Corner
             if (!ignoreList.Contains(PointControlType.LeftBottom))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[2].X - PointSize, controlPoints[2].Y - PointSize * 3, PointSize, PointSize * 4));
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[2].X - PointSize, controlPoints[2].Y, PointSize * 4, PointSize));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[2].X - PointSize, controlCurrentPoints[2].Y - PointSize * 3, PointSize, PointSize * 4));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[2].X - PointSize, controlCurrentPoints[2].Y, PointSize * 4, PointSize));
             }
-            
+
             //Bottom Center
             if (!ignoreList.Contains(PointControlType.MiddlBottom))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect((controlPoints[3].X + controlPoints[3].X - PointSize * 5) / 2, controlPoints[3].Y, PointSize * 5, PointSize));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect((controlCurrentPoints[3].X + controlCurrentPoints[3].X - PointSize * 5) / 2, controlCurrentPoints[3].Y, PointSize * 5, PointSize));
             }
 
             //Bottom Right Corner
             if (!ignoreList.Contains(PointControlType.RightBottom))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[4].X , controlPoints[4].Y - PointSize * 3, PointSize, PointSize * 4));
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[4].X - PointSize * 3, controlPoints[4].Y, PointSize * 4, PointSize));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[4].X, controlCurrentPoints[4].Y - PointSize * 3, PointSize, PointSize * 4));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[4].X - PointSize * 3, controlCurrentPoints[4].Y, PointSize * 4, PointSize));
             }
-            
+
             //Right Center
             if (!ignoreList.Contains(PointControlType.RightMiddle))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[5].X, (controlPoints[5].Y + controlPoints[5].Y - PointSize * 5) / 2, PointSize, PointSize * 5));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[5].X, (controlCurrentPoints[5].Y + controlCurrentPoints[5].Y - PointSize * 5) / 2, PointSize, PointSize * 5));
             }
-            
+
             //Right Top Corner
             if (!ignoreList.Contains(PointControlType.RightTop))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[6].X, controlPoints[6].Y - PointSize, PointSize, PointSize * 4));
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlPoints[6].X - PointSize * 4, controlPoints[6].Y - PointSize, PointSize * 4, PointSize));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[6].X, controlCurrentPoints[6].Y - PointSize, PointSize, PointSize * 4));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect(controlCurrentPoints[6].X - PointSize * 4, controlCurrentPoints[6].Y - PointSize, PointSize * 4, PointSize));
             }
-            
+
             //Top Center
             if (!ignoreList.Contains(PointControlType.MiddleTop))
             {
-                drawingContext?.DrawRectangle(BorderBrush, null, new Rect((controlPoints[7].X + controlPoints[7].X - PointSize * 5) / 2, controlPoints[7].Y-PointSize, PointSize * 5, PointSize));
+                drawingContext?.DrawRectangle(BorderBrush, null, new Rect((controlCurrentPoints[7].X + controlCurrentPoints[7].X - PointSize * 5) / 2, controlCurrentPoints[7].Y - PointSize, PointSize * 5, PointSize));
             }
+            BorderBrush = new SolidColorBrush(Color.FromArgb(0x3F, 0x00, 0x00, 0x00));
             drawingContext?.DrawGeometry(BorderBrush, PointPen, controlGroup);
         }
 
@@ -725,7 +1107,7 @@ namespace ComPDFKit.Tool.DrawTool
         /// <param name="moveRect">
         /// Current rectangle to draw
         /// </param>
-        protected void DrawMoveBounds(DrawingContext drawDc, PointControlType controltype, Pen activePen, Brush moveBrush, Rect moveRect)
+        protected void DrawMoveBounds(DrawingContext drawDc, PointControlType controltype, Pen activePen, Brush moveBrush, Rect moveRect, Pen RectPen = null)
         {
             switch (controltype)
             {
@@ -761,15 +1143,20 @@ namespace ComPDFKit.Tool.DrawTool
                     break;
                 case PointControlType.Body:
                 case PointControlType.Line:
-                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Top), new Point(PDFViewerActualWidth, moveRect.Top));
-                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
-                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, 0), new Point(moveRect.Left, PDFViewerActualHeight));
-                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, 0), new Point(moveRect.Right, PDFViewerActualHeight));
+                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Top), new Point(moveRect.Left, moveRect.Top));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Top), new Point(PDFViewerActualWidth, moveRect.Top));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, moveRect.Top), new Point(moveRect.Left, 0));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Top), new Point(moveRect.Right, 0));
+
+                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(moveRect.Left, moveRect.Bottom));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, moveRect.Bottom), new Point(moveRect.Left, PDFViewerActualHeight));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Bottom), new Point(moveRect.Right, PDFViewerActualHeight));
                     break;
                 default:
                     break;
             }
-            drawDc?.DrawRectangle(moveBrush, null, moveRect);
+            drawDc?.DrawRectangle(moveBrush, RectPen, moveRect);
         }
 
         /// <summary>

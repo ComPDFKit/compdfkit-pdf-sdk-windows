@@ -196,7 +196,7 @@
                         <ToggleButton.Content>
                             <Path Fill="#43474D" Width="30" Height="30">
                                 <Path.Data>
-                                    M22.5 8.5H7.5V12.25H13H22.5V8.5ZM12.25 13.75H7.5V21.5H12.25V13.75ZM13.75 21.5V13.75H22.5V21.5H13.75ZM7.5 7H6V8.5V21.5V23H7.5H22.5H24V21.5V8.5V7H22.5H7.5Z
+                                    M7.5 8.5H22.5V12.25H17H7.5V8.5ZM17.75 13.75H22.5V21.5H17.75V13.75ZM16.25 21.5V13.75H7.5V21.5H16.25ZM22.5 7H24V8.5V21.5V23H22.5H7.5H6V21.5V8.5V7H7.5H22.5Z
                                 </Path.Data>
                             </Path>
                         </ToggleButton.Content>

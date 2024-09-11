@@ -175,7 +175,7 @@ namespace ComPDFKit.Controls.PDFControl
             string fontFamily = string.Empty;
             string fontStyle = string.Empty;
 
-            CPDFFont.GetFamlyStyleName(freeTextData.FontFamily, ref fontFamily, ref fontStyle);
+            CPDFFont.GetFamilyStyleName(freeTextData.FontFamily, ref fontFamily, ref fontStyle);
             FreeText.FontFamily = new FontFamily(fontFamily); 
             FreeText.FontSize = freeTextData.FontSize / 1.2;
             FreeText.Foreground = new SolidColorBrush(freeTextData.BorderColor);

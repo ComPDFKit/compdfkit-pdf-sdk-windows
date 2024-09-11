@@ -19,7 +19,8 @@
             <cpdfcommon:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></cpdfcommon:PropertyPanelResourceConverter>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
@@ -115,4 +116,5 @@
             </TabItem>
         </TabControl>
     </Grid>
+    </ScrollViewer>
 </UserControl>

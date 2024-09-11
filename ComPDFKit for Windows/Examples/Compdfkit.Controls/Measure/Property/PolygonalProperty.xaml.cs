@@ -22,9 +22,6 @@ using CFontNameHelper = ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 
 namespace ComPDFKit.Controls.Measure.Property
 {
-    /// <summary>
-    /// PolygonalProperty.xaml 的交互逻辑
-    /// </summary>
     public partial class PolygonalProperty : UserControl
     {
         public ObservableCollection<int> SizeList { get; set; } = new ObservableCollection<int>

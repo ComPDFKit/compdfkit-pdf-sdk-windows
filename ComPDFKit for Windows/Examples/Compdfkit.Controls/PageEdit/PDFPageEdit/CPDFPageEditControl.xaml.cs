@@ -815,7 +815,8 @@ namespace ComPDFKit.Controls.PDFControl
                 double xPos, yPos;
                 if (!isDragingEnter)
                 {
-                    Image image = GetImageElement(tempItem);//获取item 图片
+                    //Get the item picture.
+                    Image image = GetImageElement(tempItem);
                     Viewbox viewBox = (tempItem.Content as StackPanel).Children[0] as Viewbox;//获取item宽度
 
                     ShadowPicture.Width = viewBox.ActualWidth;

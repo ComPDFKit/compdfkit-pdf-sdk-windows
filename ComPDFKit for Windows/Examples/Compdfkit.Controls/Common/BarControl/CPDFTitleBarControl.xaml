@@ -38,6 +38,8 @@
                         <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_Service}" Style="{StaticResource Sub_MenuItem}" Click="ServiceTerms_Click"></MenuItem>
                         <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=HelpMenu_DeviceID}" Style="{StaticResource Sub_MenuItem}" Click="DeviceSerial_Click"></MenuItem>
                     </MenuItem>
+
+                    <MenuItem Header="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Print}" Style="{StaticResource Dropdown_MenuItem}" Click="PrintItem_Click"></MenuItem>
                 </Menu>
 
                 <Menu 
@@ -68,6 +70,8 @@
                         <MenuItem Header="Contact us" Style="{StaticResource Sub_MenuItem }"></MenuItem>
                     </MenuItem>
                 </Menu>
+                
+                
             </StackPanel>
         </Grid>
     </Grid>

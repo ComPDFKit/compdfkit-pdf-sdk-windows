@@ -808,6 +808,276 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actual Size.
+        /// </summary>
+        internal static string Printer_ActualSize {
+            get {
+                return ResourceManager.GetString("Printer_ActualSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Pages.
+        /// </summary>
+        internal static string Printer_AllPages {
+            get {
+                return ResourceManager.GetString("Printer_AllPages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto.
+        /// </summary>
+        internal static string Printer_Auto {
+            get {
+                return ResourceManager.GetString("Printer_Auto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto Adapt.
+        /// </summary>
+        internal static string Printer_AutoAdapt {
+            get {
+                return ResourceManager.GetString("Printer_AutoAdapt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Border.
+        /// </summary>
+        internal static string Printer_Border {
+            get {
+                return ResourceManager.GetString("Printer_Border", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Borderless Printing.
+        /// </summary>
+        internal static string Printer_Borderless {
+            get {
+                return ResourceManager.GetString("Printer_Borderless", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content.
+        /// </summary>
+        internal static string Printer_Content {
+            get {
+                return ResourceManager.GetString("Printer_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom Pages.
+        /// </summary>
+        internal static string Printer_CustomPages {
+            get {
+                return ResourceManager.GetString("Printer_CustomPages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom Scale.
+        /// </summary>
+        internal static string Printer_CustomScale {
+            get {
+                return ResourceManager.GetString("Printer_CustomScale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document and Markups.
+        /// </summary>
+        internal static string Printer_DaM {
+            get {
+                return ResourceManager.GetString("Printer_DaM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document and Stamp.
+        /// </summary>
+        internal static string Printer_DaS {
+            get {
+                return ResourceManager.GetString("Printer_DaS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplex.
+        /// </summary>
+        internal static string Printer_Duplex {
+            get {
+                return ResourceManager.GetString("Printer_Duplex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fit to Page.
+        /// </summary>
+        internal static string Printer_FitPage {
+            get {
+                return ResourceManager.GetString("Printer_FitPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fit to Printable Area.
+        /// </summary>
+        internal static string Printer_FitPrintable {
+            get {
+                return ResourceManager.GetString("Printer_FitPrintable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gray Scale.
+        /// </summary>
+        internal static string Printer_GrayScale {
+            get {
+                return ResourceManager.GetString("Printer_GrayScale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landscape.
+        /// </summary>
+        internal static string Printer_Landscape {
+            get {
+                return ResourceManager.GetString("Printer_Landscape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flip On Long Edge.
+        /// </summary>
+        internal static string Printer_LongEdge {
+            get {
+                return ResourceManager.GetString("Printer_LongEdge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document.
+        /// </summary>
+        internal static string Printer_OnlyD {
+            get {
+                return ResourceManager.GetString("Printer_OnlyD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only Even Pages.
+        /// </summary>
+        internal static string Printer_OnlyEven {
+            get {
+                return ResourceManager.GetString("Printer_OnlyEven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only Odd Pages.
+        /// </summary>
+        internal static string Printer_OnlyOdd {
+            get {
+                return ResourceManager.GetString("Printer_OnlyOdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oritation.
+        /// </summary>
+        internal static string Printer_Oritation {
+            get {
+                return ResourceManager.GetString("Printer_Oritation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page Range.
+        /// </summary>
+        internal static string Printer_PageRange {
+            get {
+                return ResourceManager.GetString("Printer_PageRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paper.
+        /// </summary>
+        internal static string Printer_Paper {
+            get {
+                return ResourceManager.GetString("Printer_Paper", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Portrait.
+        /// </summary>
+        internal static string Printer_Portrait {
+            get {
+                return ResourceManager.GetString("Printer_Portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Print.
+        /// </summary>
+        internal static string Printer_Print {
+            get {
+                return ResourceManager.GetString("Printer_Print", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printer.
+        /// </summary>
+        internal static string Printer_Printer {
+            get {
+                return ResourceManager.GetString("Printer_Printer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reverse Page.
+        /// </summary>
+        internal static string Printer_ReversePage {
+            get {
+                return ResourceManager.GetString("Printer_ReversePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printer Settings.
+        /// </summary>
+        internal static string Printer_Settings {
+            get {
+                return ResourceManager.GetString("Printer_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flip On Short Edge.
+        /// </summary>
+        internal static string Printer_ShortEdge {
+            get {
+                return ResourceManager.GetString("Printer_ShortEdge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string Printer_Size {
+            get {
+                return ResourceManager.GetString("Printer_Size", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Progress.
         /// </summary>
         internal static string Property_Progress {

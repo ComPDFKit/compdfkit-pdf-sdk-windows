@@ -2,16 +2,22 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
+    <StartAction>Project</StartAction>
+    <StartProgram>
+    </StartProgram>
   </PropertyGroup>
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
-    <PublishUrlHistory>publish\</PublishUrlHistory>
-    <InstallUrlHistory />
+    <PublishUrlHistory>publish\|ftp://124.223.39.47:21/compdfkit/|ftp://124.223.39.47:21/var/www/compdfkit/|ftp://124.223.39.47/var/www/compdfkit/|ftp://124.223.39.47/</PublishUrlHistory>
+    <InstallUrlHistory>http://124.223.39.47/|http://124.223.39.47:21/var/www/compdfkit/|http://124.223.39.47:8088/|http://124.223.39.47:8088/var/www/compdfkit/|http://localhost:54496/</InstallUrlHistory>
     <SupportUrlHistory />
     <UpdateUrlHistory />
     <BootstrapperUrlHistory />
     <ErrorReportUrlHistory />
     <FallbackCulture>zh-CN</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableSecurityDebugging>false</EnableSecurityDebugging>
   </PropertyGroup>
 </Project>

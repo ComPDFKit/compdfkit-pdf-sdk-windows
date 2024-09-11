@@ -1,0 +1,223 @@
+﻿<Window x:Class="ComPDFKit.Controls.PDFControl.PrinterDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControl"
+        xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+        mc:Ignorable="d"
+        Title="PrinterDialog" Height="490" Width="835 "
+        ResizeMode="NoResize"
+        Loaded="PrinterDialog_Loaded">
+    <Window.Resources>
+        <ResourceDictionary>
+            <common:CommonResourceConverter x:Key="CommonResourceConverter"></common:CommonResourceConverter>
+            <Style x:Key="TitleTextBlockStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="FontSize" Value="12"></Setter>
+                <Setter Property="FontWeight" Value="SemiBold"></Setter>
+                <Setter Property="Margin" Value="0,8,0,8"></Setter>
+                <Setter Property="FontFamily" Value="Segoe UI"></Setter>
+            </Style>
+            <common:SecurityResourceConverter x:Key="SecurityResourceConverter"/>
+            <common:StringToVisibilityConverter x:Key="StringToVisibilityConverter"></common:StringToVisibilityConverter>
+            <common:BoolToVisibleConverter x:Key="BoolToVisibleConverter"></common:BoolToVisibleConverter>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Asset/Styles/RadioButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </Window.Resources>
+    <Grid Margin="0,30,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition  Width="300"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <local:PrintPreviewControl x:Name="ctlPreview" Margin="10,0,10,0"></local:PrintPreviewControl>
+        <StackPanel Orientation="Vertical" Grid.Column="1"  Margin="16,0,8,0">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Printer}"  Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,8"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox
+                          Style="{StaticResource ComboBoxStyle1}"
+                          Name="cmbPrinterName"
+                          SelectionChanged="cmbPrinterName_SelectionChanged"
+                          Width="200"
+                          HorizontalAlignment="Left"
+                          Height="24" >
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,5,0,0">
+                        <CheckBox      
+                          x:Name="chkGrayScale"
+                        VerticalAlignment="Center" 
+                         Click="chkGrayScale_Click">
+                            <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_GrayScale}"></TextBlock>
+                        </CheckBox>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Margin="0,8,0,0" Grid.Row="1" Orientation="Vertical">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Settings}" Style="{StaticResource TitleTextBlockStyle}"></TextBlock>
+                    <StackPanel Orientation="Horizontal"  Margin="0,0,0,8">
+                        <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Paper}"
+                            Width="64"  
+                            Height="22" 
+                            FontFamily="Segoe UI"
+                            FontSize="14"></TextBlock>
+                        <ComboBox 
+                            x:Name="cmbPaper"
+                            SelectionChanged="cmbPaper_SelectionChanged"
+                            Style="{StaticResource ComboBoxStyle1}"
+                            Width="155"
+                            Height="24" ></ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"  Margin="0,0,0,8">
+                        <TextBlock                                            
+                             Width="64"
+                            Height="22" 
+                            FontFamily="Segoe UI"
+                            FontSize="14" Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Oritation}"></TextBlock>
+                        <ComboBox       
+                            x:Name="cmbOrientation"
+                            Style="{StaticResource ComboBoxStyle1}" 
+                            SelectionChanged="cmbOrientation_SelectionChanged"
+                            Width="155"
+                            Height="24" 
+                            Loaded="cmbOrientation_Loaded" >
+                            <ComboBoxItem Tag="Portrait">
+                                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Portrait}"></TextBlock>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="Landscape">
+                                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Landscape}"></TextBlock>
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_PageRange}" Style="{StaticResource TitleTextBlockStyle}" Margin="0,8,0,8"></TextBlock>
+                <RadioButton Margin="-8,0,0,8" GroupName="Page Range" x:Name="rdoAllPages" Tag="All" IsChecked="True" Click="rdoPageRange_Click">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_AllPages}"></TextBlock>
+                </RadioButton>
+                <RadioButton  Margin="-8,0,0,8"  GroupName="Page Range" x:Name="rdoOddPages" Tag="Odd"  Click="rdoPageRange_Click">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_OnlyOdd}"></TextBlock>
+                </RadioButton>
+                <RadioButton  Margin="-8,0,0,8" GroupName="Page Range" x:Name="rdoEvenPages" Tag="Even"  Click="rdoPageRange_Click" IsEnabled="{Binding IsEvenEnabled}">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_OnlyEven}"></TextBlock>
+                </RadioButton>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton  Margin="-8,0,8,8"  GroupName="Page Range" x:Name="rdoCustomPages" Tag="Custom"  Click="rdoPageRange_Click">
+                        <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_CustomPages}"></TextBlock>
+                    </RadioButton>
+                    <TextBox Width="120" Height="24" Text="{Binding PageRangeText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                </StackPanel>
+                <CheckBox x:Name="chkReversePage" VerticalAlignment="Center" Click="chkReversePage_Click">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_ReversePage}"></TextBlock>
+                </CheckBox>
+            </StackPanel>
+        </StackPanel>
+        <Rectangle Width="1" Fill="#1A000000" Grid.Column="2" HorizontalAlignment="Left"></Rectangle>
+        <StackPanel Orientation="Vertical"  Grid.Column="2" Width="280"   Margin="8,0,8,0">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="0,0,0,0">
+                <TextBlock 
+                            Style="{StaticResource TitleTextBlockStyle}"
+                            Margin="0,0,0,8"
+                             Width="80" 
+                            Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Content}" HorizontalAlignment="Left"></TextBlock>
+                <ComboBox  
+                            x:Name="cmbContent"
+                            Style="{StaticResource ComboBoxStyle1}"
+                            SelectionChanged="cmbContent_SelectionChanged"
+                            HorizontalAlignment="Left"
+                            Width="220"
+                            Height="24"
+                    Loaded="cmbContent_Loaded">
+                    <ComboBoxItem Tag="Document">
+                        <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_OnlyD}"></TextBlock>
+                    </ComboBoxItem>
+                    <ComboBoxItem Tag="Document and Markups">
+                        <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_DaM}"></TextBlock>
+                    </ComboBoxItem>
+                    <ComboBoxItem Tag="Document and Stamps">
+                        <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_DaS}"></TextBlock>
+                    </ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="0,8,0,8">
+                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Size}"  Style="{StaticResource TitleTextBlockStyle}"></TextBlock>
+                <Grid VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="31*"/>
+                        <ColumnDefinition Width="36*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="49*"/>
+                            <ColumnDefinition Width="188*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28"></RowDefinition>
+                            <RowDefinition  Height="28"></RowDefinition>
+                            <RowDefinition  Height="28"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <RadioButton GroupName="SizeMode" VerticalAlignment="Center" Grid.ColumnSpan="2" IsChecked="True" Tag="AutoAdapt" Click="SizeMode_Click">
+                            <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_AutoAdapt}"></TextBlock>
+                        </RadioButton>
+                        <RadioButton  GroupName="SizeMode"  Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Tag="ActualSize"  Click="SizeMode_Click">
+                            <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_ActualSize}"></TextBlock>
+                        </RadioButton>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2">
+                            <RadioButton  GroupName="SizeMode"  VerticalAlignment="Center" Tag="CustomScale" Click="SizeMode_Click">
+                                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_CustomScale}"></TextBlock>
+                            </RadioButton>
+                            <common:NumericUpDownControl x:Name="nmrcScale" Minimum="1" Maximum="1000"  Height="24" Margin="16,0,0,0" Text="{Binding SizeScale, Mode=TwoWay}"></common:NumericUpDownControl>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Border}"  Style="{StaticResource TitleTextBlockStyle}"></TextBlock>
+                <RadioButton x:Name="rdoFitPrintable" GroupName="Bordless"  Margin="0,0,0,8"  IsChecked="True" Checked="rdoFitPrintable_Checked">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_FitPrintable}"></TextBlock>
+                </RadioButton>
+                <RadioButton x:Name="rdoFitPage" GroupName="Bordless" Checked="rdoFitPage_Checked">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_FitPage}"></TextBlock>
+                </RadioButton>
+            </StackPanel>
+            <StackPanel Grid.Row="3" VerticalAlignment="Top" >
+                <CheckBox Name="chkDuplex" Margin="0,8,0,8" Tag="" Click="chkDuplex_Click">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Duplex}"  Style="{StaticResource TitleTextBlockStyle}" Margin="0"></TextBlock>
+                </CheckBox>
+                <RadioButton GroupName="Flip" x:Name="rdoLongEdge" Tag="LongEdge" IsChecked="True" Visibility="{Binding IsChecked, ElementName=chkDuplex, Converter={StaticResource BoolToVisibleConverter}}" Margin="0,0,0,8" Click="rdoDuplex_Click" >
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_LongEdge}"></TextBlock>
+                </RadioButton>
+                <RadioButton GroupName="Flip" x:Name="rdoShortEdge" Tag="ShortEdge" Click="rdoDuplex_Click" Visibility="{Binding IsChecked, ElementName=chkDuplex, Converter={StaticResource BoolToVisibleConverter}}">
+                    <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_ShortEdge}"></TextBlock>
+                </RadioButton>
+            </StackPanel>
+
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="btnConfirm" Height="36" Width="108" Click="btnConfirm_Click">
+                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Button_OK}"></TextBlock>
+            </Button>
+            <Button x:Name="btnCancel" Height="36" Width="108"  Margin="10" Click="btnCancel_Click">
+                <TextBlock Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Button_Cancel}"></TextBlock>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

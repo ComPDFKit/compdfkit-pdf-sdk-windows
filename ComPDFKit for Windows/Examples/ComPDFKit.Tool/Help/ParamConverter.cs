@@ -9,19 +9,12 @@ using ComPDFKit.PDFPage.Edit;
 using ComPDFKit.Tool.SettingParam;
 using ComPDFKit.Tool.UndoManger;
 using ComPDFKit.Viewer.Helper;
-using ComPDFKitViewer.Annot;
-using ComPDFKitViewer.BaseObject;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 using static ComPDFKit.PDFAnnotation.CTextAttribute;
 using static ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 
@@ -71,7 +64,7 @@ namespace ComPDFKit.Tool.Help
                     annotHistory = new FreeTextAnnotHistory();
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_LINE:
-                    if ((cPDFAnnotation as CPDFLineAnnotation).IsMersured())
+                    if ((cPDFAnnotation as CPDFLineAnnotation).IsMeasured())
                     {
                         annotHistory = new LineMeasureAnnotHistory();
                     }
@@ -347,18 +340,20 @@ namespace ComPDFKit.Tool.Help
         internal static TextEditParam GetTextEditParam(CPDFDocument cPDFDocument, CPDFEditTextArea cPDFEditArea, int PageIndex)
         {
             TextEditParam textEditParam = new TextEditParam();
-            float fontSize = 0;
-            byte[] fontColor = null;
-            byte transparency = 0;
+            string fontName = "Helvetica";
+            float fontSize = 14;
+            byte[] fontColor = {0,0,0};
+            byte transparency = 255;
             bool isBold = false;
             bool isItalic = false;
-            cPDFEditArea.GetTextStyle(ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
-            textEditParam.Transparency = transparency;
+
+            cPDFEditArea.GetTextStyle(ref fontName,ref fontSize, ref fontColor, ref transparency, ref isBold, ref isItalic);
+            textEditParam.FontName = fontName;
             textEditParam.FontSize = fontSize;
             textEditParam.FontColor = fontColor;
+            textEditParam.Transparency = transparency;
             textEditParam.TextAlign = cPDFEditArea.GetTextSectionAlign();
             textEditParam.EditType = CPDFEditType.EditText;
-            textEditParam.FontName = cPDFEditArea.GetCharsFontName();
             CPDFPage docPage = cPDFDocument.PageAtIndex(PageIndex);
             CPDFEditPage EditPage = docPage.GetEditPage();
             textEditParam.EditIndex = EditPage.GetEditAreaList().IndexOf(cPDFEditArea);
@@ -616,7 +611,8 @@ namespace ComPDFKit.Tool.Help
                 CTextAttribute cTextAttribute = cPDFWidget.GetTextAttribute();
                 comboBoxParam.IsItalic = IsItalic(cTextAttribute.FontName);
                 comboBoxParam.IsBold = IsBold(cTextAttribute.FontName);
-                //支持多选后需要调整
+
+                //Support for multiple selections needs to be adjusted later.
                 CWidgetItem[] cWidgetItem = cPDFWidget.LoadWidgetItems();
                 CWidgetItem cWidgetItem1 = cPDFWidget.GetSelectedItem();
 
@@ -671,7 +667,8 @@ namespace ComPDFKit.Tool.Help
                 listBoxParam.IsItalic = IsItalic(cTextAttribute.FontName);
                 listBoxParam.IsBold = IsBold(cTextAttribute.FontName);
                 CWidgetItem[] cWidgetItem = cPDFWidget.LoadWidgetItems();
-                //支持多选后需要调整
+
+                //Support for multiple selections needs to be adjusted later.
                 CWidgetItem cWidgetItem1 = cPDFWidget.GetSelectedItem();
                 if (cWidgetItem != null)
                 {
@@ -824,7 +821,7 @@ namespace ComPDFKit.Tool.Help
                         CPDFLineAnnotation lineAnnot = pdfAnnot as CPDFLineAnnotation;
                         if (lineAnnot != null)
                         {
-                            if(lineAnnot.IsMersured())
+                            if(lineAnnot.IsMeasured())
                             {
                                 return GetLineMeasureParam(lineAnnot);
                             }
@@ -935,7 +932,7 @@ namespace ComPDFKit.Tool.Help
                 case C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE:
                     {
                         CPDFPolylineAnnotation polylineAnnot= pdfAnnot as CPDFPolylineAnnotation;
-                        if (polylineAnnot!=null && polylineAnnot.IsMersured())
+                        if (polylineAnnot!=null && polylineAnnot.IsMeasured())
                         {
                             return GetPolyLineMeasureParam(polylineAnnot);
                         }
@@ -944,7 +941,7 @@ namespace ComPDFKit.Tool.Help
                 case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
                     {
                         CPDFPolygonAnnotation polygonAnnot= pdfAnnot as CPDFPolygonAnnotation;
-                        if(polygonAnnot!=null && polygonAnnot.IsMersured())
+                        if(polygonAnnot!=null && polygonAnnot.IsMeasured())
                         {
                             return GetPolygonMeasureParam(polygonAnnot);
                         }
@@ -972,7 +969,8 @@ namespace ComPDFKit.Tool.Help
             annotParam.Locked = pdfAnnot.GetIsLocked();
             annotParam.ClientRect = pdfAnnot.GetRect();
             annotParam.AnnotIndex = pdfAnnot.Page.GetAnnotations().IndexOf(pdfAnnot);
-            //注释对象存在，但列表找不到，只能是新创建的注释对象
+
+            //Annotation object exists, but the list cannot be found, it can only be a newly created annotation object.
             if (annotParam.AnnotIndex == -1)
             {
                 annotParam.AnnotIndex = pdfAnnot.Page.GetAnnotCount() - 1;
@@ -1233,7 +1231,7 @@ namespace ComPDFKit.Tool.Help
 
         internal static LineMeasureParam GetLineMeasureParam(CPDFLineAnnotation lineAnnot)
         {
-            if (lineAnnot == null || lineAnnot.IsValid() == false || lineAnnot.IsMersured()==false)
+            if (lineAnnot == null || lineAnnot.IsValid() == false || lineAnnot.IsMeasured()==false)
             {
                 return null;
             }
@@ -1734,7 +1732,7 @@ namespace ComPDFKit.Tool.Help
 
         internal static PolyLineMeasureParam GetPolyLineMeasureParam(CPDFPolylineAnnotation polylineAnnot)
         {
-            if (polylineAnnot == null || polylineAnnot.IsValid() == false || polylineAnnot.IsMersured()==false)
+            if (polylineAnnot == null || polylineAnnot.IsValid() == false || polylineAnnot.IsMeasured()==false)
             {
                 return null;
             }
@@ -1768,7 +1766,7 @@ namespace ComPDFKit.Tool.Help
 
         internal static PolygonMeasureParam GetPolygonMeasureParam(CPDFPolygonAnnotation polygonAnnot)
         {
-            if (polygonAnnot == null || polygonAnnot.IsValid() == false || polygonAnnot.IsMersured() == false)
+            if (polygonAnnot == null || polygonAnnot.IsValid() == false || polygonAnnot.IsMeasured() == false)
             {
                 return null;
             }

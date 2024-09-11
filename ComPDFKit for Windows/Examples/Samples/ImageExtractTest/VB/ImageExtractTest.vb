@@ -7,7 +7,7 @@ Module ImageExtractTest
 
     Sub Main()
         ' Perparation work
-        Console.WriteLine("Running Image Extract test sample..." & vbCrLf)
+        Console.WriteLine("Running Bookmark test sample..." & vbCrLf)
 
         SDKLicenseHelper.LicenseVerify()
 

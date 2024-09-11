@@ -1,0 +1,238 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControlUI.CPDFAnnotationListUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common"
+                          xmlns:pdfControlUi="clr-namespace:ComPDFKit.Controls.PDFControlUI"
+             mc:Ignorable="d" 
+              d:DesignHeight="800" d:DesignWidth="300">
+    <UserControl.Resources>
+        <cpdfcommon:AnnotArgsTypeToVisibilityConverter x:Key="AnnotArgsTypeToVisibilityConverter"></cpdfcommon:AnnotArgsTypeToVisibilityConverter>
+        <cpdfcommon:BotaResourceConverter x:Key="BotaResourceConverter"></cpdfcommon:BotaResourceConverter>
+        <cpdfcommon:SubtractionConverter x:Key="SubtractionConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <ListView Name="AnnotationList" SelectionChanged="AnnotationListControl_SelectionChanged" VirtualizingPanel.IsVirtualizingWhenGrouping="True" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden" BorderThickness="0" SelectionMode="Single" Visibility="Collapsed" 
+                  ContextMenuOpening="AnnotationList_ContextMenuOpening"
+                  MouseRightButtonDown="AnnotationList_MouseRightButtonDown">
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <StackPanel Height="32" Orientation="Horizontal" Background="#F2F2F2">
+                                    <TextBlock VerticalAlignment="Center" TextAlignment="Center"
+                                           FontWeight="SemiBold" FontSize="12" Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Text_Page}" FontFamily="Microsoft YaHei" Foreground="#43474D"  Margin="16,6,0,6"/>
+                                    <TextBlock VerticalAlignment="Center" TextAlignment="Center"
+                                           FontWeight="SemiBold" FontSize="12" Text="{Binding Name}" FontFamily="Microsoft YaHei" Foreground="#43474D" Margin="0,6"/>
+                                </StackPanel>
+                                <TextBlock VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Right"  
+                                           FontWeight="SemiBold" FontSize="12" Text="{Binding Items.Count}" FontFamily="Microsoft YaHei" Foreground="#43474D" Margin="0,0,40,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                </GroupStyle>
+            </ListView.GroupStyle>
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Background="#FAFCFF" Margin="-5,0,5,0" HorizontalAlignment="Stretch" 
+                                            Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Converter={StaticResource SubtractionConverter}, ConverterParameter=5}"></VirtualizingStackPanel>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="MinHeight" Value="0" />
+                    <Setter Property="Height" Value="Auto" /> 
+                </Style> 
+            </ListView.ItemContainerStyle>
+            
+            <ListView.ItemTemplate>
+                <ItemContainerTemplate>
+                    <Grid Margin="0,0,10,2" Visibility = "{Binding BindProperty.IsAnnotListVisible}">
+                        <Grid.Style>
+                            <Style TargetType="Grid">  
+                                <Setter Property="Background" Value="#1A000000"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="LightGray"/>
+                                        <!-- You can set this to any color you prefer -->
+                                    </Trigger>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                        <Setter Property="Background" Value="#3A000000"/>
+                                        <!-- Color when selected -->
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Name="AnnotGrid" Margin="10,5,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Canvas Height="16" Width="20">
+                                <Grid x:Name="HighlightGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Highlight}">
+                                    <Path Data="M1.6 1.60001H16L14.4 14.4H0L1.6 1.60001Z" Fill="#FEF87C" Height="16" Width="16"></Path>
+                                    <Path Data="M12.2075 12.3L8.29604 2.52145H6.90332L2.9919 12.3H2V13.3H5.2V12.3H4.60744L5.40739 10.3H9.79197L10.5919 12.3H10V13.3H13.2V12.3H12.2075ZM9.39199 9.30002L7.59968 4.819L5.80736 9.30002H9.39199Z" Fill="#43474D" Height="16" Width="16" HorizontalAlignment="Center" VerticalAlignment="Center"></Path>
+                                </Grid>
+                                <Grid x:Name="UnderlineGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Underline}">
+                                    <Rectangle Width="16" Height="1.5" Fill="#FF0000" Margin="0,13.5,0,0"></Rectangle>
+                                    <Path Data="M12.6078 11L8.69643 1.22147H7.30371L3.39229 11H2.40039V12H5.60039V11H5.00783L5.80778 9.00003H10.1924L10.9923 11H10.4004V12H13.6004V11H12.6078ZM9.79238 8.00003L8.00007 3.51901L6.20775 8.00003H9.79238Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="StrikeoutGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Strikeout}">
+                                    <Rectangle Width="16" Height="1.5" Fill="#FF0000" Margin="0,5,0,0"></Rectangle>
+                                    <Path Data="M12.6078 11L8.69643 1.22147H7.30371L3.39229 11H2.40039V12H5.60039V11H5.00783L5.80778 9.00003H10.1924L10.9923 11H10.4004V12H13.6004V11H12.6078ZM9.79238 8.00003L8.00007 3.51901L6.20775 8.00003H9.79238Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="SquigglyGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Squiggly}">
+                                    <Path Data="M12.6078 11L8.69643 1.22147H7.30371L3.39229 11H2.40039V12H5.60039V11H5.00783L5.80778 9.00003H10.1924L10.9923 11H10.4004V12H13.6004V11H12.6078ZM9.79238 8.00003L8.00007 3.51901L6.20775 8.00003H9.79238Z" Fill="#43474D"></Path>
+                                    <Path Data="M5.08299 17.9329L5.22219 18.02C6.28806 18.7528 7.65967 18.7913 8.75772 18.1357L8.93809 18.02C9.52914 17.6136 10.2863 17.5846 10.9011 17.9329L11.0403 18.02C12.1062 18.7528 13.4778 18.7913 14.5759 18.1357L14.7562 18.02C15.3473 17.6136 16.1045 17.5846 16.7193 17.9329L16.8585 18.02C17.0638 18.1611 17.2824 18.2778 17.5107 18.3687C17.8854 18.5178 18.3064 18.3254 18.451 17.939C18.5956 17.5525 18.4091 17.1184 18.0344 16.9693C17.9483 16.935 17.8647 16.8943 17.784 16.8472L17.6653 16.7719C16.5994 16.0391 15.2278 16.0005 14.1298 16.6562L13.9494 16.7719C13.3584 17.1782 12.6011 17.2073 11.9864 16.859L11.8472 16.7719C10.7813 16.0391 9.40969 16.0005 8.31164 16.6562L8.13126 16.7719C7.54022 17.1782 6.78301 17.2073 6.16823 16.859L6.02902 16.7719C4.96316 16.0391 3.59155 16.0005 2.4935 16.6562L2.31312 16.7719C2.23868 16.8231 2.16125 16.8685 2.08133 16.9081L1.95963 16.963C1.5862 17.1155 1.40339 17.5514 1.55131 17.9365C1.69922 18.3216 2.12186 18.5101 2.49529 18.3576C2.64087 18.2981 2.78242 18.2281 2.91898 18.1479L3.11995 18.02C3.711 17.6136 4.46821 17.5846 5.08299 17.9329Z" Fill="#FF0000">
+                                        <Path.RenderTransform>
+                                            <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Grid>
+                                <Grid x:Name="FreehandGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Freehand}">
+                                    <Path Data="M1.10936 15.3356L0.589844 13.9284L1.34042 13.6538L2.40472 13.2747L3.39641 12.9348L4.31689 12.6344L5.16759 12.3737L5.94992 12.1528L6.43418 12.0278C6.51244 12.0084 6.58947 11.9898 6.66529 11.9719L7.1057 11.8736L7.51741 11.7932C8.77614 11.5671 9.60934 11.6109 10.077 11.9319C10.3519 12.1206 10.5561 12.3408 10.6834 12.5985C10.8912 13.019 10.8803 13.3578 10.7258 13.7932L10.6516 13.982L10.9143 13.9387C11.0093 13.9217 11.1153 13.9013 11.231 13.8762L11.3745 13.8438C11.5029 13.8137 11.6393 13.7792 11.7837 13.7403L12.2409 13.6106L12.7457 13.4546L13.2982 13.2724L13.8979 13.0641L14.5448 12.8296L14.8859 12.7026L15.4133 14.1068L14.7657 14.3469L14.1598 14.5645L13.5942 14.7597L13.0678 14.9321L12.5796 15.0816C12.5013 15.1045 12.4246 15.1266 12.3493 15.1477L11.916 15.2624C10.6693 15.5719 9.89718 15.566 9.45819 15.2229C9.11269 14.9529 8.96315 14.5695 9.0131 14.1601C9.03233 14.0025 9.05684 13.9071 9.1248 13.7394L9.32936 13.2643C9.33349 13.2526 9.30366 13.2204 9.22814 13.1686C9.1551 13.1185 9.00487 13.0984 8.78117 13.1088L8.57153 13.1252L8.32642 13.1566C8.28264 13.1631 8.23741 13.1702 8.19073 13.1779L7.89341 13.2319L7.38354 13.3414L7.00179 13.4334L6.58719 13.5407L6.14025 13.6634L5.6615 13.8015L4.88485 14.0378L4.32885 14.2147L3.43876 14.5096L2.48296 14.8398L1.46319 15.2057L1.10936 15.3356Z" Fill="#64BC38"></Path>
+                                    <Path Data="M10.2324 0.000183105L13.7037 3.47143L11.9598 5.21533L8.48853 1.74408L10.2324 0.000183105ZM7.90998 2.32262L2.71138 7.52123L1.55429 12.1496L6.18263 10.9925L11.3812 5.79387L7.90998 2.32262Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="FreeTextGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = FreeText}">
+                                    <Path Data="M11.55 0.0499878V2.79999H10.05V1.54999H6.74995V10.85H7.86688V12.35H4.13354V10.85H5.24995V1.54999H1.94995V2.79999H0.449951V0.0499878H11.55Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="NoteGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Note}">
+                                    <Path Data="M13.5017 0.5H0.501709V10H2.99989V12.5L6.99989 10H13.5017V0.5ZM2.99989 3H7.79989V4.2H2.99989V3ZM2.99989 6H10.9999V7.2H2.99989V6Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="SquareGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Square}">
+                                    <Path Data="M14 0.5H0V11.5H14V0.5ZM12.5 2V10H1.5V2H12.5Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="CircleGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Circle}">
+                                    <Path Data="M7 0.25C3.27208 0.25 0.25 3.27208 0.25 7C0.25 10.7279 3.27208 13.75 7 13.75C10.7279 13.75 13.75 10.7279 13.75 7C13.75 3.27208 10.7279 0.25 7 0.25ZM7 1.75C9.8995 1.75 12.25 4.10051 12.25 7C12.25 9.8995 9.8995 12.25 7 12.25C4.10051 12.25 1.75 9.8995 1.75 7C1.75 4.10051 4.10051 1.75 7 1.75Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="LineGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Line}">
+                                    <Path Data="M14.4697 0.469666L15.5304 1.53033L1.53039 15.5303L0.469727 14.4697L14.4697 0.469666Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="StampGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = Stamp}">
+                                    <Path Data="M9.98201 7.97521C11.1875 7.28619 12 5.98798 12 4.5C12 2.29086 10.2091 0.5 8 0.5C5.79086 0.5 4 2.29086 4 4.5C4 5.98798 4.81248 7.2862 6.018 7.97522C6.10745 8.10318 6.5 8.69622 6.5 9.25C6.5 9.875 6 10.5 6 10.5H0V12H16V10.5H10C10 10.5 9.5 9.875 9.5 9.25C9.5 8.69621 9.89256 8.10316 9.98201 7.97521ZM16 15.5V14H0V15.5H16Z" Fill="#43474D"></Path>
+                                </Grid>
+                                <Grid x:Name="LineMeasureGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = LineMeasure}">
+                                    <Path Fill="#43474D">
+                                        <Path.Data>
+                                            M17.7782 5.75646L14.2427 2.22093L13.0052 3.45837L15.4802 5.93333L14.4195 6.99399L11.9446 4.51903L10.1768
+                                            6.28679L12.6518 8.76175L11.5911 9.82241L9.11615 7.34745L7.34838 9.11522L9.82334 11.5902L8.76268
+                                            12.6508L6.28772 10.1759L4.51996 11.9436L6.99492 14.4186L5.93426 15.4793L3.4593 13.0043L2.22186
+                                            14.2417L5.75739 17.7773L17.7782 5.75646ZM15.3033 1.16027L14.2427 0.0996094L13.182 1.16027L1.1612
+                                            13.1811L0.100539 14.2417L1.1612 15.3024L4.69673 18.8379L5.75739 19.8986L6.81805 18.8379L18.8389 
+                                            6.81712L19.8995 5.75646L18.8389 4.6958L15.3033 1.16027Z
+                                        </Path.Data>
+                                    </Path>
+                                </Grid>
+                                <Grid x:Name="PolyLineMeasureGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = PolyLineMeasure}">
+                                    <Path Fill="#43474D">
+                                        <Path.Data>
+                                            M0.5 3C0.5 1.89543 1.39543 1 2.5 1C3.33934 1 4.05793 1.51704 4.35462 2.25H15.6454C15.9421 1.51704 16.6607 1 
+                                            17.5 1C18.6046 1 19.5 1.89543 19.5 3C19.5 3.83934 18.983 4.55793 18.25 4.85462V17V17.75H17.5H13.7011L14.5167
+                                            18.5765L13.5138 19.5928L11.4986 17.5505L10.9972 17.0423L11.4986 16.5342L13.5138 14.4918L14.5167 15.5082L13.7847
+                                            16.25H16.75V4.85462C16.2487 4.65168 15.8483 4.25135 15.6454 3.75H4.35462C4.15168 4.25135 3.75135 4.65168 3.25
+                                            4.85462V16.25H6.25V15H7.75V19H6.25V17.75H2.5H1.75V17V4.85462C1.01704 4.55793 0.5 3.83934 0.5 3Z
+                                        </Path.Data>
+                                    </Path>
+                                </Grid>
+                                <Grid x:Name="PolygonMeasureGrid" Visibility="{Binding BindProperty.CurrentAnnotationType, Converter={StaticResource AnnotArgsTypeToVisibilityConverter}, ConverterParameter = PolygonMeasure}">
+                                    <Path Data="M1.37111 7.6963L10 1.42705L18.6289 7.6963L15.3329 17.8402H4.66705L1.37111 7.6963Z" Stroke="#43474D"></Path>
+                                </Grid>
+                            </Canvas>
+                            <Grid Grid.Column="1" Margin="10,0,10,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding BindProperty.Author}"></TextBlock>
+                                    <TextBlock Text="{Binding BindProperty.CreateDate}" ></TextBlock>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" IsChecked="{Binding BindProperty.IsMarkState}" 
+                                          Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="ToolTip" Value="Marked"/>
+                                                </Trigger>
+                                                <Trigger Property="IsChecked" Value="False">
+                                                    <Setter Property="ToolTip" Value="UnMarked"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                            </Grid>
+                        </Grid>
+                        <TextBox Text="{Binding BindProperty.Note, Mode=OneWay}"  Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" IsHitTestVisible="False" Background="Transparent" BorderThickness="0" Width="{Binding ElementName=AnnotationList,Path=ActualWidth}" Padding="16,6,26,6" FontFamily="Microsoft YaHei" FontSize="14px"></TextBox>
+                        <pdfControlUi:AnnotationReplyListControl x:Name="ReplyListControl" Grid.Row="2" ReplyListSource="{Binding BindProperty.ReplyList}"
+                                                                 IsShowList="{Binding IsReplyListVisible}" IsShowInput="{Binding IsReplyInputVisible,Mode=TwoWay}" Margin="10" Padding="0"></pdfControlUi:AnnotationReplyListControl>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <pdfControlUi:ReplyStatusControl x:Name="StatusControl" Status="{Binding BindProperty.ReplyState}" ReplyStatusChanged="StatusControl_ReplyStatusChanged" Grid.Column="0"></pdfControlUi:ReplyStatusControl>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Width="40" Height="20" Background="Transparent" BorderThickness="0">
+                                    <Button.Command>
+                                        <pdfControlUi:ShowReplyListCommand/>
+                                    </Button.Command>
+                                    <Button.CommandParameter>
+                                        <Binding Path="."></Binding>
+                                    </Button.CommandParameter>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="M16 12.3333C16 12.7017 15.8537 13.055 15.5932 13.3154C15.3327 13.5759 14.9795 13.7222 14.6111 13.7222H6.27778L3.5 16.5V5.38889C3.5 5.02053 3.64633 4.66726 3.9068 4.4068C4.16726 4.14633 4.52053 4 4.88889 4H14.6111C14.9795 4 15.3327 4.14633 15.5932 4.4068C15.8537 4.66726 16 5.02053 16 5.38889V12.3333Z" 
+                                              Stroke="#43474D" StrokeThickness="1.25" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                                        <TextBlock Text="{Binding BindProperty.ReplyCount}"  VerticalAlignment="Bottom" Margin="5,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Width="20" Height="20" Background="Transparent" BorderThickness="0" Margin="10,0,10,0">
+                                    <Button.Command>
+                                        <pdfControlUi:ShowReplyInputCommand/>
+                                    </Button.Command>
+                                    <Button.CommandParameter>
+                                        <Binding Path="."></Binding>
+                                    </Button.CommandParameter>
+                                    <Canvas Width="20" Height="20">
+                                        <Path Data="M7.95833 8.75L4 12.7083L7.95833 16.6667" 
+                                              Stroke="#43474D" StrokeThickness="1.5" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                                        <Path Data="M16.6666 4V9.54166C16.6666 10.3815 16.333 11.187 15.7392 11.7808C15.1453 12.3747 14.3398 12.7083 13.5 12.7083H4" 
+                                              Stroke="#43474D" StrokeThickness="1.5" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                                    </Canvas>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </ItemContainerTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock Name="NoContentText" Text="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Text_NoAnnotations}" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+    </Grid>
+</UserControl>

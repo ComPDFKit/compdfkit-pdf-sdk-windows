@@ -1,21 +1,10 @@
-﻿using ComPDFKit.Controls.PDFControl;
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.IO;
 using System.ComponentModel;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using Dragablz;
 using ComPDFKit.Controls.Helper;
@@ -24,8 +13,7 @@ using ComPDFKit.PDFDocument;
 using ComPDFKit.Controls.Data;
 using ComPDFKit.Controls.Common;
 using System.Reflection;
-using ComPDFKit.NativeMethod;
-using System.Threading;
+using ComPDFKit.Controls.PDFControl;
 
 namespace PDFViewer
 {
@@ -37,6 +25,8 @@ namespace PDFViewer
         #region Property
         private PDFViewControl passwordViewer;
         private string[] oldAndNewFilePath;
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public string AppInfo
         {
             get { return Assembly.GetExecutingAssembly().GetName().Name + " " + string.Join(".", Assembly.GetExecutingAssembly().GetName().Version.ToString().Split('.').Take(3)); }
@@ -308,7 +298,7 @@ namespace PDFViewer
                     tabItem.IsSelected = true;
                     tabItem.FileName = Path.GetFileName(filePath);
                     tabItem.Tag = filePath;
-
+                    passwordViewer.Password = e;
                     viewPage.SetPDFViewer(passwordViewer);
                     App.OpenedFilePathList.Add(filePath);
 
@@ -447,6 +437,7 @@ namespace PDFViewer
             {
                 return;
             }
+
             if (mainPage.CanSave)
             {
                 string fileName = (dragablzItem.Content as TabItemExt).FileName;
@@ -476,6 +467,7 @@ namespace PDFViewer
                 tabControl.Items.Remove(dragablzItem.Content);
             }
 
+            mainPage.CloseFile();
             if (tabControl.Items.Count == 0)
             {
                 HomePageButton.IsToggled = true;
@@ -514,13 +506,13 @@ namespace PDFViewer
             while (count > 0)
             {
                 TabItemExt item = TabControl.Items[0] as TabItemExt;
-
                 MainPage mainPage = item.Content as MainPage;
                 if (mainPage == null)
                 {
                     count--;
                     continue;
                 }
+
                 if (mainPage.CanSave)
                 {
                     string fileName = item.FileName;
@@ -551,6 +543,8 @@ namespace PDFViewer
                     TabControl.Items.Remove(item);
                     count--;
                 }
+
+                mainPage.CloseFile();
             }
 
             if (count == 0)
@@ -610,7 +604,6 @@ namespace PDFViewer
             this.Close();
         }
 
-
         private void HomePageButton_Toggled(object sender, RoutedEventArgs e)
         {
             if (sender is HomePageButton homePageButton && homePageButton.IsToggled)
@@ -623,11 +616,11 @@ namespace PDFViewer
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
         protected bool UpdateProper<T>(ref T properValue, T newValue, [CallerMemberName] string properName = "")
         {
             if (object.Equals(properValue, newValue))

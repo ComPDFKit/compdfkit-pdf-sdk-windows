@@ -673,7 +673,7 @@ namespace ComPDFKit.Tool
 
                     string fontName = string.Empty;
                     string fontFamily = string.Empty;
-                    CPDFFont.GetFamlyStyleName(textWidget.FreeTextDa.FontName, ref fontFamily, ref fontName);
+                    CPDFFont.GetFamilyStyleName(textWidget.FreeTextDa.FontName, ref fontFamily, ref fontName);
                     textui.FontFamily = new FontFamily(fontFamily);
 
                     textui.AcceptsReturn = true;

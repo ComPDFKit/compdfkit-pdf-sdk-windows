@@ -19,6 +19,7 @@ namespace ComPDFKit.Tool
     {
         bool isDrawSelectRect = false;
         int selectedRectViewTag = -1;
+        private bool isOutSideScaling = false;
         public event EventHandler<SelectedAnnotData> SelectedDataChanging;
         public event EventHandler<SelectedAnnotData> SelectedDataChanged;
 
@@ -33,6 +34,15 @@ namespace ComPDFKit.Tool
             selectedRect.DataChanging += SelectedRect_DataChanging;
             PDFViewer.InsertView(selectedRectViewIndex, customizeLayer);
             selectedRectViewTag= customizeLayer.GetResTag();
+        }
+
+        /// <summary>
+        /// Set whether the border can be moved outside the border
+        /// </summary>
+        /// <param name="IsOutSideScaling"></param>
+        public void SetOutSideScaling(bool IsOutSideScaling)
+        {
+            isOutSideScaling = IsOutSideScaling;
         }
 
         private void SelectedRect_DataChanging(object sender, SelectedAnnotData e)
@@ -87,6 +97,7 @@ namespace ComPDFKit.Tool
             SelectedRect selectedRect = CommonHelper.FindVisualChild<SelectedRect>(baseLayer as CustomizeLayer);
             if (selectedRect != null)
             {
+                selectedRect.SetOutSideScaling(isOutSideScaling);
                 selectedRect.OnMouseMove(point, out DrawTag,PDFViewer.ActualWidth,PDFViewer.ActualHeight);
                 selectedRect.Draw();
             }

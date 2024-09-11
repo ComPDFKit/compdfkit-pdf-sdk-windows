@@ -720,7 +720,7 @@ namespace ComPDFKit.Tool
             {
                 return;
             }
-            if (!LineAnnotation.IsMersured() && annotParam != null)
+            if (!LineAnnotation.IsMeasured() && annotParam != null)
             {
                 return;
             }
@@ -783,7 +783,7 @@ namespace ComPDFKit.Tool
             {
                 return;
             }
-            if (!PolyAnnotation.IsMersured() && annotParam != null)
+            if (!PolyAnnotation.IsMeasured() && annotParam != null)
             {
                 return;
             }
@@ -850,7 +850,7 @@ namespace ComPDFKit.Tool
             {
                 return;
             }
-            if (!PolyAnnotation.IsMersured() && annotParam != null)
+            if (!PolyAnnotation.IsMeasured() && annotParam != null)
             {
                 return;
             }

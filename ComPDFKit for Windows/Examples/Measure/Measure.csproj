@@ -57,11 +57,11 @@
     <ApplicationIcon>ComPDFKit_Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ComPDFKit.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ComPDFKit.NetFramework.2.0.0\lib\ComPDFKit.NET.dll</HintPath>
+    <Reference Include="ComPDFKit.NET, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ComPDFKit.NetFramework.2.1.3\lib\ComPDFKit.NET.dll</HintPath>
     </Reference>
-    <Reference Include="ComPDFKit.Viewer, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ComPDFKit.NetFramework.2.0.0\lib\ComPDFKit.Viewer.dll</HintPath>
+    <Reference Include="ComPDFKit.Viewer, Version=2.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ComPDFKit.NetFramework.2.1.3\lib\ComPDFKit.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero2, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\PresentationFramework.Aero2.1.0.1\lib\PresentationFramework.Aero2.dll</HintPath>
@@ -119,11 +119,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Content Include="..\TestFile\ComPDFKit_Measurement_Sample_File.pdf">
-      <Link>ComPDFKit_Measurement_Sample_File.pdf</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
+    <None Include="PDF32000_2008.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -131,6 +130,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Compdfkit.Controls\Compdfkit.Controls.csproj">
+      <Project>{9363bcb1-3a67-446a-8093-5708b86bf418}</Project>
+      <Name>Compdfkit.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ComPDFKit.Tool\ComPDFKit.Tool.csproj">
+      <Project>{a061ee7a-6704-4bd9-86ee-48ed5df75e2f}</Project>
+      <Name>ComPDFKit.Tool</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ComPDFKit_Logo.ico" />
@@ -153,22 +162,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ComPDFKit.Tool\ComPDFKit.Tool.csproj">
-      <Project>{a061ee7a-6704-4bd9-86ee-48ed5df75e2f}</Project>
-      <Name>ComPDFKit.Tool</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Compdfkit.Controls\Compdfkit.Controls.csproj">
-      <Project>{9363bcb1-3a67-446a-8093-5708b86bf418}</Project>
-      <Name>Compdfkit.Controls</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\ComPDFKit.NetFramework.2.0.0\build\ComPDFKit.NetFramework.targets" Condition="Exists('..\packages\ComPDFKit.NetFramework.2.0.0\build\ComPDFKit.NetFramework.targets')" />
+  <Import Project="..\packages\ComPDFKit.NetFramework.2.1.3\build\ComPDFKit.NetFramework.targets" Condition="Exists('..\packages\ComPDFKit.NetFramework.2.1.3\build\ComPDFKit.NetFramework.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\ComPDFKit.NetFramework.2.0.0\build\ComPDFKit.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ComPDFKit.NetFramework.2.0.0\build\ComPDFKit.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\ComPDFKit.NetFramework.2.1.3\build\ComPDFKit.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ComPDFKit.NetFramework.2.1.3\build\ComPDFKit.NetFramework.targets'))" />
   </Target>
 </Project>

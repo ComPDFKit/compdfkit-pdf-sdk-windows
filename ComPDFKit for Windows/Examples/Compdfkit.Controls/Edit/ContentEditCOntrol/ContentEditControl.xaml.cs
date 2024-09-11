@@ -17,7 +17,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using static ComPDFKit.Tool.CPDFToolManager;
 using System.Windows.Media.Imaging;
 using ComPDFKit.Import;
 using ComPDFKit.Tool.Help;
@@ -28,6 +27,7 @@ using KeyEventHandler = System.Windows.Input.KeyEventHandler;
 using MenuItem = System.Windows.Controls.MenuItem;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
+using System.Linq;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -54,7 +54,7 @@ namespace ComPDFKit.Controls.PDFControl
         private bool textAreaCreating = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
-         
+
         public bool CanUndo
         {
             get
@@ -70,8 +70,9 @@ namespace ComPDFKit.Controls.PDFControl
                 }
                 catch (Exception ex)
                 {
+                    return false;
+                }
 
-                } 
                 return false;
             }
         }
@@ -91,7 +92,7 @@ namespace ComPDFKit.Controls.PDFControl
                 }
                 catch (Exception ex)
                 {
-
+                    return false;
                 }
 
                 return false;
@@ -113,7 +114,7 @@ namespace ComPDFKit.Controls.PDFControl
                 }
                 catch (Exception ex)
                 {
-
+                    return false;
                 }
 
                 return false;
@@ -156,7 +157,7 @@ namespace ComPDFKit.Controls.PDFControl
             PdfViewControl.PDFViewTool.GetCPDFViewer().SetIsShowStampMouse(false);
             PdfViewControl.PDFViewTool.SelectedEditAreaForIndex(-1, -1);
         }
-         
+
         public void SetViewSettings(Visibility visibility, CPDFDisplaySettingsControl displaySettingsControl = null)
         {
             this.PropertyContainer.Child = displaySettingsControl;
@@ -173,7 +174,7 @@ namespace ComPDFKit.Controls.PDFControl
         {
             this.displaySettingsControl = displaySettingsControl;
         }
-         
+
         public void InitWithPDFViewer(PDFViewControl view)
         {
             PdfViewControl.PDFViewTool.GetCPDFViewer().UndoManager.PropertyChanged -= UndoManager_PropertyChanged;
@@ -197,6 +198,7 @@ namespace ComPDFKit.Controls.PDFControl
                 {
                     PdfViewControl.PDFViewTool.RemoveHandler(KeyDownEvent, KeyDownHandler);
                 }
+
                 KeyDownHandler = new KeyEventHandler(PDFView_KeyDown);
                 PdfViewControl.PDFViewTool.AddHandler(KeyDownEvent, KeyDownHandler, false);
             }
@@ -204,7 +206,7 @@ namespace ComPDFKit.Controls.PDFControl
 
         private void PdfViewControl_DrawChanged(object sender, EventArgs e)
         {
-            if(textAreaCreating && PdfViewControl.PDFToolManager.GetCreateContentEditType() == CPDFEditType.EditText)
+            if (textAreaCreating && PdfViewControl.PDFToolManager.GetCreateContentEditType() == CPDFEditType.EditText)
             {
                 textAreaCreating = false;
                 int pageIndex = -1;
@@ -218,7 +220,7 @@ namespace ComPDFKit.Controls.PDFControl
                     if (editAreaArea.Type == CPDFEditType.EditText)
                     {
                         PDFEditParam pDFEditParam = ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), editAreaArea, pageIndex);
-                        pdfContentEditControl.SetPDFTextEditData((TextEditParam)pDFEditParam, true);
+                        pdfContentEditControl.SetPDFTextEditData(new List<TextEditParam> { (TextEditParam)pDFEditParam }, true);
                         PropertyContainer.Child = pdfContentEditControl;
                     }
                 }
@@ -234,6 +236,16 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 return;
             }
+
+            if (e.Key == Key.LeftShift || e.Key == Key.RightShift)
+            {
+                PdfViewControl.PDFViewTool.SetMultiSelectKey(e.Key);
+            }
+            else if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            {
+                PdfViewControl.PDFViewTool.SetMultiSelectKey(e.Key);
+            }
+
             int pageIndex = -1;
             CPDFEditTextArea textArea = PdfViewControl.PDFToolManager.GetSelectedEditAreaObject(ref pageIndex) as CPDFEditTextArea;
             if (textArea == null)
@@ -335,31 +347,34 @@ namespace ComPDFKit.Controls.PDFControl
 
             if (Keyboard.Modifiers == ModifierKeys.None)
             {
-                var oldFrame = textArea.GetFrame();
+                CRect textFrame = textArea.GetFrame();
                 if (e.Key == Key.Left)
                 {
-                    oldFrame.left -= 5;
+                    textFrame.left -= 5;
+                    textArea.SetFrame(textFrame);
                     e.Handled = true;
                 }
 
                 if (e.Key == Key.Right)
                 {
-                    oldFrame.left += 5;
+                    textFrame.left += 5;
+                    textArea.SetFrame(textFrame);
                     e.Handled = true;
                 }
 
                 if (e.Key == Key.Up)
                 {
-                    oldFrame.top -= 5;
+                    textFrame.top -= 5;
+                    textArea.SetFrame(textFrame);
                     e.Handled = true;
                 }
 
                 if (e.Key == Key.Down)
                 {
-                    oldFrame.top += 5;
+                    textFrame.top += 5;
+                    textArea.SetFrame(textFrame);
                     e.Handled = true;
                 }
-                textArea.SetFrame(oldFrame);
             }
 
             if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
@@ -369,6 +384,7 @@ namespace ComPDFKit.Controls.PDFControl
                     startPoint = GetPoint(textArea);
                     isUpdateStartPoint = false;
                 }
+
                 if (e.Key == Key.Left)
                 {
                     textArea.GetPreWordCharPlace();
@@ -431,7 +447,7 @@ namespace ComPDFKit.Controls.PDFControl
             PropertyContainer.Child = propertytPanel;
             PropertyContainer.Visibility = visible;
         }
-         
+
         private void PanelState_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PanelState.IsLeftPanelExpand))
@@ -475,15 +491,13 @@ namespace ComPDFKit.Controls.PDFControl
                     textEditParam.EditIndex = -1;
                     textEditParam.TextAlign = TextAlignType.AlignLeft;
                     textEditParam.Transparency = 255;
-                    pdfContentEditControl.SetPDFTextEditData(textEditParam);
+                    pdfContentEditControl.SetPDFTextEditData(new List<TextEditParam> { textEditParam });
                     DefaultSettingParam defaultSettingParam = PdfViewControl.PDFViewTool.GetDefaultSettingParam();
                     defaultSettingParam.SetPDFEditParamm(textEditParam);
                     panelState.RightPanel = PanelState.RightPanelState.PropertyPanel;
                     PdfViewControl.PDFToolManager.SetCreateContentEditType(CPDFEditType.EditText);
                     PdfViewControl.PDFViewTool.SetCurrentEditType(CPDFEditType.EditText);
                 }
-
-                PdfViewControl.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
             }
 
         }
@@ -494,7 +508,6 @@ namespace ComPDFKit.Controls.PDFControl
             if (senderBtn != null && PdfViewControl != null)
             {
                 ClearPDFEditState(senderBtn);
-                PdfViewControl.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
                 panelState.RightPanel = PanelState.RightPanelState.None;
                 senderBtn.IsChecked = false;
                 OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -556,7 +569,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 if (PdfViewControl.PDFToolManager.GetCreateContentEditType() == CPDFEditType.EditText)
                 {
-                    pdfContentEditControl.SetPDFTextEditData(pdfTextCreateParam);
+                    pdfContentEditControl.SetPDFTextEditData(new List<TextEditParam> { pdfTextCreateParam });
                 }
                 else if (PdfViewControl.PDFToolManager.GetCreateContentEditType() == CPDFEditType.None)
                 {
@@ -613,6 +626,19 @@ namespace ComPDFKit.Controls.PDFControl
                 case MouseHitTestType.ImageEdit:
                     CreateImageEditMenu(sender, ref ContextMenu);
                     break;
+                case MouseHitTestType.Unknown:
+                    List<int> pageInts = new List<int>();
+                    List<CPDFEditArea> editAreas = PdfViewControl.PDFToolManager.GetSelectedEditAreaListObject(ref pageInts);
+                    if (editAreas.Count > 0)
+                    {
+                        CreateMultiTextEditMenu(sender, ref ContextMenu);
+                    }
+                    else
+                    {
+                        ContextMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Paste"), Command = ApplicationCommands.Paste, CommandTarget = (UIElement)sender });
+                        ContextMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_MatchPaste"), Command = CustomCommands.PasteWithoutStyle, CommandTarget = (UIElement)sender });
+                    }
+                    break;
                 default:
                     ContextMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Paste"), Command = ApplicationCommands.Paste, CommandTarget = (UIElement)sender });
                     ContextMenu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_MatchPaste"), Command = CustomCommands.PasteWithoutStyle, CommandTarget = (UIElement)sender });
@@ -621,7 +647,7 @@ namespace ComPDFKit.Controls.PDFControl
             PdfViewControl.SetRightMenu(ContextMenu);
         }
         #endregion
-        
+
         #region Property changed
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
@@ -683,27 +709,54 @@ namespace ComPDFKit.Controls.PDFControl
                     PdfViewControl.PDFToolManager.SetCreateContentEditType(CPDFEditType.None);
                 }
 
-                if(PdfViewControl.PDFToolManager.GetCreateContentEditType() == CPDFEditType.EditText)
+                if (PdfViewControl.PDFToolManager.GetCreateContentEditType() == CPDFEditType.EditText)
                 {
                     textAreaCreating = true;
                 }
             }
 
             int pageIndex = -1;
-            CPDFEditArea editAreaArea = PdfViewControl.PDFToolManager.GetSelectedEditAreaObject(ref pageIndex);
-            if (editAreaArea == null)
+            CPDFEditArea editArea = PdfViewControl.PDFToolManager.GetSelectedEditAreaObject(ref pageIndex);
+            List<int> pageInts = new List<int>();
+            List<CPDFEditArea> editAreas = PdfViewControl.PDFToolManager.GetSelectedEditAreaListObject(ref pageInts);
+
+            if (editArea != null)
             {
-                return;
+                if (editArea.Type == CPDFEditType.EditText)
+                {
+                    PDFEditParam editParam = ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), editArea, pageIndex);
+                    pdfContentEditControl.SetPDFTextEditData(new List<TextEditParam> { (TextEditParam)editParam }, true);
+                    PropertyContainer.Child = pdfContentEditControl;
+                }
+            }
+            else if (editAreas != null && editAreas.Count != 0)
+            {
+                List<CPDFEditTextArea> editTextAreas = editAreas.OfType<CPDFEditTextArea>().ToList();
+                editTextAreas.ForEach(textArea => textArea.SelectAllChars());
+                if (editAreas.Count == editTextAreas.Count)
+                {
+                    List<TextEditParam> editParams = editTextAreas.
+                        Select(area => ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), area, pageInts.FirstOrDefault())).
+                        Cast<TextEditParam>().ToList();
+                    pdfContentEditControl.SetPDFTextEditData(editParams, true);
+                    PropertyContainer.Child = pdfContentEditControl;
+                }
+                else if (editTextAreas.Count == 0)
+                {
+                    List<ImageEditParam> editParams = editAreas.
+                        Select(area => ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), area, pageInts.FirstOrDefault())).
+                        Cast<ImageEditParam>().ToList();
+                    pdfContentEditControl.SetPDFImageEditData(editParams);
+                    PropertyContainer.Child = pdfContentEditControl;
+                }
+                else
+                {
+                    pdfContentEditControl.ClearContentControl();
+                }
             }
             else
             {
-                if (editAreaArea.Type == CPDFEditType.EditText)
-                {
-                    PDFEditParam pDFEditParam = ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), editAreaArea, pageIndex);
-                    pdfContentEditControl.SetPDFTextEditData((TextEditParam)pDFEditParam, true);
-                    PropertyContainer.Child = pdfContentEditControl;
-                }
-                //panelState.RightPanel = PanelState.RightPanelState.PropertyPanel;
+                return;
             }
         }
 
@@ -722,7 +775,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 if (PdfViewControl.PDFToolManager.GetCreateContentEditType() != CPDFEditType.EditText)
                 {
-                    pdfContentEditControl.ClearContentControl(); 
+                    pdfContentEditControl.ClearContentControl();
                 }
                 return;
             }
@@ -731,7 +784,7 @@ namespace ComPDFKit.Controls.PDFControl
                 if (editAreaArea.Type == CPDFEditType.EditText)
                 {
                     PDFEditParam pDFEditParam = ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), editAreaArea, pageIndex);
-                    pdfContentEditControl.SetPDFTextEditData((TextEditParam)pDFEditParam, true);
+                    pdfContentEditControl.SetPDFTextEditData(new List<TextEditParam> { (TextEditParam)pDFEditParam }, true);
                     PropertyContainer.Child = pdfContentEditControl;
                 }
 
@@ -744,9 +797,14 @@ namespace ComPDFKit.Controls.PDFControl
                         pageView.MouseLeftButtonUp += PageView_MouseLeftButtonUp;
                     }
                     PDFEditParam pDFEditParam = ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), editAreaArea, pageIndex);
-                    pdfContentEditControl.SetPDFImageEditData((ImageEditParam)pDFEditParam);
+                    pdfContentEditControl.SetPDFImageEditData(new List<ImageEditParam> { (ImageEditParam)pDFEditParam });
                     PropertyContainer.Child = pdfContentEditControl;
-                } 
+                }
+
+                else
+                {
+
+                }
             }
         }
 
@@ -765,7 +823,7 @@ namespace ComPDFKit.Controls.PDFControl
             }
             if (imageAreaParam != null)
             {
-                pdfContentEditControl.SetPDFImageEditData((ImageEditParam)imageAreaParam);
+                pdfContentEditControl.SetPDFImageEditData(new List<ImageEditParam> { (ImageEditParam)imageAreaParam });
             }
         }
 
@@ -961,6 +1019,14 @@ namespace ComPDFKit.Controls.PDFControl
             };
             menu.Items.Add(cropMenu);
 
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Cut"), Command = ApplicationCommands.Cut, CommandTarget = (UIElement)sender });
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Delete"), Command = ApplicationCommands.Delete, CommandTarget = (UIElement)sender });
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Paste"), Command = ApplicationCommands.Paste, CommandTarget = (UIElement)sender });
+        }
+
+        private void CreateMultiTextEditMenu(object sender, ref ContextMenu menu)
+        {
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Cut"), Command = ApplicationCommands.Cut, CommandTarget = (UIElement)sender });
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Delete"), Command = ApplicationCommands.Delete, CommandTarget = (UIElement)sender });

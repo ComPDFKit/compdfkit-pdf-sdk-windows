@@ -169,7 +169,7 @@ namespace ComPDFKit.Tool.DrawTool
                             );
                         activePoints.Add(point);
                     }
-                    if ((annotData.Annot as CPDFLineAnnotation).IsMersured())
+                    if ((annotData.Annot as CPDFLineAnnotation).IsMeasured())
                     {
                         CRect rawRect = annotData.Annot.GetRect();
                         Rect rect = DataConversionForWPF.CRectConversionForRect(rawRect);
@@ -197,7 +197,7 @@ namespace ComPDFKit.Tool.DrawTool
                             );
                         activePoints.Add(point);
                     }
-                    if ((annotData.Annot as CPDFPolygonAnnotation).IsMersured())
+                    if ((annotData.Annot as CPDFPolygonAnnotation).IsMeasured())
                     {
                         CRect rawRect = annotData.Annot.GetRect();
                         Rect rect = DataConversionForWPF.CRectConversionForRect(rawRect);
@@ -220,7 +220,7 @@ namespace ComPDFKit.Tool.DrawTool
                             );
                         activePoints.Add(point);
                     }
-                    if ((annotData.Annot as CPDFPolylineAnnotation).IsMersured())
+                    if ((annotData.Annot as CPDFPolylineAnnotation).IsMeasured())
                     {
                         CRect rawRect = annotData.Annot.GetRect();
                         Rect rect = DataConversionForWPF.CRectConversionForRect(rawRect);
@@ -389,7 +389,7 @@ namespace ComPDFKit.Tool.DrawTool
             Draw();
             if (annotData!=null&&annotData.AnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
             {
-                if ((annotData.Annot as CPDFLineAnnotation).IsMersured())
+                if ((annotData.Annot as CPDFLineAnnotation).IsMeasured())
                 {
                     activePoints.Clear();
 
@@ -443,7 +443,7 @@ namespace ComPDFKit.Tool.DrawTool
                 {
                     if (annotData.AnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
                     {
-                        if (!(annotData.Annot as CPDFLineAnnotation).IsMersured())
+                        if (!(annotData.Annot as CPDFLineAnnotation).IsMeasured())
                         {
                             currentPoint.X += moveOffset.X;
                             currentPoint.Y += moveOffset.Y;
@@ -486,7 +486,7 @@ namespace ComPDFKit.Tool.DrawTool
                 {
                     case C_ANNOTATION_TYPE.C_ANNOTATION_LINE:
                         {
-                            if ((annotData.Annot as CPDFLineAnnotation).IsMersured())
+                            if ((annotData.Annot as CPDFLineAnnotation).IsMeasured())
                             {
                                 DrawLineMeasure(drawDC);
                             }

@@ -105,7 +105,7 @@ namespace ComPDFKit.Controls.PDFControlUI
         }
 
         /// <summary>
-        /// 清除选中结果
+        /// Clear selected results.
         /// </summary>
         public void ClearSelection()
         {
@@ -118,9 +118,9 @@ namespace ComPDFKit.Controls.PDFControlUI
         }
 
         /// <summary>
-        /// 设置选中结果
+        /// Set selected results.
         /// </summary>
-        /// <param name="selectIndex">选中索引</param>
+        /// <param name="selectIndex">The selected index.</param>
         public void SelectItem(int selectIndex)
         {
             if (ResultListControl.SelectedIndex != selectIndex)
@@ -138,27 +138,27 @@ namespace ComPDFKit.Controls.PDFControlUI
     public class BindSearchResult
     {
         /// <summary>
-        /// 页面索引
+        /// Page index.
         /// </summary>
         public int PageIndex { get; set; }
         /// <summary>
-        /// 搜索文字结果
+        /// The search text results.
         /// </summary>
         public string TextContent { get; set; }
         /// <summary>
-        /// 搜索高亮颜色
+        /// Search highlight color.
         /// </summary>
         public Color HighLightColor { get; set; }
         /// <summary>
-        /// 搜索关键字
+        /// Search keywords.
         /// </summary>
         public string SearchWord { get; set; }
         /// <summary>
-        /// 搜索结果范围区域
+        /// Search result range area.
         /// </summary>
         public Rect TextRect { get; set; }
         /// <summary>
-        /// 页面旋转角度
+        /// The page rotation angle.
         /// </summary>
         public int PageRotate { get; set; }
         public object RefData {  get; set; }

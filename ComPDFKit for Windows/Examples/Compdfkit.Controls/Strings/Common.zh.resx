@@ -513,4 +513,94 @@
   <data name="FileMenu_Flatten" xml:space="preserve">
     <value>另存为扁平化副本</value>
   </data>
+  <data name="Printer_ActualSize" xml:space="preserve">
+    <value>实际尺寸</value>
+  </data>
+  <data name="Printer_AllPages" xml:space="preserve">
+    <value>所有页面</value>
+  </data>
+  <data name="Printer_Auto" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="Printer_AutoAdapt" xml:space="preserve">
+    <value>自适应</value>
+  </data>
+  <data name="Printer_Content" xml:space="preserve">
+    <value>打印内容设置</value>
+  </data>
+  <data name="Printer_CustomPages" xml:space="preserve">
+    <value>自定义页面</value>
+  </data>
+  <data name="Printer_CustomScale" xml:space="preserve">
+    <value>自定义尺寸</value>
+  </data>
+  <data name="Printer_DaM" xml:space="preserve">
+    <value>文档和标记</value>
+  </data>
+  <data name="Printer_DaS" xml:space="preserve">
+    <value>文档和注释</value>
+  </data>
+  <data name="Printer_Duplex" xml:space="preserve">
+    <value>双面打印</value>
+  </data>
+  <data name="Printer_GrayScale" xml:space="preserve">
+    <value>黑白（灰度）打印</value>
+  </data>
+  <data name="Printer_Landscape" xml:space="preserve">
+    <value>横向</value>
+  </data>
+  <data name="Printer_LongEdge" xml:space="preserve">
+    <value>长边翻页</value>
+  </data>
+  <data name="Printer_OnlyD" xml:space="preserve">
+    <value>仅文档</value>
+  </data>
+  <data name="Printer_OnlyEven" xml:space="preserve">
+    <value>仅偶数页</value>
+  </data>
+  <data name="Printer_OnlyOdd" xml:space="preserve">
+    <value>仅奇数页</value>
+  </data>
+  <data name="Printer_Oritation" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="Printer_PageRange" xml:space="preserve">
+    <value>页面范围</value>
+  </data>
+  <data name="Printer_Paper" xml:space="preserve">
+    <value>纸张</value>
+  </data>
+  <data name="Printer_Portrait" xml:space="preserve">
+    <value>纵向</value>
+  </data>
+  <data name="Printer_Printer" xml:space="preserve">
+    <value>打印机</value>
+  </data>
+  <data name="Printer_ReversePage" xml:space="preserve">
+    <value>反转页面</value>
+  </data>
+  <data name="Printer_Settings" xml:space="preserve">
+    <value>打印设置</value>
+  </data>
+  <data name="Printer_ShortEdge" xml:space="preserve">
+    <value>短边翻页</value>
+  </data>
+  <data name="Printer_Size" xml:space="preserve">
+    <value>大小模式</value>
+  </data>
+  <data name="Printer_Print" xml:space="preserve">
+    <value>打印</value>
+  </data>
+  <data name="Printer_Borderless" xml:space="preserve">
+    <value>无边距打印</value>
+  </data>
+  <data name="Printer_Border" xml:space="preserve">
+    <value>边距</value>
+  </data>
+  <data name="Printer_FitPage" xml:space="preserve">
+    <value>适合纸张</value>
+  </data>
+  <data name="Printer_FitPrintable" xml:space="preserve">
+    <value>适合可打印区域</value>
+  </data>
 </root>

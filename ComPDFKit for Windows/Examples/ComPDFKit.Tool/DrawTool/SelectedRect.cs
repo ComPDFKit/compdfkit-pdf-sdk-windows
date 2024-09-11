@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Xml.Linq;
+using static ComPDFKit.Tool.Help.ImportWin32;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace ComPDFKit.Tool.DrawTool
@@ -76,7 +77,6 @@ namespace ComPDFKit.Tool.DrawTool
 
     public partial class SelectedRect : DrawingVisual
     {
-
         /// <summary>
         /// Re-layout child elements
         /// </summary>
@@ -140,7 +140,7 @@ namespace ComPDFKit.Tool.DrawTool
 
         public bool GetIsHover()
         {
-           return isHover;
+            return isHover;
         }
 
         public void SetIsSelected(bool selected)
@@ -150,7 +150,7 @@ namespace ComPDFKit.Tool.DrawTool
 
         public bool GetIsSelected()
         {
-           return isSelected;
+            return isSelected;
         }
 
         public void SetCurrentDrawPointType(DrawPointType type)
@@ -172,7 +172,15 @@ namespace ComPDFKit.Tool.DrawTool
             HitTestResult hitResult = VisualTreeHelper.HitTest(this, downPoint);
             if (hitResult != null && hitResult.VisualHit is DrawingVisual)
             {
-                hitControlType = GetHitControlIndex(downPoint);
+                //Crop judgment point
+                if (currentDrawPointType == DrawPointType.Crop)
+                {
+                    hitControlType = GetHitCropControlIndex(downPoint);
+                }
+                else
+                {
+                    hitControlType = GetHitControlIndex(downPoint);
+                }
                 if (hitControlType != PointControlType.None)
                 {
                     cacheRect = drawRect;
@@ -272,8 +280,16 @@ namespace ComPDFKit.Tool.DrawTool
                         {
                             SolidColorBrush moveBrush = DrawParam.AnnotMoveBrush;
                             Pen movepen = DrawParam.AnnotMovePen;
+
                             GetMoveBrushAndPen(ref moveBrush, ref movepen);
-                            DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect);
+                            if (selectedType == SelectedType.PDFEdit)
+                            {
+                                DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect, DrawParam.PDFEditMoveRectPen);
+                            }
+                            else
+                            {
+                                DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect);
+                            }
                         }
                         break;
                     default:
@@ -292,7 +308,16 @@ namespace ComPDFKit.Tool.DrawTool
                 switch (currentDrawPointType)
                 {
                     case DrawPointType.Circle:
-                        DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
+                        if (selectedType == SelectedType.PDFEdit)
+                        {
+                            DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, new SolidColorBrush(Color.FromRgb(71, 126, 222)));
+
+                            //DrawEditSelectionBox(drawDC, PointPen);
+                        }
+                        else
+                        {
+                            DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
+                        }
                         break;
                     case DrawPointType.Square:
                         DrawSquarePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
@@ -388,7 +413,7 @@ namespace ComPDFKit.Tool.DrawTool
                     if (isHover)
                     {
                         colorBrush = DrawParam.PDFEditRectFillHoverBrush;
-                        pen = DrawParam.PDFEditRectLineHoverPen;
+                        pen = editHoverPen;//DrawParam.PDFEditRectLineHoverPen;
                     }
                     else
                     {
@@ -400,7 +425,16 @@ namespace ComPDFKit.Tool.DrawTool
                         else
                         {
                             colorBrush = DrawParam.PDFEditRectFillBrush;
-                            pen = DrawParam.PDFEditRectLinePen;
+                            //init Color
+                            if (showCreatTextRect)
+                            {
+                                pen = DrawParam.PDFEditRectLinePen;
+                            }
+                            else
+                            {
+                                pen = editPen;
+                            }
+                            // editPen; //editPen;//// DrawParam.PDFEditRectLinePen; 
                         }
                     }
                     break;
@@ -408,6 +442,31 @@ namespace ComPDFKit.Tool.DrawTool
                     break;
             }
         }
+        public void SetShowCreatTextRect(bool ShowCreatTextRect)
+        {
+            showCreatTextRect = ShowCreatTextRect;
+        }
+
+        public void SetEditPen(Pen editPen = null, Pen editHoverPen = null)
+        {
+            if (editPen == null)
+            {
+                this.editPen = DrawParam.PDFEditRectLinePen;
+            }
+            else
+            {
+                this.editPen = new Pen(editPen.Brush, editPen.Thickness);
+            }
+            if (editHoverPen == null)
+            {
+                this.editHoverPen = DrawParam.PDFEditRectLineHoverPen;
+            }
+            else
+            {
+                this.editHoverPen = editHoverPen;
+            }
+        }
+
         public virtual void ClearDraw()
         {
             SetDrawRect = drawRect = new Rect();
@@ -425,13 +484,13 @@ namespace ComPDFKit.Tool.DrawTool
             drawDC?.Close();
         }
 
-        public void SetRect(Rect newRect,double zoom)
+        public void SetRect(Rect newRect, double zoom)
         {
-            if(newRect == Rect.Empty || newRect == null)
+            if (newRect == Rect.Empty || newRect == null)
             {
                 return;
             }
-            newRect = new Rect((int)(newRect.X - rectPadding* zoom), (int)(newRect.Y - rectPadding* zoom),(int)( newRect.Width + 2 * rectPadding* zoom), (int)(newRect.Height + 2 * rectPadding* zoom));
+            newRect = new Rect((int)(newRect.X - rectPadding * zoom), (int)(newRect.Y - rectPadding * zoom), (int)(newRect.Width + 2 * rectPadding * zoom), (int)(newRect.Height + 2 * rectPadding * zoom));
             currentZoom = zoom;
             SetDrawRect = drawRect = newRect;
             drawCenterPoint = new Point(drawRect.Left + drawRect.Width / 2, drawRect.Top + drawRect.Height / 2);
@@ -462,6 +521,48 @@ namespace ComPDFKit.Tool.DrawTool
         public Rect GetDrawRect()
         {
             return drawRect;
+        }
+
+        /// <summary>
+        /// Obtain cropped and actual region margin
+        /// </summary>
+        /// <returns></returns>
+        public Thickness GetClipThickness()
+        {
+            return clipThickness;
+        }
+
+        /// <summary>
+        /// Get ClipRect
+        /// </summary>
+        /// <returns></returns>
+        public Rect GetClipRect()
+        {
+            Rect drawrect = new Rect(0, 0, 0, 0);
+            drawrect.X = SetDrawRect.X - clipThickness.Left * currentZoom;
+            drawrect.Y = SetDrawRect.Y - clipThickness.Top * currentZoom;
+            drawrect.Width = SetDrawRect.Width - clipThickness.Right * currentZoom + clipThickness.Left * currentZoom;
+            drawrect.Height = SetDrawRect.Height - clipThickness.Bottom * currentZoom + clipThickness.Top * currentZoom;
+            return drawrect;
+        }
+
+        /// <summary>
+        /// Set cropping and actual area margins
+        /// </summary>
+        /// <returns></returns>
+        public void SetClipThickness(Thickness rect)
+        {
+            try
+            {
+                Rect drawrect = new Rect(0, 0, 0, 0);
+                drawrect.X = SetDrawRect.X - rect.Left * currentZoom;
+                drawrect.Y = SetDrawRect.Y - rect.Top * currentZoom;
+                drawrect.Width = SetDrawRect.Width - rect.Right * currentZoom + rect.Left * currentZoom;
+                drawrect.Height = SetDrawRect.Height - rect.Bottom * currentZoom + rect.Top * currentZoom;
+                drawRect = drawrect;
+                clipThickness = rect;
+            }
+            catch { }
         }
 
         public void SetMaxRect(Rect rect)
@@ -548,6 +649,33 @@ namespace ComPDFKit.Tool.DrawTool
             foreach (PointControlType type in types)
             {
                 ignorePoints.Add(type);
+            }
+        }
+
+        /// <summary>
+        /// Set Edit that need to be ignored
+        /// </summary>
+        /// <param name="types">
+        /// The collection of point types that need to be ignored
+        /// </param>
+        public void SetEditIgnorePoints(List<PointControlType> ignoreTextPoints, List<PointControlType> ignoreImagePoints, DrawPointType drawEditPointType, bool IsText = true)
+        {
+            SetCurrentDrawPointType(drawEditPointType);
+            if (IsText)
+            {
+                ignorePoints.Clear();
+                foreach (PointControlType type in ignoreTextPoints)
+                {
+                    ignorePoints.Add(type);
+                }
+            }
+            else
+            {
+                ignorePoints.Clear();
+                foreach (PointControlType type in ignoreImagePoints)
+                {
+                    ignorePoints.Add(type);
+                }
             }
         }
 
@@ -652,7 +780,7 @@ namespace ComPDFKit.Tool.DrawTool
         /// <returns>
         /// The control point type
         /// </returns>
-        public PointControlType GetHitControlIndex(Point point, bool isIgnore=true)
+        public PointControlType GetHitControlIndex(Point point, bool isIgnore = true)
         {
             HitTestResult hitResult = VisualTreeHelper.HitTest(this, point);
             if (hitResult != null && hitResult.VisualHit is DrawingVisual)
@@ -671,7 +799,140 @@ namespace ComPDFKit.Tool.DrawTool
                 {
                     Point checkPoint = controlPoints[i];
 
-                    if (isIgnore&&IgnorePointsList.Contains(checkPoint))
+                    if (isIgnore && IgnorePointsList.Contains(checkPoint))
+                    {
+                        continue;
+                    }
+                    switch (currentDrawPointType)
+                    {
+                        case DrawPointType.Circle:
+                            if (IgnorePointsList.Contains(checkPoint))
+                            {
+                                continue;
+                            }
+                            Vector checkVector = checkPoint - point;
+                            double wlen = drawRect.Width;
+                            if (wlen > 50)
+                            {
+                                wlen = 20;
+                            }
+                            else
+                            {
+                                wlen = wlen / 3;
+                            }
+                            double hlen = drawRect.Height;
+                            if (hlen > 50)
+                            {
+                                hlen = 20;
+                            }
+                            else
+                            {
+                                hlen = wlen / 3;
+                            }
+                            if ((PointControlType)i == PointControlType.RightMiddle)
+                            {
+
+                                if (Math.Abs(point.X - checkPoint.X) < wlen && checkVector.Length < drawRect.Height/3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+                            if ((PointControlType)i == PointControlType.LeftMiddle)
+                            {
+                                if (Math.Abs(point.X - checkPoint.X) < wlen && checkVector.Length < drawRect.Height/3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+
+                            if ((PointControlType)i == PointControlType.MiddleTop)
+                            {
+                                if (Math.Abs(point.Y - checkPoint.Y) < hlen && checkVector.Length < drawRect.Width/3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+
+                            if ((PointControlType)i == PointControlType.MiddlBottom)
+                            {
+                                if (Math.Abs(point.Y - checkPoint.Y) < hlen && checkVector.Length < drawRect.Width/3)
+                                {
+                                    return (PointControlType)i;
+                                }
+                            }
+                            if (checkVector.Length < pointSize)
+                            {
+                                return (PointControlType)i;
+                            }
+                            break;
+                        case DrawPointType.Square:
+
+                            Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
+                            if (checkRect.Contains(point))
+                            {
+                                return (PointControlType)i;
+                            }
+                            break;
+
+                        case DrawPointType.Crop:
+                            Rect cropRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
+                            if (cropRect.Contains(point))
+                            {
+                                return (PointControlType)i;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (drawRect.Contains(point))
+                {
+                    double rectWidth = (drawRect.Width - 2 * rectPadding > 0) ? drawRect.Width - 2 * rectPadding : 0;
+                    double rectHeight = (drawRect.Height - 2 * rectPadding > 0) ? drawRect.Height - 2 * rectPadding : 0;
+                    Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), rectWidth, rectHeight);
+                    if (rect.Contains(point))
+                    {
+                        if (!ignoreList.Contains(PointControlType.Body))
+                        {
+                            return PointControlType.Body;
+                        }
+                    }
+                    if (!ignoreList.Contains(PointControlType.Body))
+                    {
+                        return PointControlType.Line;
+                    }
+                }
+            }
+            return PointControlType.None;
+        }
+
+        /// <summary>
+        /// The position of the points in the cropping box
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="isIgnore"></param>
+        /// <returns></returns>
+        public PointControlType GetHitCropControlIndex(Point point, bool isIgnore = true)
+        {
+            List<Point> controlCurrentPoints = GetControlPoint(drawRect);
+            HitTestResult hitResult = VisualTreeHelper.HitTest(this, point);
+            if (hitResult != null && hitResult.VisualHit is DrawingVisual)
+            {
+                List<PointControlType> ignoreList = GetIgnorePoints();
+
+                List<Point> IgnorePointsList = new List<Point>();
+                foreach (PointControlType type in ignoreList)
+                {
+                    if ((int)type < controlCurrentPoints.Count)
+                    {
+                        IgnorePointsList.Add(controlCurrentPoints[(int)type]);
+                    }
+                }
+                for (int i = 0; i < controlCurrentPoints.Count; i++)
+                {
+                    Point checkPoint = controlCurrentPoints[i];
+
+                    if (isIgnore && IgnorePointsList.Contains(checkPoint))
                     {
                         continue;
                     }
@@ -686,13 +947,13 @@ namespace ComPDFKit.Tool.DrawTool
                             break;
                         case DrawPointType.Square:
 
-                            Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize,0), Math.Max(checkPoint.Y - pointSize,0), pointSize * 2, pointSize * 2);
+                            Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
                             if (checkRect.Contains(point))
                             {
                                 return (PointControlType)i;
                             }
                             break;
-                        
+
                         case DrawPointType.Crop:
                             Rect cropRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
                             if (cropRect.Contains(point))
@@ -706,9 +967,9 @@ namespace ComPDFKit.Tool.DrawTool
                 }
                 if (drawRect.Contains(point))
                 {
-                    double rectWidth = (drawRect.Width - 2 * rectPadding > 0)? drawRect.Width - 2 * rectPadding: 0;
-                    double rectHeight = (drawRect.Height - 2 * rectPadding > 0)? drawRect.Height - 2 * rectPadding: 0;
-                    Rect rect = new Rect(Math.Max(drawRect.X + rectPadding,0),Math.Max( drawRect.Y + rectPadding,0), rectWidth, rectHeight);
+                    double rectWidth = (drawRect.Width - 2 * rectPadding > 0) ? drawRect.Width - 2 * rectPadding : 0;
+                    double rectHeight = (drawRect.Height - 2 * rectPadding > 0) ? drawRect.Height - 2 * rectPadding : 0;
+                    Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), rectWidth, rectHeight);
                     if (rect.Contains(point))
                     {
                         if (!ignoreList.Contains(PointControlType.Body))

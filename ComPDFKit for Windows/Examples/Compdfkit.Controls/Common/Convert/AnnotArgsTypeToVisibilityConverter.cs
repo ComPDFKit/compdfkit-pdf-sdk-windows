@@ -1,4 +1,4 @@
-﻿using ComPDFKit.PDFAnnotation;
+﻿using ComPDFKit.Controls.Data;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -6,12 +6,12 @@ using System.Windows.Data;
 
 namespace ComPDFKit.Controls.Common
 {
-    [ValueConversion(typeof(C_ANNOTATION_TYPE), typeof(Visibility))]
+    [ValueConversion(typeof(CPDFAnnotationType), typeof(Visibility))]
     public class AnnotArgsTypeToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            C_ANNOTATION_TYPE annotArgsType = (C_ANNOTATION_TYPE)value;
+            CPDFAnnotationType annotArgsType = (CPDFAnnotationType)value;
             if (annotArgsType.ToString() == parameter as string)
             {
                 return Visibility.Visible;
