@@ -1,3 +1,0 @@
-You can contact ComPDFKit team to get a trial license. Before using any ComPDFKit classes, a required operation is to set the license key.
-
-Contact us for the license to trial for free: https://www.compdf.com/contact-us
