@@ -42,7 +42,7 @@
                 </StackPanel>
                 <StackPanel x:Name="LineStyleStackPanel" Height="90" Margin="5">
                     <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_LineStyle}"></TextBlock>
-                    <cpdfcommon:CPDFLineStyleControl x:Name="CPDFLineStyleControl"></cpdfcommon:CPDFLineStyleControl>
+                    <cpdfcommon:CPDFLineStyleControl x:Name="CPDFLineStyleControl"/>
                 </StackPanel>
                 <StackPanel x:Name="ArrowStackPanel" Visibility="Visible" Height="75"  Margin="5">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">

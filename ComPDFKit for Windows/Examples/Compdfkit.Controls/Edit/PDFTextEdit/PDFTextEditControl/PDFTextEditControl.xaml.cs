@@ -24,7 +24,6 @@ namespace ComPDFKit.Controls.Edit
         public CPDFViewerTool ToolView { get; private set; }
         public List<TextEditParam> EditEvents { get; set; }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool _isMultiSelected = true;
@@ -53,7 +52,6 @@ namespace ComPDFKit.Controls.Edit
             DataContext = this;
             InitializeComponent();
             Loaded += PDFTextEditControl_Loaded;
-
         }
 
         #region Init PDFView
@@ -92,8 +90,11 @@ namespace ComPDFKit.Controls.Edit
                 TextStyleUI.SelectFontName(defaultEvent.FontName);
                 TextStyleUI.SetFontStyle(defaultEvent.IsBold, defaultEvent.IsItalic);
                 TextStyleUI.SetFontSize(defaultEvent.FontSize);
-                OpacityTextBox.Text = string.Format("{0}%", (int)(Math.Ceiling(defaultEvent.Transparency * 100 / 255D)));
+
+                FontOpacitySlider.Tag = "false";
                 FontOpacitySlider.Value = ((int)(Math.Ceiling(defaultEvent.Transparency * 100 / 255D))) / 100D;
+                FontOpacitySlider.Tag = "true";
+
                 TextAlignUI.SetFontAlign(defaultEvent.TextAlign);
                 if (defaultEvent.FontColor != null && defaultEvent.FontColor.Length == 3)
                 {
@@ -143,12 +144,7 @@ namespace ComPDFKit.Controls.Edit
 
         private void SliderOpacity_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            Slider slider = sender as Slider;
-            if (slider != null)
-            {
-                slider.Tag = "true";
-            }
-
+            FontOpacitySlider.Tag = "true";
             GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
             if (textAreas.Count == 0 || pdfPage == null || editPage == null)
                 return;
@@ -211,13 +207,12 @@ namespace ComPDFKit.Controls.Edit
 
         private void SliderOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Slider slider = sender as Slider;
             if (OpacityTextBox != null && FontOpacitySlider != null)
             {
-                OpacityTextBox.Text = string.Format("{0}%", (int)(FontOpacitySlider.Value * 100));
+                OpacityTextBox.Text = string.Format("{0}%", (int)(FontOpacitySlider.Value * 100D));
             }
 
-            if (slider != null && slider.Tag != null && slider.Tag.ToString() == "false")
+            if (FontOpacitySlider.Tag == null || FontOpacitySlider.Tag.ToString() == "false")
             {
                 return;
             }
@@ -284,24 +279,21 @@ namespace ComPDFKit.Controls.Edit
 
         private void Slider_DragStarted(object sender, DragStartedEventArgs e)
         {
-            Slider slider = sender as Slider;
-            if (slider != null)
-            {
-                slider.Tag = "false";
-            }
+            FontOpacitySlider.Tag = "false";
         }
         #endregion
 
         #region Loaded
         private void PDFTextEditControl_Loaded(object sender, RoutedEventArgs e)
         {
-
             TextStyleUI.TextFontChanged -= TextStyleUI_TextFontChanged;
             TextStyleUI.TextBoldChanged -= TextStyleUI_TextBoldChanged;
             TextStyleUI.TextItalicChanged -= TextStyleUI_TextItalicChanged;
             TextStyleUI.TextSizeChanged -= TextStyleUI_TextSizeChanged;
             TextAlignUI.TextAlignChanged -= TextAlignUI_TextAlignChanged;
             FontColorUI.ColorChanged -= FontColorUI_ColorChanged;
+            TextMarkupUI.TextUnderlineChanged -= TextMarkupUI_TextUnderlineChanged;
+            TextMarkupUI.TextStrikethroughChanged -= TextMarkupUI_TextStrikethroughChanged;
 
             TextStyleUI.TextFontChanged += TextStyleUI_TextFontChanged;
             TextStyleUI.TextBoldChanged += TextStyleUI_TextBoldChanged;
@@ -309,6 +301,8 @@ namespace ComPDFKit.Controls.Edit
             TextStyleUI.TextSizeChanged += TextStyleUI_TextSizeChanged;
             TextAlignUI.TextAlignChanged += TextAlignUI_TextAlignChanged;
             FontColorUI.ColorChanged += FontColorUI_ColorChanged;
+            TextMarkupUI.TextUnderlineChanged += TextMarkupUI_TextUnderlineChanged;
+            TextMarkupUI.TextStrikethroughChanged += TextMarkupUI_TextStrikethroughChanged;
 
             IsMultiSelected = ToolView.GetIsMultiSelected();
             ShowBorder = ToolView.GetEditPen() == null || ToolView.GetEditPen().Thickness != 0;
@@ -317,7 +311,6 @@ namespace ComPDFKit.Controls.Edit
         #endregion
 
         #region Property changed
-
         private void TextStyleUI_TextSizeChanged(object sender, double e)
         {
             GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
@@ -750,10 +743,127 @@ namespace ComPDFKit.Controls.Edit
             {
                 if (double.TryParse(selectItem.Content.ToString().TrimEnd('%'), out double newOpacity))
                 {
-                    OpacityTextBox.Text = selectItem.Content.ToString();
                     FontOpacitySlider.Value = newOpacity / 100.0;
                 }
             }
+        }
+
+        private void TextMarkupUI_TextUnderlineChanged(object sender, bool e)
+        {
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
+            {
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if(e)
+                {
+                    result = textAreas[0].AddUnderline();
+                }
+                else
+                {
+                    result = textAreas[0].RemoveUnderline();
+                }
+
+                if (result)
+                {
+                    PDFEditHistory editHistory = new PDFEditHistory();
+                    editHistory.EditPage = editPage;
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
+                }
+            }
+            else
+            {
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    bool result;
+                    if (e)
+                    {
+                        result = textArea.AddUnderline();
+                    }
+                    else
+                    {
+                        result = textArea.RemoveUnderline();
+                    }
+
+                    if (result)
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
+        }
+
+        private void TextMarkupUI_TextStrikethroughChanged(object sender, bool e)
+        {
+            GetTextArea(out List<CPDFEditTextArea> textAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (textAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            if (ToolView.CurrentEditAreaObject() != null)
+            {
+                bool result;
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(textAreas[0].GetFrame());
+                if (e)
+                {
+                    result = textAreas[0].AddStrikethrough();
+                }
+                else
+                {
+                    result = textAreas[0].RemoveStrikethrough();
+                }
+
+                if (result)
+                {
+                    PDFEditHistory editHistory = new PDFEditHistory();
+                    editHistory.EditPage = editPage;
+                    editHistory.PageIndex = pdfPage.PageIndex;
+                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                    ToolView.UpdateRender(oldRect, textAreas[0]);
+                }
+            }
+            else
+            {
+                GroupHistory groupHistory = new GroupHistory();
+                foreach (CPDFEditTextArea textArea in textAreas)
+                {
+                    bool result;
+                    if (e)
+                    {
+                        result = textArea.AddStrikethrough();
+                    }
+                    else
+                    {
+                        result = textArea.RemoveStrikethrough();
+                    }
+
+                    if (result)
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pdfPage.PageIndex;
+                        groupHistory.Histories.Add(editHistory);
+                    }
+                }
+
+                ToolView.GetCPDFViewer()?.UndoManager.AddHistory(groupHistory);
+                ToolView.GetCPDFViewer()?.UpdateRenderFrame();
+            }
+
+            editPage.EndEdit();
         }
 
         #endregion
@@ -768,6 +878,7 @@ namespace ComPDFKit.Controls.Edit
             {
                 return;
             }
+
             if (EditEvents != null && EditEvents.Count>0 )
             {
                 try
@@ -789,15 +900,6 @@ namespace ComPDFKit.Controls.Edit
                 {
 
                 }
-            }
-            else
-            {
-                CPDFViewer pdfViewer = ToolView.GetCPDFViewer();
-                CPDFDocument pdfDoc = pdfViewer.GetDocument();
-                pdfPage = pdfDoc.PageAtIndex(0);
-                editPage = pdfPage.GetEditPage();
-                editPage.BeginEdit(CPDFEditType.EditText);
-                editPage.EndEdit();
             }
         }
         #endregion

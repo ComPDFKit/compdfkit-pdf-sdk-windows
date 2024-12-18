@@ -157,7 +157,7 @@
     <value>线宽</value>
   </data>
   <data name="Property_LineStyle" xml:space="preserve">
-    <value>线型</value>
+    <value>线条类型</value>
   </data>
   <data name="Title_Line" xml:space="preserve">
     <value>线</value>
@@ -593,5 +593,20 @@
   </data>
   <data name="Title_Caption" xml:space="preserve">
     <value>文字展示</value>
+  </data>
+  <data name="Title_Cloud" xml:space="preserve">
+    <value>云朵线</value>
+  </data>
+  <data name="Property_LineShape" xml:space="preserve">
+    <value>线条形状</value>
+  </data>
+  <data name="Option_MultiSelect" xml:space="preserve">
+    <value>多选</value>
+  </data>
+  <data name="Option_ShowBorder" xml:space="preserve">
+    <value>显示边框</value>
+  </data>
+  <data name="Title_PathProperty" xml:space="preserve">
+    <value>路径属性</value>
   </data>
 </root>

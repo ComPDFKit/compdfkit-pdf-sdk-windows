@@ -603,4 +603,7 @@
   <data name="Printer_FitPrintable" xml:space="preserve">
     <value>适合可打印区域</value>
   </data>
+  <data name="Tooltip_Select" xml:space="preserve">
+    <value>内容选择工具</value>
+  </data>
 </root>

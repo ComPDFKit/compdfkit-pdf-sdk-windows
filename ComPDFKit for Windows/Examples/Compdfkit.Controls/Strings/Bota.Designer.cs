@@ -160,7 +160,7 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Match Whole Word.
+        ///   Looks up a localized string similar to Whole Words Only.
         /// </summary>
         internal static string Chb_Match {
             get {
@@ -241,7 +241,7 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete a replies.
+        ///   Looks up a localized string similar to Delete all replies.
         /// </summary>
         internal static string Menu_DelAllReply {
             get {

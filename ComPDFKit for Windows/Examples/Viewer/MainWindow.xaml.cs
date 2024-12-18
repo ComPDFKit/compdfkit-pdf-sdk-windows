@@ -408,11 +408,10 @@ namespace Viewer
                     }
                 }
 
-                if (image == null)
+                if(image == null)
                 {
                     return;
                 }
-
                 CPDFPage page = pdfViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
                 string savePath = Path.Combine(folderDialog.SelectedPath, Guid.NewGuid() + ".jpg");
                 string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
@@ -442,7 +441,6 @@ namespace Viewer
             {
                 return;
             }
-
             CPDFPage page = pdfViewControl.PDFToolManager.GetDocument().PageAtIndex(image.PageIndex);
             string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
             page.GetImgSelection().GetImgBitmap(image.ImageIndex, tempPath);
@@ -455,7 +453,7 @@ namespace Viewer
                 imageData = new BitmapImage();
                 imageData.BeginInit();
                 imageData.StreamSource = ms;
-
+                
                 imageData.CacheOption = BitmapCacheOption.OnLoad;
                 imageData.EndInit();
                 imageData.Freeze();
@@ -464,7 +462,7 @@ namespace Viewer
                 File.Delete(tempPath);
             }
         }
-
+        
         private void CreateImageContextMenu(object sender, ref ContextMenu menu)
         {
             if (menu == null)

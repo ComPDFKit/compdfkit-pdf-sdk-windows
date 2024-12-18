@@ -1,24 +1,16 @@
-﻿using ComPDFKit.PDFAnnotation;
+﻿using ComPDFKit.Import;
+using ComPDFKit.PDFAnnotation;
+using ComPDFKit.Tool.Help;
 using ComPDFKit.Tool.SettingParam;
-using ComPDFKit.Viewer.Layer;
+using ComPDFKit.Viewer.Helper;
 using ComPDFKitViewer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
-using System.Xml.Linq;
-using static ComPDFKit.Tool.Help.ImportWin32;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ComPDFKit.Tool.DrawTool
 {
@@ -28,14 +20,14 @@ namespace ComPDFKit.Tool.DrawTool
         LeftTop,
         LeftMiddle,
         LeftBottom,
-        MiddlBottom,
+        MiddleBottom,
         RightBottom,
         RightMiddle,
         RightTop,
-        MiddleTop,
-        Rotate,
+        MiddleTop, 
         Body,
-        Line
+        Line, 
+        Rotate
     }
 
     public enum SelectedType
@@ -45,18 +37,18 @@ namespace ComPDFKit.Tool.DrawTool
         PDFEdit
     }
 
-
     public enum DrawPointType
     {
         Circle,
-        Square,
-        Crop
+        Square, 
+        Crop, 
     }
 
     public enum DrawMoveType
     {
         kDefault,
         kReferenceLine,
+        kRotatable
     }
 
     public class SelectedAnnotData
@@ -73,10 +65,11 @@ namespace ComPDFKit.Tool.DrawTool
 
         public AnnotData annotData { get; set; }
 
+        public int rotationAngle { get; set; }
     }
 
     public partial class SelectedRect : DrawingVisual
-    {
+    { 
         /// <summary>
         /// Re-layout child elements
         /// </summary>
@@ -125,6 +118,8 @@ namespace ComPDFKit.Tool.DrawTool
         protected bool isHover = false;
 
         protected bool isSelected = false;
+
+        protected bool canRotate = false;
 
         protected SelectedType selectedType = SelectedType.None;
 
@@ -177,13 +172,25 @@ namespace ComPDFKit.Tool.DrawTool
                 {
                     hitControlType = GetHitCropControlIndex(downPoint);
                 }
-                else
+                else 
                 {
                     hitControlType = GetHitControlIndex(downPoint);
                 }
+
                 if (hitControlType != PointControlType.None)
                 {
                     cacheRect = drawRect;
+                    rotateRect = drawRect;
+                    rotateControlPoints = controlPoints.ToList();
+
+                    if (hitControlType != PointControlType.Rotate)
+                    {
+                        isInScaling = true;
+                    }
+                    else
+                    {
+                        isInRotate = true;
+                    }
                 }
             }
         }
@@ -193,6 +200,8 @@ namespace ComPDFKit.Tool.DrawTool
             if (isMouseDown && hitControlType != PointControlType.None)
             {
                 isMouseDown = false;
+                isInScaling = false;
+                isInRotate = false;
                 cacheRect = SetDrawRect = drawRect;
                 Draw();
                 if ((int)upPoint.X != (int)mouseDownPoint.X || (int)upPoint.Y != (int)mouseDownPoint.Y)
@@ -223,7 +232,7 @@ namespace ComPDFKit.Tool.DrawTool
         }
 
         public Cursor GetCursor(Point downPoint, Cursor cursor)
-        {
+        { 
             if (isMouseDown)
             {
                 return cursor;
@@ -233,23 +242,22 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 case PointControlType.LeftTop:
                 case PointControlType.RightBottom:
-                    return Cursors.SizeNWSE;
-
+                    return Cursors.SizeNWSE; 
                 case PointControlType.LeftMiddle:
                 case PointControlType.RightMiddle:
-                    return Cursors.SizeWE;
-
+                    return Cursors.SizeWE; 
                 case PointControlType.LeftBottom:
                 case PointControlType.RightTop:
                     return Cursors.SizeNESW;
-
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                 case PointControlType.MiddleTop:
                     return Cursors.SizeNS;
                 case PointControlType.Body:
                     return Cursors.Arrow;
                 case PointControlType.Line:
                     return Cursors.SizeAll;
+                case PointControlType.Rotate:
+                    return CommonHelper.RotationCursor;
                 default:
                     return Cursors.Arrow;
             }
@@ -281,7 +289,7 @@ namespace ComPDFKit.Tool.DrawTool
                             SolidColorBrush moveBrush = DrawParam.AnnotMoveBrush;
                             Pen movepen = DrawParam.AnnotMovePen;
 
-                            GetMoveBrushAndPen(ref moveBrush, ref movepen);
+                            GetMoveBrushAndPen(ref moveBrush, ref movepen); 
                             if (selectedType == SelectedType.PDFEdit)
                             {
                                 DrawMoveBounds(drawDC, hitControlType, movepen, moveBrush, drawRect, DrawParam.PDFEditMoveRectPen);
@@ -299,8 +307,10 @@ namespace ComPDFKit.Tool.DrawTool
                 SolidColorBrush solidColorBrush = DrawParam.AnnotRectFillBrush;
                 Pen pen = DrawParam.AnnotRectLinePen;
                 GetBrushAndPen(ref solidColorBrush, ref pen);
+                RotateTransform rotateTransform = new RotateTransform(rotateAngle, centerPoint.X, centerPoint.Y);
+                drawDC.PushTransform(rotateTransform); 
                 drawDC?.DrawRectangle(solidColorBrush, pen, currentRect);
-
+                drawDC.Pop();
                 SolidColorBrush PointBrush = DrawParam.AnnotPointBorderBrush;
                 Pen PointPen = DrawParam.AnnotPointPen;
                 GetPointBrushAndPen(ref PointBrush, ref PointPen);
@@ -310,16 +320,14 @@ namespace ComPDFKit.Tool.DrawTool
                     case DrawPointType.Circle:
                         if (selectedType == SelectedType.PDFEdit)
                         {
-                            DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, new SolidColorBrush(Color.FromRgb(71, 126, 222)));
-
-                            //DrawEditSelectionBox(drawDC, PointPen);
+                            DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);  
                         }
                         else
                         {
                             DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
                         }
                         break;
-                    case DrawPointType.Square:
+                    case DrawPointType.Square: 
                         DrawSquarePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
                         break;
                     case DrawPointType.Crop:
@@ -330,7 +338,7 @@ namespace ComPDFKit.Tool.DrawTool
                 drawDC = null;
             });
         }
-
+          
         private void GetMoveBrushAndPen(ref SolidColorBrush colorBrush, ref Pen pen)
         {
             switch (selectedType)
@@ -340,7 +348,7 @@ namespace ComPDFKit.Tool.DrawTool
                 case SelectedType.Annot:
                     colorBrush = DrawParam.AnnotMoveBrush;
                     pen = DrawParam.AnnotMovePen;
-                    break;
+                    break; 
                 case SelectedType.PDFEdit:
                     colorBrush = DrawParam.PDFEditMoveBrush;
                     pen = DrawParam.PDFEditMovePen;
@@ -368,7 +376,8 @@ namespace ComPDFKit.Tool.DrawTool
                     }
                     else if (currentDrawPointType == DrawPointType.Crop)
                     {
-                        colorBrush = DrawParam.SPDFEditCropBorderBrush;//new SolidColorBrush((DrawParam.SPDFEditPointPen.Brush as SolidColorBrush).Color);
+                        colorBrush = DrawParam.SPDFEditCropBorderBrush; 
+                        //new SolidColorBrush((DrawParam.SPDFEditPointPen.Brush as SolidColorBrush).Color);
                         pen = DrawParam.SPDFEditPointPen.Clone();
                         pen.DashStyle = DashStyles.Solid;
                     }
@@ -470,6 +479,7 @@ namespace ComPDFKit.Tool.DrawTool
         public virtual void ClearDraw()
         {
             SetDrawRect = drawRect = new Rect();
+            rotateAngle = 0;
             drawDC = RenderOpen();
             drawDC?.Close();
             drawDC = null;
@@ -490,7 +500,7 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 return;
             }
-            newRect = new Rect((int)(newRect.X - rectPadding * zoom), (int)(newRect.Y - rectPadding * zoom), (int)(newRect.Width + 2 * rectPadding * zoom), (int)(newRect.Height + 2 * rectPadding * zoom));
+            newRect = new Rect((newRect.X - rectPadding * zoom), (newRect.Y - rectPadding * zoom), (newRect.Width + 2 * rectPadding * zoom), (newRect.Height + 2 * rectPadding * zoom));
             currentZoom = zoom;
             SetDrawRect = drawRect = newRect;
             drawCenterPoint = new Point(drawRect.Left + drawRect.Width / 2, drawRect.Top + drawRect.Height / 2);
@@ -502,10 +512,20 @@ namespace ComPDFKit.Tool.DrawTool
         /// <param name="newRect">
         /// The new rect to set
         /// </param>
-        public Rect GetRect()
+        public Rect GetRect() 
         {
-            Rect rect = new Rect(drawRect.X + rectPadding * currentZoom, drawRect.Y + rectPadding * currentZoom, Math.Max(rectMinWidth, drawRect.Width - 2 * rectPadding * currentZoom), Math.Max(RectMinHeight, drawRect.Height - 2 * rectPadding * currentZoom));
+            Rect rect = new Rect(drawRect.X + rectPadding * currentZoom, drawRect.Y + rectPadding * currentZoom, Math.Max(RectMinWidth, drawRect.Width - 2 * rectPadding * currentZoom), Math.Max(RectMinHeight, drawRect.Height - 2 * rectPadding * currentZoom));
             return rect;
+        }
+
+        public int GetRotation()
+        {
+            return rotateAngle;
+        }
+
+        public void SetRotation(int rotationAngle)
+        {
+            this.rotateAngle = rotationAngle;
         }
 
         public void SetRectPadding(double rectPadding)
@@ -569,15 +589,17 @@ namespace ComPDFKit.Tool.DrawTool
         {
             maxRect = rect;
         }
+
         public Rect GetMaxRect()
         {
             return maxRect;
         }
 
-        public void SetAnnotData(AnnotData annotData)
+        public void SetAnnotData(AnnotData annotData, CPDFViewer viewer)
         {
             SetIgnorePoints(new List<PointControlType>());
             SetIsProportionalScaling(false);
+            SetRoationHandle(false);
             isProportionalScaling = false;
             switch (annotData.AnnotType)
             {
@@ -598,6 +620,7 @@ namespace ComPDFKit.Tool.DrawTool
 
                 case C_ANNOTATION_TYPE.C_ANNOTATION_STAMP:
                     SetIsProportionalScaling(true);
+                    SetRoationHandle(true);
                     break;
 
                 case C_ANNOTATION_TYPE.C_ANNOTATION_LINK:
@@ -607,10 +630,41 @@ namespace ComPDFKit.Tool.DrawTool
                 default:
                     break;
             }
+
             SetMaxRect(annotData.PaintOffset);
-            SetRect(annotData.PaintRect, annotData.CurrentZoom);
+            if(annotData.AnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_STAMP)
+            {
+                CRect sourceRect = new CRect();
+                annotData.Annot.GetSourceRect(ref sourceRect);
+                if (!sourceRect.IsEmpty)
+                {
+                    RenderData renderData = viewer.GetCurrentRenderPageForIndex(annotData.PageIndex);
+                    Rect zoomRect = new Rect(sourceRect.left / 72 * 96 * annotData.CurrentZoom, sourceRect.top / 72 * 96 * annotData.CurrentZoom, sourceRect.width() / 72 * 96 * annotData.CurrentZoom, sourceRect.height() / 72 * 96 * annotData.CurrentZoom);
+                    Rect rotateRect = zoomRect;
+                    rotateRect.X += renderData.PageBound.X - renderData.CropLeft * annotData.CurrentZoom;
+                    rotateRect.Y += renderData.PageBound.Y - renderData.CropTop * annotData.CurrentZoom;
+                    SetRect(rotateRect, annotData.CurrentZoom);
+                    rotateAngle = -(annotData.Annot as CPDFStampAnnotation).AnnotationRotator.GetRotation();
+                    pageRotation = annotData.Annot.Page.Rotation;
+                }
+                else
+                {
+                    SetRect(annotData.PaintRect, annotData.CurrentZoom);
+                }
+            }
+            else
+            {
+                SetRect(annotData.PaintRect, annotData.CurrentZoom);
+            }
+
+            //SetRotation(annotData.Rotation);
             selectedRectData = new SelectedAnnotData();
             selectedRectData.annotData = annotData;
+        }
+
+        private void SetRoationHandle(bool canRotate)
+        {
+            this.canRotate = canRotate;
         }
 
         public void SetIsProportionalScaling(bool isProportionalScaling)
@@ -620,11 +674,11 @@ namespace ComPDFKit.Tool.DrawTool
             if (isProportionalScaling)
             {
                 ignorePoints.Add(PointControlType.LeftMiddle);
-                ignorePoints.Add(PointControlType.MiddlBottom);
+                ignorePoints.Add(PointControlType.MiddleBottom);
                 ignorePoints.Add(PointControlType.RightMiddle);
                 ignorePoints.Add(PointControlType.MiddleTop);
                 ignorePoints.Add(PointControlType.Rotate);
-            }
+            } 
         }
 
         public void SetDrawType(DrawPointType drawType)
@@ -688,7 +742,7 @@ namespace ComPDFKit.Tool.DrawTool
             ignorePoints.Add(PointControlType.LeftTop);
             ignorePoints.Add(PointControlType.LeftMiddle);
             ignorePoints.Add(PointControlType.LeftBottom);
-            ignorePoints.Add(PointControlType.MiddlBottom);
+            ignorePoints.Add(PointControlType.MiddleBottom);
             ignorePoints.Add(PointControlType.RightBottom);
             ignorePoints.Add(PointControlType.RightMiddle);
             ignorePoints.Add(PointControlType.RightTop);
@@ -704,7 +758,7 @@ namespace ComPDFKit.Tool.DrawTool
             ignorePoints.Add(PointControlType.LeftTop);
             ignorePoints.Add(PointControlType.LeftMiddle);
             ignorePoints.Add(PointControlType.LeftBottom);
-            ignorePoints.Add(PointControlType.MiddlBottom);
+            ignorePoints.Add(PointControlType.MiddleBottom);
             ignorePoints.Add(PointControlType.RightBottom);
             ignorePoints.Add(PointControlType.RightMiddle);
             ignorePoints.Add(PointControlType.RightTop);
@@ -786,7 +840,6 @@ namespace ComPDFKit.Tool.DrawTool
             if (hitResult != null && hitResult.VisualHit is DrawingVisual)
             {
                 List<PointControlType> ignoreList = GetIgnorePoints();
-
                 List<Point> IgnorePointsList = new List<Point>();
                 foreach (PointControlType type in ignoreList)
                 {
@@ -799,10 +852,33 @@ namespace ComPDFKit.Tool.DrawTool
                 {
                     Point checkPoint = controlPoints[i];
 
+                    if (canRotate)
+                    {
+                        // Convert the rotation angle from degrees to radians
+                        double angleRad = rotateAngle * Math.PI / 180.0;
+
+                        // Calculate the sine and cosine of the angle
+                        double cosAngle = Math.Cos(angleRad);
+                        double sinAngle = Math.Sin(angleRad);
+
+                        // Translate checkPoint to the origin (centerPoint becomes the origin)
+                        double translatedX = checkPoint.X - centerPoint.X;
+                        double translatedY = checkPoint.Y - centerPoint.Y;
+
+                        // Apply the rotation matrix
+                        double rotatedX = translatedX * cosAngle - translatedY * sinAngle;
+                        double rotatedY = translatedX * sinAngle + translatedY * cosAngle;
+
+                        // Translate the point back to its original position
+                        checkPoint.X = rotatedX + centerPoint.X;
+                        checkPoint.Y = rotatedY + centerPoint.Y;
+                    }
+
                     if (isIgnore && IgnorePointsList.Contains(checkPoint))
                     {
                         continue;
                     }
+
                     switch (currentDrawPointType)
                     {
                         case DrawPointType.Circle:
@@ -831,7 +907,6 @@ namespace ComPDFKit.Tool.DrawTool
                             }
                             if ((PointControlType)i == PointControlType.RightMiddle)
                             {
-
                                 if (Math.Abs(point.X - checkPoint.X) < wlen && checkVector.Length < drawRect.Height/3)
                                 {
                                     return (PointControlType)i;
@@ -853,7 +928,7 @@ namespace ComPDFKit.Tool.DrawTool
                                 }
                             }
 
-                            if ((PointControlType)i == PointControlType.MiddlBottom)
+                            if ((PointControlType)i == PointControlType.MiddleBottom)
                             {
                                 if (Math.Abs(point.Y - checkPoint.Y) < hlen && checkVector.Length < drawRect.Width/3)
                                 {
@@ -865,12 +940,24 @@ namespace ComPDFKit.Tool.DrawTool
                                 return (PointControlType)i;
                             }
                             break;
-                        case DrawPointType.Square:
 
+                        case DrawPointType.Square:
                             Rect checkRect = new Rect(Math.Max(checkPoint.X - pointSize, 0), Math.Max(checkPoint.Y - pointSize, 0), pointSize * 2, pointSize * 2);
                             if (checkRect.Contains(point))
                             {
                                 return (PointControlType)i;
+                            }
+
+                            if (canRotate)
+                            {
+                                Point hitRotationPoint = new Point(centerPoint.X + (rotationPoint.X - centerPoint.X) * Math.Cos(rotateAngle * Math.PI / 180) - (rotationPoint.Y - centerPoint.Y) * Math.Sin(rotateAngle * Math.PI / 180),
+                                    centerPoint.Y + (rotationPoint.X - centerPoint.X) * Math.Sin(rotateAngle * Math.PI / 180) + (rotationPoint.Y - centerPoint.Y) * Math.Cos(rotateAngle * Math.PI / 180));
+                                Vector checkVector1 = point - hitRotationPoint;
+
+                                if (checkVector1.Length < pointSize)
+                                {
+                                    return PointControlType.Rotate;
+                                } 
                             }
                             break;
 
@@ -881,28 +968,58 @@ namespace ComPDFKit.Tool.DrawTool
                                 return (PointControlType)i;
                             }
                             break;
+
                         default:
                             break;
                     }
                 }
-                if (drawRect.Contains(point))
+
+                if (canRotate)
                 {
-                    double rectWidth = (drawRect.Width - 2 * rectPadding > 0) ? drawRect.Width - 2 * rectPadding : 0;
-                    double rectHeight = (drawRect.Height - 2 * rectPadding > 0) ? drawRect.Height - 2 * rectPadding : 0;
-                    Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), rectWidth, rectHeight);
-                    if (rect.Contains(point))
+                    bool isIn = DataConversionForWPF.IsPointInRotatedRectangle(point, drawRect, rotateAngle);
+                    if(isIn)
                     {
+                        double rectWidth = (drawRect.Width - 2 * rectPadding > 0) ? drawRect.Width - 2 * rectPadding : 0;
+                        double rectHeight = (drawRect.Height - 2 * rectPadding > 0) ? drawRect.Height - 2 * rectPadding : 0;
+                        Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), rectWidth, rectHeight);
+                        isIn = DataConversionForWPF.IsPointInRotatedRectangle(point, rect, rotateAngle);
+                        if (isIn)
+                        {
+                            if (!ignoreList.Contains(PointControlType.Body))
+                            {
+                                return PointControlType.Body;
+                            }
+                        }
+
                         if (!ignoreList.Contains(PointControlType.Body))
                         {
-                            return PointControlType.Body;
+                            return PointControlType.Line;
                         }
                     }
-                    if (!ignoreList.Contains(PointControlType.Body))
+                }
+                else
+                {
+                    if (drawRect.Contains(point))
                     {
-                        return PointControlType.Line;
+                        double rectWidth = (drawRect.Width - 2 * rectPadding > 0) ? drawRect.Width - 2 * rectPadding : 0;
+                        double rectHeight = (drawRect.Height - 2 * rectPadding > 0) ? drawRect.Height - 2 * rectPadding : 0;
+                        Rect rect = new Rect(Math.Max(drawRect.X + rectPadding, 0), Math.Max(drawRect.Y + rectPadding, 0), rectWidth, rectHeight);
+                        if (rect.Contains(point))
+                        {
+                            if (!ignoreList.Contains(PointControlType.Body))
+                            {
+                                return PointControlType.Body;
+                            }
+                        }
+
+                        if (!ignoreList.Contains(PointControlType.Body))
+                        {
+                            return PointControlType.Line;
+                        }
                     }
                 }
             }
+
             return PointControlType.None;
         }
 

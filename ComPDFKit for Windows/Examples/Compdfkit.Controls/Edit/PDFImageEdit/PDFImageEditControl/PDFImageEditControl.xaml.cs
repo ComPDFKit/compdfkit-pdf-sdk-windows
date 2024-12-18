@@ -72,37 +72,43 @@ namespace ComPDFKit.Controls.Edit
         #endregion
 
         #region Property changed
+
+        private void ImageCut()
+        {
+            GetImageArea(out List<CPDFEditImageArea> imageAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
+            if (imageAreas.Count == 0 || pdfPage == null || editPage == null)
+                return;
+
+            SelectedRect selectedRect = ToolView.GetSelectedRectForEditAreaObject(imageAreas[0]);
+            if (selectedRect == null)
+                return;
+
+            Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageAreas[0].GetFrame());
+            double currentZoom = ToolView.GetCPDFViewer().CurrentRenderFrame.ZoomFactor;
+            Rect rect = selectedRect.GetRect();
+            Rect maxRect = selectedRect.GetMaxRect();
+            Rect pdfRect = new Rect((rect.X - maxRect.X) / currentZoom, (rect.Y - maxRect.Y) / currentZoom, rect.Width / currentZoom, rect.Height / currentZoom);
+            pdfRect = DpiHelper.StandardRectToPDFRect(pdfRect);
+            CRect newCRect = new CRect((float)pdfRect.Left, (float)pdfRect.Bottom, (float)pdfRect.Right, (float)pdfRect.Top);
+            if (imageAreas[0].CutWithRect(newCRect))
+            {
+                PDFEditHistory editHistory = new PDFEditHistory();
+                editHistory.EditPage = editPage;
+                editHistory.PageIndex = pdfPage.PageIndex;
+
+                ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                ToolView.UpdateRender(oldRect, imageAreas[0]);
+            }
+
+            editPage.EndEdit();
+            SetImageThumb();
+        }
+
         private void ToolView_SelectedDataChanged(object sender, SelectedAnnotData e)
         {
             if (ToolView.GetIsCropMode())
             {
-                GetImageArea(out List<CPDFEditImageArea> imageAreas, out CPDFPage pdfPage, out CPDFEditPage editPage);
-                if (imageAreas.Count == 0 || pdfPage == null || editPage == null)
-                    return;
-
-                SelectedRect selectedRect = ToolView.GetSelectedRectForEditAreaObject(imageAreas[0]);
-                if (selectedRect == null)
-                    return;
-
-                Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageAreas[0].GetFrame());
-                double currentZoom = ToolView.GetCPDFViewer().CurrentRenderFrame.ZoomFactor;
-                Rect rect = selectedRect.GetRect();
-                Rect maxRect = selectedRect.GetMaxRect();
-                Rect pdfRect = new Rect((rect.X - maxRect.X) / currentZoom, (rect.Y - maxRect.Y) / currentZoom, rect.Width / currentZoom, rect.Height / currentZoom);
-                pdfRect = DpiHelper.StandardRectToPDFRect(pdfRect);
-                CRect newCRect = new CRect((float)pdfRect.Left, (float)pdfRect.Bottom, (float)pdfRect.Right, (float)pdfRect.Top);
-                if(imageAreas[0].CutWithRect(newCRect))
-                {
-                    PDFEditHistory editHistory = new PDFEditHistory();
-                    editHistory.EditPage = editPage;
-                    editHistory.PageIndex = pdfPage.PageIndex;
-
-                    ToolView.GetCPDFViewer().UndoManager.AddHistory(editHistory);
-                    ToolView.UpdateRender(oldRect, imageAreas[0]);
-                 }
-
-                editPage.EndEdit();
-                SetImageThumb();
+                ImageCut();
             }
         }
 
@@ -165,7 +171,6 @@ namespace ComPDFKit.Controls.Edit
 
         public void SetPDFImageEditData(List<ImageEditParam> newEvents)
         {
-
             EditEvents = newEvents.Where(newEvent => newEvent.EditIndex >= 0 && newEvent.EditType == CPDFEditType.EditImage).ToList();
 
             if (EditEvents.Count > 0)
@@ -572,6 +577,7 @@ namespace ComPDFKit.Controls.Edit
             {
                 return;
             }
+
             try
             {
                 foreach (var EditEvent in EditEvents)

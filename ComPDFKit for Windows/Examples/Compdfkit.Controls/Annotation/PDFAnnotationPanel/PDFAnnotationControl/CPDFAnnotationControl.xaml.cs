@@ -26,7 +26,6 @@ namespace ComPDFKit.Controls.PDFControl
 {
     public partial class CPDFAnnotationControl : UserControl
     {
-
         private bool isTempPanel = false;
 
         private CPDFAnnotationType currentAnnotationType = CPDFAnnotationType.Unknown;
@@ -44,6 +43,7 @@ namespace ComPDFKit.Controls.PDFControl
         private CPDFShapeUI pdfCircleUI;
         private CPDFShapeUI pdfLineUI;
         private CPDFShapeUI pdfArrowUI;
+        private CPDFCloudUI pdfCloudUI;
         private CPDFFreehandUI pdfFreehandUI;
         private CPDFFreeTextUI pdfFreeTextUI;
         private CPDFNoteUI pdfNoteUI;
@@ -116,7 +116,7 @@ namespace ComPDFKit.Controls.PDFControl
 
         private void AnnotationControl_Unloaded(object sender, RoutedEventArgs e)
         {
-             UnLoadPDFViewHandler();
+            UnLoadPDFViewHandler();
         }
 
         private UIElement GetAnnotationPanel()
@@ -153,6 +153,11 @@ namespace ComPDFKit.Controls.PDFControl
                     (annotationPanel as CPDFShapeUI).PropertyChanged -= CPDFAnnotationControl_PropertyChanged;
                     (annotationPanel as CPDFShapeUI).PropertyChanged += CPDFAnnotationControl_PropertyChanged;
                     SetAnnotationProperty((annotationPanel as CPDFShapeUI).GetShapeData());
+                    break;
+                case CPDFAnnotationType.Polygon:
+                    (annotationPanel as CPDFCloudUI).PropertyChanged -= CPDFAnnotationControl_PropertyChanged;
+                    (annotationPanel as CPDFCloudUI).PropertyChanged += CPDFAnnotationControl_PropertyChanged;
+                    SetAnnotationProperty((annotationPanel as CPDFCloudUI).GetPolygonData());
                     break;
                 case CPDFAnnotationType.Note:
                     (annotationPanel as CPDFNoteUI).PropertyChanged -= CPDFAnnotationControl_PropertyChanged;
@@ -261,8 +266,10 @@ namespace ComPDFKit.Controls.PDFControl
                 case CPDFAnnotationType.Square:
                     {
                         CPDFShapeData squareData = pdfAnnotationData as CPDFShapeData;
-                        annotHandlerEventArgs = new SquareParam();
-                        annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE;
+                        annotHandlerEventArgs = new SquareParam()
+                        {
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE
+                        };
                         byte[] LineColor = new byte[] { squareData.BorderColor.R, squareData.BorderColor.G, squareData.BorderColor.B };
                         (annotHandlerEventArgs as SquareParam).LineColor = LineColor;
                         if (squareData.FillColor != Colors.Transparent)
@@ -276,6 +283,7 @@ namespace ComPDFKit.Controls.PDFControl
                         ParamConverter.ParseDashStyle(squareData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
                         (annotHandlerEventArgs as SquareParam).LineDash = LineDash;
                         (annotHandlerEventArgs as SquareParam).BorderStyle = BorderStyle;
+
                         (annotHandlerEventArgs as SquareParam).Author = CPDFMarkupData.Author;
                         (annotHandlerEventArgs as SquareParam).Content = squareData.Note;
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE);
@@ -284,45 +292,87 @@ namespace ComPDFKit.Controls.PDFControl
 
                 case CPDFAnnotationType.Circle:
                     {
-                        CPDFShapeData cicleData = pdfAnnotationData as CPDFShapeData;
-                        annotHandlerEventArgs = new CircleParam();
-                        annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE;
-                        byte[] LineColor = new byte[] { cicleData.BorderColor.R, cicleData.BorderColor.G, cicleData.BorderColor.B };
-                        (annotHandlerEventArgs as CircleParam).LineColor = LineColor;
-                        if (cicleData.FillColor != Colors.Transparent)
+                        CPDFShapeData circleData = pdfAnnotationData as CPDFShapeData;
+                        byte[] LineColor = new byte[] { circleData.BorderColor.R, circleData.BorderColor.G, circleData.BorderColor.B };
+
+                        annotHandlerEventArgs = new CircleParam
                         {
-                            byte[] BgColor = new byte[] { cicleData.FillColor.R, cicleData.FillColor.G, cicleData.FillColor.B };
-                            (annotHandlerEventArgs as CircleParam).BgColor = BgColor;
-                            (annotHandlerEventArgs as CircleParam).HasBgColor = true;
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE
+                        };
+
+                        if (annotHandlerEventArgs is CircleParam circleParam)
+                        {
+                            circleParam.LineColor = LineColor;
+                            if (circleData.FillColor != Colors.Transparent)
+                            {
+                                byte[] BgColor = new byte[] { circleData.FillColor.R, circleData.FillColor.G, circleData.FillColor.B };
+                                circleParam.BgColor = BgColor;
+                                circleParam.HasBgColor = true;
+                            }
+                            circleParam.LineWidth = circleData.Thickness;
+                            circleParam.Transparency = Convert.ToByte(circleData.Opacity * 255);
+                            ParamConverter.ParseDashStyle(circleData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
+                            circleParam.LineDash = LineDash;
+                            circleParam.BorderStyle = BorderStyle;
+                            circleParam.Author = CPDFMarkupData.Author;
+                            circleParam.Content = circleData.Note; 
                         }
-                        (annotHandlerEventArgs as CircleParam).LineWidth = cicleData.Thickness;
-                        (annotHandlerEventArgs as CircleParam).Transparency = Convert.ToByte(cicleData.Opacity * 255);
-                        ParamConverter.ParseDashStyle(cicleData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
-                        (annotHandlerEventArgs as CircleParam).LineDash = LineDash;
-                        (annotHandlerEventArgs as CircleParam).BorderStyle = BorderStyle;
-                        (annotHandlerEventArgs as CircleParam).Author = CPDFMarkupData.Author;
-                        (annotHandlerEventArgs as CircleParam).Content = cicleData.Note;
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE);
                     }
                     break;
+                case CPDFAnnotationType.Polygon:
+                    {
+                        CPDFPolygonData polygonData = pdfAnnotationData as CPDFPolygonData;
+                        pdfViewerControl.PDFViewTool.GetDefaultSettingParam().IsCreateSquarePolygonMeasure = false;
+                        annotHandlerEventArgs = new PolygonMeasureParam()
+                        {   
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON
+                        };
+                        if (annotHandlerEventArgs is PolygonMeasureParam polygonMeasureParam)
+                        { 
+                            polygonMeasureParam.LineColor = new byte[] { polygonData.BorderColor.R, polygonData.BorderColor.G, polygonData.BorderColor.B };
+                            polygonMeasureParam.HasFillColor = true;
+                            if(polygonData.FillColor.A == 0)
+                            {
+                                polygonMeasureParam.HasFillColor = false;
+                            }
+                            polygonMeasureParam.FillColor = new byte[] { polygonData.FillColor.R, polygonData.FillColor.G, polygonData.FillColor.B };
+                            polygonMeasureParam.BorderStyle = polygonData.BorderStyle;
+                            ParamConverter.ParseDashStyle(polygonData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
+                            polygonMeasureParam.LineDash = LineDash;
+                            polygonMeasureParam.BorderEffector = polygonData.BorderEffector;
+                            polygonMeasureParam.LineWidth = polygonData.Thickness; 
+                            polygonMeasureParam.Transparency = (byte)(polygonData.Opacity / 100 * 255.0);
+                            polygonMeasureParam.IsMeasure = false;
+                            polygonMeasureParam.Content = polygonData.Note;
+                            polygonMeasureParam.Author = CPDFMarkupData.Author;
+                        }
 
+                        pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON);
+                    }
+                    break;
                 case CPDFAnnotationType.Arrow:
                 case CPDFAnnotationType.Line:
                     {
                         CPDFLineShapeData lineData = pdfAnnotationData as CPDFLineShapeData;
-                        annotHandlerEventArgs = new LineParam();
-                        annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_LINE;
-                        byte[] LineColor = new byte[] { lineData.BorderColor.R, lineData.BorderColor.G, lineData.BorderColor.B };
-                        (annotHandlerEventArgs as LineParam).LineColor = LineColor;
-                        (annotHandlerEventArgs as LineParam).LineWidth = lineData.Thickness;
-                        (annotHandlerEventArgs as LineParam).Transparency = Convert.ToByte(lineData.Opacity * 255);
-                        ParamConverter.ParseDashStyle(lineData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
-                        (annotHandlerEventArgs as LineParam).LineDash = LineDash;
-                        (annotHandlerEventArgs as LineParam).BorderStyle = BorderStyle;
-                        (annotHandlerEventArgs as LineParam).HeadLineType = lineData.LineType.HeadLineType;
-                        (annotHandlerEventArgs as LineParam).TailLineType = lineData.LineType.TailLineType;
-                        (annotHandlerEventArgs as LineParam).Author = CPDFMarkupData.Author;
-                        (annotHandlerEventArgs as LineParam).Content = lineData.Note;
+                        annotHandlerEventArgs = new LineParam()
+                        {
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_LINE
+                        };
+                        if (annotHandlerEventArgs is LineParam lineParam)
+                        { 
+                            byte[] LineColor = new byte[] { lineData.BorderColor.R, lineData.BorderColor.G, lineData.BorderColor.B };
+                            lineParam.LineColor = LineColor;
+                            lineParam.LineWidth = lineData.Thickness;
+                            lineParam.Transparency = Convert.ToByte(lineData.Opacity * 255);
+                            ParamConverter.ParseDashStyle(lineData.DashStyle, out float[] LineDash, out C_BORDER_STYLE BorderStyle);
+                            lineParam.LineDash = LineDash;
+                            lineParam.BorderStyle = BorderStyle;
+                            lineParam.HeadLineType = lineData.LineType.HeadLineType;
+                            lineParam.TailLineType = lineData.LineType.TailLineType;
+                            lineParam.Author = CPDFMarkupData.Author;
+                            lineParam.Content = lineData.Note;
+                        }
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_LINE);
                     }
                     break;
@@ -331,12 +381,15 @@ namespace ComPDFKit.Controls.PDFControl
                     {
                         CPDFNoteData noteData = pdfAnnotationData as CPDFNoteData;
                         annotHandlerEventArgs = new StickyNoteParam();
-                        annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_TEXT;
-                        byte[] StickyNoteColor = new byte[] { noteData.BorderColor.R, noteData.BorderColor.G, noteData.BorderColor.B };
-                        (annotHandlerEventArgs as StickyNoteParam).StickyNoteColor = StickyNoteColor;
-                        (annotHandlerEventArgs as StickyNoteParam).Content = noteData.Note;
-                        (annotHandlerEventArgs as StickyNoteParam).Transparency = 255;
-                        (annotHandlerEventArgs as StickyNoteParam).Author = CPDFMarkupData.Author;
+                        if (annotHandlerEventArgs is StickyNoteParam stickyNoteParam)
+                        {
+                            annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_TEXT;
+                            byte[] StickyNoteColor = new byte[] { noteData.BorderColor.R, noteData.BorderColor.G, noteData.BorderColor.B };
+                            stickyNoteParam.StickyNoteColor = StickyNoteColor;
+                            stickyNoteParam.Content = noteData.Note;
+                            stickyNoteParam.Transparency = 255;
+                            stickyNoteParam.Author = CPDFMarkupData.Author;
+                        }  
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_TEXT);
                     }
                     break;
@@ -344,14 +397,20 @@ namespace ComPDFKit.Controls.PDFControl
                 case CPDFAnnotationType.Freehand:
                     {
                         CPDFFreehandData freehandData = pdfAnnotationData as CPDFFreehandData;
-                        annotHandlerEventArgs = new InkParam();
-                        annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_INK;
-                        byte[] LineColor = new byte[] { freehandData.BorderColor.R, freehandData.BorderColor.G, freehandData.BorderColor.B };
-                        (annotHandlerEventArgs as InkParam).InkColor = LineColor;
-                        (annotHandlerEventArgs as InkParam).Thickness = freehandData.Thickness;
-                        (annotHandlerEventArgs as InkParam).Transparency = Convert.ToByte(freehandData.Opacity * 255);
-                        (annotHandlerEventArgs as InkParam).Content = freehandData.Note;
-                        (annotHandlerEventArgs as InkParam).Author = CPDFMarkupData.Author;
+                        annotHandlerEventArgs = new InkParam()
+                        {
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_INK
+                        };
+                        if (annotHandlerEventArgs is InkParam inkParam)
+                        {
+                            byte[] LineColor = new byte[] { freehandData.BorderColor.R, freehandData.BorderColor.G, freehandData.BorderColor.B };
+                            inkParam.InkColor = LineColor;
+                            inkParam.Thickness = freehandData.Thickness;
+                            inkParam.Transparency = Convert.ToByte(freehandData.Opacity * 255);
+                            inkParam.Content = freehandData.Note;
+                            inkParam.Author = CPDFMarkupData.Author;
+                        } 
+
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_INK);
                     }
                     break;
@@ -359,57 +418,66 @@ namespace ComPDFKit.Controls.PDFControl
                 case CPDFAnnotationType.FreeText:
                     {
                         CPDFFreeTextData freeTextData = pdfAnnotationData as CPDFFreeTextData;
-                        annotHandlerEventArgs = new FreeTextParam();
-                        annotHandlerEventArgs.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_FREETEXT;
-                        (annotHandlerEventArgs as FreeTextParam).Transparency = Convert.ToByte(freeTextData.Opacity * 255);
-                        (annotHandlerEventArgs as FreeTextParam).FontName = freeTextData.FontFamily.ToString();
-
-                        byte[] FontColor = new byte[] { freeTextData.BorderColor.R, freeTextData.BorderColor.G, freeTextData.BorderColor.B };
-                        (annotHandlerEventArgs as FreeTextParam).FontColor = FontColor;
-                        (annotHandlerEventArgs as FreeTextParam).FontSize = freeTextData.FontSize; 
-
-                        string postScriptName = string.Empty;
-                        CPDFFont.GetPostScriptName(pdfFreeTextUI.CPDFFontControl.FontFamilyValue, pdfFreeTextUI.CPDFFontControl.FontStyleValue, ref postScriptName);
-                        (annotHandlerEventArgs as FreeTextParam).FontName = postScriptName;
-                        switch (freeTextData.TextAlignment)
+                        annotHandlerEventArgs = new FreeTextParam()
                         {
-                            case TextAlignment.Left:
-                                (annotHandlerEventArgs as FreeTextParam).Alignment = C_TEXT_ALIGNMENT.ALIGNMENT_LEFT;
-                                break;
-                            case TextAlignment.Right:
-                                (annotHandlerEventArgs as FreeTextParam).Alignment = C_TEXT_ALIGNMENT.ALIGNMENT_RIGHT;
-                                break;
-                            case TextAlignment.Center:
-                                (annotHandlerEventArgs as FreeTextParam).Alignment = C_TEXT_ALIGNMENT.ALIGNMENT_CENTER;
-                                break;
-                            default:
-                                break;
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_FREETEXT
+                        };
+                        if (annotHandlerEventArgs is FreeTextParam freeTextParam)
+                        {
+                            freeTextParam.Transparency = Convert.ToByte(freeTextData.Opacity * 255);
+                            freeTextParam.FontName = freeTextData.FontFamily.ToString();
+
+                            byte[] FontColor = new byte[] { freeTextData.BorderColor.R, freeTextData.BorderColor.G, freeTextData.BorderColor.B };
+                            freeTextParam.FontColor = FontColor;
+                            freeTextParam.FontSize = freeTextData.FontSize;
+
+                            string postScriptName = string.Empty;
+                            CPDFFont.GetPostScriptName(pdfFreeTextUI.CPDFFontControl.FontFamilyValue, pdfFreeTextUI.CPDFFontControl.FontStyleValue, ref postScriptName);
+                            freeTextParam.FontName = postScriptName;
+                            switch (freeTextData.TextAlignment)
+                            {
+                                case TextAlignment.Left:
+                                    freeTextParam.Alignment = C_TEXT_ALIGNMENT.ALIGNMENT_LEFT;
+                                    break;
+                                case TextAlignment.Right:
+                                    freeTextParam.Alignment = C_TEXT_ALIGNMENT.ALIGNMENT_RIGHT;
+                                    break;
+                                case TextAlignment.Center:
+                                    freeTextParam.Alignment = C_TEXT_ALIGNMENT.ALIGNMENT_CENTER;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            freeTextParam.Content = freeTextData.Note;
+                            freeTextParam.Author = CPDFMarkupData.Author;
                         }
-                        (annotHandlerEventArgs as FreeTextParam).Content = freeTextData.Note;
-                        (annotHandlerEventArgs as FreeTextParam).Author = CPDFMarkupData.Author;
+
                         pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_FREETEXT);
                     }
                     break;
 
                 case CPDFAnnotationType.Stamp:
                     {
-                        StampParam stampParam = new StampParam();
-                        stampParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_STAMP;
-                        CPDFStampData stampData = pdfAnnotationData as CPDFStampData;
-                        SetStamp(ref stampParam, stampData);
-                        annotHandlerEventArgs = stampParam;
-                        pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP);
-
-                        byte[] imageData = null;
-                        int imageWidth = 0;
-                        int imageHeight = 0;
-                        PDFHelp.ImageStreamToByte(stampParam.ImageStream, ref imageData, ref imageWidth, ref imageHeight);
-                        if (imageData != null && imageWidth > 0 && imageHeight > 0)
+                        StampParam stampParam = new StampParam()
                         {
-                            pdfViewerControl.PDFViewTool.GetCPDFViewer().SetMouseImageMaxSize(200, 300);
-                            pdfViewerControl.SetStampMouseImage(imageData, imageWidth, imageHeight);
-                        }
+                            CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_STAMP
+                        }; 
+                        if(pdfAnnotationData is CPDFStampData stampData)
+                        {
+                            SetStamp(ref stampParam, stampData);
+                            annotHandlerEventArgs = stampParam;
+                            pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP);
 
+                            byte[] imageData = null;
+                            int imageWidth = 0;
+                            int imageHeight = 0;
+                            PDFHelp.ImageStreamToByte(stampParam.ImageStream, ref imageData, ref imageWidth, ref imageHeight);
+                            if (imageData != null && imageWidth > 0 && imageHeight > 0)
+                            {
+                                pdfViewerControl.PDFViewTool.GetCPDFViewer().SetMouseImageMaxSize(200, 300);
+                                pdfViewerControl.SetStampMouseImage(imageData, imageWidth, imageHeight);
+                            }
+                        }  
                         pdfViewerControl.SetIsVisibleCustomMouse(true);
                         pdfViewerControl.SetIsShowStampMouse(true);
                     }
@@ -589,7 +657,7 @@ namespace ComPDFKit.Controls.PDFControl
                         annotParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_STAMP;
                         (annotParam as StampParam).Transparency = 255;
                         (annotParam as StampParam).StampType = C_STAMP_TYPE.IMAGE_STAMP;
-                        if (!string.IsNullOrEmpty(stamp.SourcePath) && File.Exists(stamp.SourcePath))
+                        if (!string.IsNullOrEmpty(stamp.SourcePath))
                         {
                             BitmapImage image = new BitmapImage(new Uri(stamp.SourcePath));
                             PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -643,6 +711,7 @@ namespace ComPDFKit.Controls.PDFControl
                     break;
             }
         }
+
         private List<List<Point>> GetPoints(string Path)
         {
             StrokeCollection Strokes;
@@ -698,6 +767,7 @@ namespace ComPDFKit.Controls.PDFControl
 
         public void AnnotationCancel()
         {
+            this.pdfViewerControl.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_NONE);
             this.pdfViewerControl.SetToolType(ToolType.Pan);
             pdfViewerControl.SetIsShowStampMouse(false);
             pdfViewerControl.SetIsVisibleCustomMouse(false);
@@ -760,6 +830,13 @@ namespace ComPDFKit.Controls.PDFControl
                     }
                     annotationPanel = pdfCircleUI;
                     (annotationPanel as CPDFShapeUI).InitWithAnnotationType(annotationType);
+                    break;
+                case CPDFAnnotationType.Polygon:
+                    if (pdfCloudUI == null)
+                    {
+                        pdfCloudUI = new CPDFCloudUI();
+                    }
+                    annotationPanel = pdfCloudUI;
                     break;
                 case CPDFAnnotationType.Arrow:
                     if (pdfArrowUI == null)
@@ -1092,6 +1169,17 @@ namespace ComPDFKit.Controls.PDFControl
                         (tempAnnotationPanel as CPDFLinkUI).SetPresentAnnotAttrib(annotParam as LinkParam, baseAnnot.GetAnnotData().Annot as CPDFLinkAnnotation, pdfViewerControl, pdfViewerControl.PDFToolManager.GetDocument().PageCount);
                     }
                     break;
+                case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
+                    {
+                        tempAnnotationPanel = new CPDFCloudUI();
+                        AnnotParam annotParam = ParamConverter.CPDFDataConverterToAnnotParam(
+                            pdfViewerControl.PDFViewTool.GetCPDFViewer().GetDocument(),
+                            baseAnnot.GetAnnotData().PageIndex,
+                            baseAnnot.GetAnnotData().Annot
+                            );
+                        (tempAnnotationPanel as CPDFCloudUI).SetPresentAnnotAttrib(annotParam as PolygonMeasureParam, baseAnnot.GetAnnotData().Annot as CPDFPolygonAnnotation, pdfViewerControl, pdfViewerControl.PDFToolManager.GetDocument().PageCount);
+                    }
+                    break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_SOUND:
                     tempAnnotationPanel = null;
                     break;
@@ -1115,7 +1203,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 if (annotationPanel is CPDFFreehandUI)
                 {
-                    if(pdfViewerControl.PDFToolManager.GetToolType() == ToolType.Customize)
+                    if (pdfViewerControl.PDFToolManager.GetToolType() == ToolType.Customize)
                     {
                         (annotationPanel as CPDFFreehandUI)?.SetEraseCheck(true);
                         return;
@@ -1123,7 +1211,7 @@ namespace ComPDFKit.Controls.PDFControl
                     else
                     {
                         (annotationPanel as CPDFFreehandUI)?.SetEraseCheck(false);
-                    }                    
+                    }
                 }
 
                 SetAnnotationPanel(annotationPanel);
@@ -1142,7 +1230,7 @@ namespace ComPDFKit.Controls.PDFControl
             }
         }
 
-        private void ShowTempAnnotPanel()
+        public void ShowTempAnnotPanel()
         {
             BaseAnnot baseAnnot = pdfViewerControl.GetCacheHitTestAnnot();
             if (baseAnnot != null)

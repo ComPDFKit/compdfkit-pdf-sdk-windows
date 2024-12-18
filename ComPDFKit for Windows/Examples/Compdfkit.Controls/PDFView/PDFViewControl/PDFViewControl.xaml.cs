@@ -14,12 +14,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ComPDFKit.Controls.Helper;
-using ComPDFKit.Tool.DrawTool;
 using SplitMode = ComPDFKit.Controls.PDFControlUI.CPDFViewModeUI.SplitMode;
 using System.Threading;
 using System.Threading.Tasks;
 using ComPDFKitViewer.Annot;
 using System.IO;
+using ComPDFKit.Import;
+using ComPDFKit.PDFPage;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -34,6 +35,7 @@ namespace ComPDFKit.Controls.PDFControl
         public string Password { get; set; } = string.Empty;
 
         public CPDFViewerTool PDFViewTool { get; private set; }
+
         public CPDFToolManager PDFToolManager { get; private set; }
 
         public CPDFViewerTool FocusPDFViewTool { get; private set; }
@@ -44,8 +46,10 @@ namespace ComPDFKit.Controls.PDFControl
         public event EventHandler<MouseEventObject> MouseLeftButtonUpHandler;
         public event EventHandler<MouseEventObject> MouseMoveHandler;
         public event EventHandler<MouseEventObject> MouseRightButtonDownHandler;
-        public event EventHandler<ComPDFKitViewer.MouseWheelZoomArgs> MouseWheelZoomHandler;
+        public event EventHandler<MouseWheelZoomArgs> MouseWheelZoomHandler;
         public event EventHandler DrawChanged;
+
+        public PageSelectedData SnapshotData { get; private set; }
 
         //private ContextMenu RightMenu;
         #region Properties
@@ -57,6 +61,7 @@ namespace ComPDFKit.Controls.PDFControl
 
         private double[] zoomLevelList = { 1f, 8f, 12f, 25, 33f, 50, 66f, 75, 100, 125, 150, 200, 300, 400, 600, 800, 1000 };
         #endregion
+
         public PDFViewControl()
         {
             InitializeComponent();
@@ -78,6 +83,7 @@ namespace ComPDFKit.Controls.PDFControl
             PDFViewTool.GetCPDFViewer().MouseWheelZoomHandler -= PDFViewControl_MouseWheelZoomHandler;
             PDFViewTool.GetCPDFViewer().MouseMove -= PDFViewControl_MouseMove;
             PDFViewTool.DrawChanged -= PDFViewTool_DrawChanged;
+            PDFViewTool.PageSelectedChanged -= PDFViewTool_PageSelectedChanged;
             PDFToolManager.MouseLeftButtonDownHandler -= PDFToolManager_MouseLeftButtonDownHandler;
             PDFToolManager.MouseLeftButtonUpHandler -= PDFToolManager_MouseLeftButtonUpHandler;
             PDFToolManager.MouseMoveHandler -= PDFToolManager_MouseMoveHandler;
@@ -87,6 +93,7 @@ namespace ComPDFKit.Controls.PDFControl
             PDFViewTool.GetCPDFViewer().MouseWheelZoomHandler += PDFViewControl_MouseWheelZoomHandler;
             PDFViewTool.GetCPDFViewer().MouseMove += PDFViewControl_MouseMove;
             PDFViewTool.DrawChanged += PDFViewTool_DrawChanged;
+            PDFViewTool.PageSelectedChanged += PDFViewTool_PageSelectedChanged;
             PDFToolManager.MouseLeftButtonDownHandler += PDFToolManager_MouseLeftButtonDownHandler;
             PDFToolManager.MouseLeftButtonUpHandler += PDFToolManager_MouseLeftButtonUpHandler;
             PDFToolManager.MouseMoveHandler += PDFToolManager_MouseMoveHandler;
@@ -95,6 +102,7 @@ namespace ComPDFKit.Controls.PDFControl
             splitViewerTool.SizeChanged -= SplitViewerTool_SizeChanged;
             splitViewerTool.GetCPDFViewer().MouseWheelZoomHandler -= SplitPDFViewControl_MouseWheelZoomHandler;
             splitViewerTool.DrawChanged -= PDFViewTool_DrawChanged;
+            splitViewerTool.PageSelectedChanged -= PDFViewTool_PageSelectedChanged;
             splitToolManager.MouseLeftButtonDownHandler -= PDFToolManager_MouseLeftButtonDownHandler;
             splitToolManager.MouseLeftButtonUpHandler -= PDFToolManager_MouseLeftButtonUpHandler;
             splitToolManager.MouseMoveHandler -= PDFToolManager_MouseMoveHandler;
@@ -103,18 +111,32 @@ namespace ComPDFKit.Controls.PDFControl
             splitViewerTool.SizeChanged += SplitViewerTool_SizeChanged;
             splitViewerTool.GetCPDFViewer().MouseWheelZoomHandler += SplitPDFViewControl_MouseWheelZoomHandler;
             splitViewerTool.DrawChanged += PDFViewTool_DrawChanged;
+            splitViewerTool.PageSelectedChanged += PDFViewTool_PageSelectedChanged;
             splitToolManager.MouseLeftButtonDownHandler += PDFToolManager_MouseLeftButtonDownHandler;
             splitToolManager.MouseLeftButtonUpHandler += PDFToolManager_MouseLeftButtonUpHandler;
             splitToolManager.MouseMoveHandler += PDFToolManager_MouseMoveHandler;
             splitToolManager.MouseRightButtonDownHandler += PDFToolManager_MouseRightButtonDownHandler;
 
+            GetCPDFViewer().OnRenderFinish -= PDFViewControl_OnRenderFinish;
+            GetCPDFViewer().OnRenderFinish += PDFViewControl_OnRenderFinish;
+
             SetCursor();
         }
-    
+
+        private void PDFViewControl_OnRenderFinish(object sender, EventArgs e)
+        {
+            SetCursorStatus();
+        }
+
         private void PDFViewTool_DrawChanged(object sender, EventArgs e)
         {
             FocusPDFViewToolChanged?.Invoke(this, EventArgs.Empty);
             DrawChanged?.Invoke(sender, e);
+        }
+
+        private void PDFViewTool_PageSelectedChanged(object sender, PageSelectedData e)
+        {
+            SnapshotData = e;
         }
 
         public ContextMenu GetRightMenu()
@@ -312,7 +334,6 @@ namespace ComPDFKit.Controls.PDFControl
 
             viewerTool?.GetCPDFViewer()?.UpdateRenderFrame();
             splitViewerTool?.GetCPDFViewer()?.UpdateRenderFrame();
-
         }
 
         public void SetToolType(ToolType type)
@@ -529,6 +550,38 @@ namespace ComPDFKit.Controls.PDFControl
             }
         }
 
+        private void ReloadDocument()
+        {
+            viewerTool?.GetCPDFViewer()?.UpdateVirtualNodes();
+            splitViewerTool?.GetCPDFViewer()?.UpdateVirtualNodes();
+            viewerTool?.GetCPDFViewer()?.UpdateRenderFrame();
+            splitViewerTool?.GetCPDFViewer()?.UpdateRenderFrame();
+        }
+
+        public void CropPage(CPDFDisplayBox cropBox, Rect cropRect, List<int> pagesList)
+        {
+            bool needLoad = false;
+            CPDFDocument doc = FocusPDFViewTool.GetCPDFViewer().GetDocument();
+
+            foreach (int pageIndex in pagesList)
+            {
+                if (pageIndex < 0 || pageIndex > doc.PageCount)
+                {
+                    continue;
+                }
+                CPDFPage CropPage = doc.PageAtIndex(pageIndex);
+                CRect rect = new CRect((float)cropRect.X, (float)(cropRect.Y + cropRect.Height), (float)(cropRect.X + cropRect.Width), (float)cropRect.Y);
+                CropPage.CropPage(cropBox, rect);
+                CropPage.ReleaseAllAnnotations();
+                needLoad = true;
+            }
+
+            if (needLoad)
+            {
+                ReloadDocument();
+            }
+        }
+
         #region Private Command Methods
         private double CheckZoomLevel(double zoom, bool IsGrowth)
         {
@@ -598,8 +651,80 @@ namespace ComPDFKit.Controls.PDFControl
             }
         }
 
+        private void SetCursorStatus()
+        {
+            List<ToolType> toolTypes = new List<ToolType>
+                {
+                      ToolType.Viewer,
+                      ToolType.Pan
+                };
+
+            ToolType currentMode = PDFViewTool.GetToolType();
+            Cursor newCursor = Cursors.Arrow;
+
+            if (toolTypes.Contains(currentMode))
+            {
+                BaseAnnot hitAnnot = GetCPDFViewer().AnnotHitTest();
+                if (hitAnnot != null)
+                {
+                    if (hitAnnot is LinkAnnot || hitAnnot is BaseWidget)
+                    {
+                        newCursor = Cursors.Hand;
+                    }
+                    else
+                    {
+                        newCursor = annotEditCursor;
+                    }
+                }
+                else
+                {
+                    if (!PDFViewTool.IsSelectRectMousePoint())
+                    {
+                        newCursor = (PDFToolManager.GetToolType() == ToolType.Pan) ? panToolCursor : Cursors.Arrow;
+
+                        if (PDFViewTool.IsText())
+                        {
+                            newCursor = Cursors.IBeam;
+                        }
+                    }
+                }
+
+                if (currentMode == ToolType.CreateAnnot)
+                {
+                    List<C_ANNOTATION_TYPE> annotTypes = new List<C_ANNOTATION_TYPE>
+                    {
+                         C_ANNOTATION_TYPE.C_ANNOTATION_HIGHLIGHT,
+                         C_ANNOTATION_TYPE.C_ANNOTATION_UNDERLINE,
+                         C_ANNOTATION_TYPE.C_ANNOTATION_SQUIGGLY,
+                         C_ANNOTATION_TYPE.C_ANNOTATION_STRIKEOUT
+                    };
+
+                    if (GetCPDFViewer().AnnotHitTest() == null && PDFViewTool.IsText() && annotTypes.Contains(toolManager.GetAnnotType()))
+                    {
+                        newCursor = Cursors.IBeam;
+                    }
+                    else
+                    {
+                        if (newCursor == Cursors.IBeam || newCursor == panToolCursor || newCursor == Cursors.Arrow)
+                        {
+                            newCursor = annotEditCursor;
+                        }
+                    }
+                }
+            }
+
+            GetCPDFViewer().Cursor = newCursor;
+        }
+
         private void PDFViewControl_MouseMove(object sender, MouseEventArgs e)
         {
+            if (GetCPDFViewer().IsRendering)
+            {
+                GetCPDFViewer().Cursor = Cursors.Wait;
+                FocusPDFViewTool.ContextMenu?.Items.Clear();
+                return;
+            }
+
             if (isAutomaticScroll)
             {
                 middleMovePoint = e.GetPosition(this);
@@ -666,7 +791,7 @@ namespace ComPDFKit.Controls.PDFControl
                             {
                                 newCursor = Cursors.IBeam;
                             }
-                            cursorSet = true; 
+                            cursorSet = true;
                         }
                     }
 
@@ -685,6 +810,7 @@ namespace ComPDFKit.Controls.PDFControl
                          C_ANNOTATION_TYPE.C_ANNOTATION_SQUIGGLY,
                          C_ANNOTATION_TYPE.C_ANNOTATION_STRIKEOUT
                     };
+
                     if (GetCPDFViewer().AnnotHitTest() == null && PDFViewTool.IsText() && annotTypes.Contains(toolManager.GetAnnotType()))
                     {
                         newCursor = Cursors.IBeam;

@@ -84,12 +84,9 @@ namespace ComPDFKit.Tool.UndoManger
                 }
                 textAttr.FontColor = fontColor;
 				textAttr.FontSize = (float)currentParam.FontSize;
-				textAttr.FontName = ObtainFontName(
-					GetFontType(currentParam.FontName),
-					currentParam.IsBold,
-					currentParam.IsItalic);
+				textAttr.FontName = currentParam.FontName;
 
-				comboboxWidget.SetTextAttribute(textAttr);
+                comboboxWidget.SetTextAttribute(textAttr);
 
 				if(currentParam.OptionItems!=null && currentParam.OptionItems.Count > 0)
 				{
@@ -198,11 +195,8 @@ namespace ComPDFKit.Tool.UndoManger
 				if (updateParam.FontName != checkParam.FontName)
 				{
 					CTextAttribute textAttr = comboboxWidget.GetTextAttribute();
-					bool isBold = IsBold(textAttr.FontName);
-					bool isItalic = IsItalic(textAttr.FontName);
-					FontType fontType = GetFontType(updateParam.FontName);
-					textAttr.FontName = ObtainFontName(fontType, isBold, isItalic);
-					comboboxWidget.SetTextAttribute(textAttr);
+					textAttr.FontName = updateParam.FontName;
+                    comboboxWidget.SetTextAttribute(textAttr);
 				}
 
 				if (updateParam.FontSize != checkParam.FontSize)
@@ -220,24 +214,6 @@ namespace ComPDFKit.Tool.UndoManger
                         textAttr.FontColor = updateParam.FontColor;
                         comboboxWidget.SetTextAttribute(textAttr);
                     }
-				}
-
-				if (updateParam.IsBold != checkParam.IsBold)
-				{
-					CTextAttribute textAttr = comboboxWidget.GetTextAttribute();
-					bool isItalic = IsItalic(textAttr.FontName);
-					FontType fontType = GetFontType(textAttr.FontName);
-					textAttr.FontName = ObtainFontName(fontType, updateParam.IsBold, isItalic);
-					comboboxWidget.SetTextAttribute(textAttr);
-				}
-
-				if (updateParam.IsItalic != checkParam.IsItalic)
-				{
-					CTextAttribute textAttr = comboboxWidget.GetTextAttribute();
-					bool isBold = IsBold(textAttr.FontName);
-					FontType fontType = GetFontType(textAttr.FontName);
-					textAttr.FontName = ObtainFontName(fontType, isBold, updateParam.IsItalic);
-					comboboxWidget.SetTextAttribute(textAttr);
 				}
 
 				if (updateParam.OptionItems != null)

@@ -93,12 +93,13 @@
 
                 <local:CPDFTextStyleUI x:Name="TextStyleUI" Grid.Row="3" FontSize="16" Margin="0,20,0,0"></local:CPDFTextStyleUI>
 
-                <local:CPDFTextAlignUI x:Name="TextAlignUI" Grid.Row="4" FontSize="16" Margin="0,20,0,0" Width="150" HorizontalAlignment="Left"></local:CPDFTextAlignUI>
-                <StackPanel Grid.Row="5">
-                    <CheckBox x:Name="chkMulti" IsChecked="{Binding IsMultiSelected}"  Content="Multi Selected" Margin="0,10,0,0" Click="chkMulti_Click"></CheckBox>
+                <local:CPDFTextMarkupUI x:Name="TextMarkupUI" Grid.Row="4" FontSize="16" Margin="0,20,0,0" Width="200" HorizontalAlignment="Left"></local:CPDFTextMarkupUI>
 
-                    <CheckBox x:Name="chkEditPen" IsChecked="{Binding ShowBorder}" Content="Show Border" Margin="0,10,0,0" Click="chkEditPen_Click"></CheckBox>
+                <local:CPDFTextAlignUI x:Name="TextAlignUI" Grid.Row="5" FontSize="16" Margin="0,20,0,0" Width="150" HorizontalAlignment="Left"></local:CPDFTextAlignUI>
 
+                <StackPanel Grid.Row="6" Margin="0,20,0,0">
+                    <CheckBox x:Name="chkMulti" IsChecked="{Binding IsMultiSelected}" Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_MultiSelect}" Click="chkMulti_Click"></CheckBox>
+                    <CheckBox x:Name="chkEditPen" IsChecked="{Binding ShowBorder}" Content="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Option_ShowBorder}" Margin="0,10,0,0" Click="chkEditPen_Click"></CheckBox>
                 </StackPanel>
             </Grid>
         </Grid>

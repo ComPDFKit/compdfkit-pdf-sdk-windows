@@ -583,6 +583,15 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Multi Select.
+        /// </summary>
+        internal static string Option_MultiSelect {
+            get {
+                return ResourceManager.GetString("Option_MultiSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Visible but doesn&apos;t print.
         /// </summary>
         internal static string Option_NoPrint {
@@ -597,6 +606,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Option_Print {
             get {
                 return ResourceManager.GetString("Option_Print", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Border.
+        /// </summary>
+        internal static string Option_ShowBorder {
+            get {
+                return ResourceManager.GetString("Option_ShowBorder", resourceCulture);
             }
         }
         
@@ -732,6 +750,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Property_LineColor {
             get {
                 return ResourceManager.GetString("Property_LineColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line and Border Shape.
+        /// </summary>
+        internal static string Property_LineShape {
+            get {
+                return ResourceManager.GetString("Property_LineShape", resourceCulture);
             }
         }
         
@@ -1249,6 +1276,15 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cloud.
+        /// </summary>
+        internal static string Title_Cloud {
+            get {
+                return ResourceManager.GetString("Title_Cloud", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Combo Button.
         /// </summary>
         internal static string Title_Cmb {
@@ -1344,6 +1380,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Title_Note {
             get {
                 return ResourceManager.GetString("Title_Note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path Properties.
+        /// </summary>
+        internal static string Title_PathProperty {
+            get {
+                return ResourceManager.GetString("Title_PathProperty", resourceCulture);
             }
         }
         

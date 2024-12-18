@@ -376,22 +376,17 @@
                     VerticalContentAlignment="Center" Grid.ColumnSpan="2"
                         FontSize="45"/>
                     <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <TextBlock  Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Font}" VerticalAlignment="Center"/>
-                        <ComboBox Width="200" Name="FontNameCmb"
-                                  Height="25"
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Font}" VerticalAlignment="Center"/>
+                        <ComboBox Width="232"
                         Style="{StaticResource ComboBoxStyle1}"
                         Margin="8,0,0,0"
-                         SelectionChanged="FontNameCmb_SelectionChanged"
-                        SelectedIndex="0"
+                        SelectionChanged="TextName_SelectionChanged"
+                        x:Name="TextName"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center">
-                        </ComboBox>
-                        <TextBlock  Text="样式" VerticalAlignment="Center" Margin="10,0,8,0"/>
-                        <ComboBox x:Name="StyleNameCmb" Style="{StaticResource ComboBoxStyle1}" Height="25" Width="80" Margin="10,0,0,0" SelectionChanged="StyleNameCmb_SelectionChanged">
-                            <ComboBoxItem Content="Regular"></ComboBoxItem>
-                            <ComboBoxItem Content="Bold"></ComboBoxItem>
-                            <ComboBoxItem Content="Oblique"></ComboBoxItem>
-                            <ComboBoxItem Content="BoldOblique"></ComboBoxItem>
+                            <ComboBoxItem Content="Arial" />
+                            <ComboBoxItem Content="Courier New" IsSelected="True"/>
+                            <ComboBoxItem Content="Times New Roman"/>
                         </ComboBox>
                     </StackPanel>
                     <StackPanel

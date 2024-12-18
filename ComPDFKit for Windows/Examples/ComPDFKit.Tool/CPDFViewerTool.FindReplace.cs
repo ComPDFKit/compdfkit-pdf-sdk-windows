@@ -102,7 +102,7 @@ namespace ComPDFKit.Tool
             // Start searching from the currently displayed page
             CPDFPage pdfPage = GetCPDFViewer().GetDocument().PageAtIndex(nextPageIndex);
             findSelectionEditPage = pdfPage.GetEditPage();
-            findSelectionEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            findSelectionEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
 
             // If the passed value is null, it will cause the program to freeze
             if (string.IsNullOrEmpty(findText))
@@ -328,7 +328,7 @@ namespace ComPDFKit.Tool
             {
                 CPDFPage page = PDFViewer.GetDocument().PageAtIndex(pageIndex);
                 CPDFEditPage editPage = page.GetEditPage();
-                editPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+                editPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
                 editPage.FindText(findText, options);
                 List<CPDFEditTextFindSelection> editTextFindSelectionList = editPage.GetTextFindSelectionList();
 

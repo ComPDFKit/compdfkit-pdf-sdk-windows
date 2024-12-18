@@ -1,0 +1,142 @@
+﻿<UserControl
+    x:Class="ComPDFKit.Controls.Snapshot.SnapshotMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ComPDFKit.Controls.Snapshot"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid
+        x:Name="SnapGrid"
+        Height="40"
+        HorizontalAlignment="Center"
+        Background="#FFF8F8F8" Margin="0,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="13*"/>
+            <ColumnDefinition Width="47*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+            <Button
+                x:Name="ReSnapshotBtn"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_ReSnapshot"
+                Tag="ReSnapshot"
+                Style="{StaticResource TitleBarButtonStyle}">
+                <Button.Content>
+                    <Path Data="M5.93933983,9.3890873 L5.23223305,10.0961941 L0.636038969,5.5 L5.23223305,0.903805922 L5.93933983,1.6109127 L2.54903897,4.99980592 L9.25,5 C12.4256373,5 15,7.57436269 15,10.75 C15,13.8517853 12.5439828,16.379937 9.47055571,16.4958479 L9.25,16.5 L1.5,16.5 L1.5,15.5 L9.25,15.5 C11.8733526,15.5 14,13.3733526 14,10.75 C14,8.19951834 11.9898587,6.11853034 9.467428,6.00488786 L9.25,6 L2.54903897,5.99980592 L5.93933983,9.3890873 Z" Fill="#000000" />
+                </Button.Content>
+            </Button>
+
+            <Button
+                x:Name="SnapshotPrintBtn"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_PrintSnapshot"
+                Tag="SnapshotPrint"
+                Style="{StaticResource TitleBarButtonStyle}">
+                <Button.Content>
+                    <Path Data="M12,0 L12,6 L14.5,6 C15.2796961,6 15.9204487,6.59488808 15.9931334,7.35553999 L16,7.5 L16,14 L12,14 L12,16 L4,16 L3.999,14 L0,14 L0,7.5 C0,6.72030388 0.594888083,6.07955132 1.35553999,6.00686658 L1.5,6 L3.999,6 L4,0 L12,0 Z M11,11 L5,11 L5,15 L11,15 L11,11 Z M14.5,7 L1.5,7 C1.25454011,7 1.05039163,7.17687516 1.00805567,7.41012437 L1,7.5 L1,13 L3.999,13 L4,10 L12,10 L12,13 L15,13 L15,7.5 C15,7.25454011 14.8231248,7.05039163 14.5898756,7.00805567 L14.5,7 Z M3,8 L3,9 L2,9 L2,8 L3,8 Z M11,1 L5,1 L4.999,6 L11,6 L11,1 Z" Fill="#000000" />
+                </Button.Content>
+            </Button>
+            <Button
+                x:Name="SnapshotCorpBtn"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_SnapshotCorp"
+                Tag="SnapshotCorp"
+                Style="{StaticResource TitleBarButtonStyle}">
+
+                <Button.Content>
+                    <Grid>
+                        <Path Data="M4 -4.57764e-05V11.9999H15.9999V12.9999H3V-4.57764e-05H4Z" Fill="#000000" />
+                        <Path Data="M6 3.00003H13V9.99999H12V4.00003H6V3.00003Z" Fill="#000000" />
+                        <Path Data="M0 3.00003H3.99998V4.00003H0V3.00003Z" Fill="#000000" />
+                        <Path Data="M13 12V16H12V12H13Z" Fill="#000000" />
+                    </Grid>
+                </Button.Content>
+            </Button>
+            <Button
+                x:Name="SnapshotSaveBtn"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_SnapshotSave"
+                Tag="SnapshotSave"
+                Style="{StaticResource TitleBarButtonStyle}">
+
+                <Button.Content>
+                    <Path Data="M3,11 L3,14 L13,14 L13,11 L14,11 L14,15 L2,15 L2,11 L3,11 Z M8,1.000253 L12.5961941,5.596447 L11.8890873,6.303553 L8.5,2.914253 L8.5,12 L7.5,12 L7.5,2.912253 L4.1109127,6.303553 L3.40380592,5.596447 L8,1.000253 Z" Fill="#000000" />
+                </Button.Content>
+            </Button>
+
+            <Button
+                x:Name="SnapshotCloseBtn"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_SnapshotClose"
+                Tag="SnapshotClose"
+                Style="{StaticResource TitleBarButtonStyle}">
+                <Button.Content>
+                    <Path Data="M11.4852814,3.57106781 L11.4850678,10.4850678 L18.3994949,10.4852814 L18.3994949,11.4852814 L11.4850678,11.4850678 L11.4852814,18.3994949 L10.4852814,18.3994949 L10.4850678,11.4850678 L3.57106781,11.4852814 L3.57106781,10.4852814 L10.4850678,10.4850678 L10.4852814,3.57106781 L11.4852814,3.57106781 Z" Fill="#000000">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform CenterX="8" CenterY="8">
+                                    <RotateTransform.Angle>45</RotateTransform.Angle>
+                                </RotateTransform>
+                                <TranslateTransform>
+                                    <TranslateTransform.Y>-2</TranslateTransform.Y>
+                                </TranslateTransform>
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                </Button.Content>
+            </Button>
+            <Button
+                x:Name="SnapshotCopyBtn"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_SnapshotCopy"
+                Tag="SnapCopyDone"
+                Style="{StaticResource TitleBarButtonStyle}">
+                <Button.Content>
+                    <Polygon Fill="#000000" Points="15.5992424 4.59619408 16.3063492 5.30330086 5.69974747 15.9099026 0.396446609 10.6066017 1.10355339 9.89949494 5.7 14.496" />
+                </Button.Content>
+            </Button>
+            <Button
+                x:Name="SnapshotCorpBtn2"
+                Width="40"
+                Height="40"
+                Background="#FFF8F8F8"
+                Click="Button_SnapshotCorp"
+                Tag="SnapshotCorp"
+                Visibility="Collapsed"
+                Style="{StaticResource TitleBarButtonStyle}">
+                <Button.Content>
+                    <Grid>
+                        <Path Data="M4 -4.57764e-05V11.9999H15.9999V12.9999H3V-4.57764e-05H4Z" Fill="#000000" />
+                        <Path Data="M6 3.00003H13V9.99999H12V4.00003H6V3.00003Z" Fill="#000000" />
+                        <Path Data="M0 3.00003H3.99998V4.00003H0V3.00003Z" Fill="#000000" />
+                        <Path Data="M13 12V16H12V12H13Z" Fill="#000000" />
+                    </Grid>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

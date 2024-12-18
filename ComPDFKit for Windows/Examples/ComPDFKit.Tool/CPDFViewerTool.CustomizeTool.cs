@@ -70,9 +70,11 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = PDFViewer.GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(index);
             BaseLayer layer = PDFViewer.GetViewForTag(PDFViewer.GetAnnotViewTag());
+            (baseLayer as CreateCustomizeTool).ErasePageIndex = -1;
             if (ToolType == CustomizeToolType.kErase)
             {
                 (baseLayer as CreateCustomizeTool).SetAnnotLayer(layer as AnnotLayer);
+                (baseLayer as CreateCustomizeTool).ErasePageIndex = index;
             }
            (baseLayer as CreateCustomizeTool).StartDraw(point, cPDFPage, paintRect, pageBound, ToolType);
         }

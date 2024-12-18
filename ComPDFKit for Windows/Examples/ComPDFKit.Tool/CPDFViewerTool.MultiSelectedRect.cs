@@ -1,4 +1,5 @@
-﻿using ComPDFKit.Tool.DrawTool;
+﻿using ComPDFKit.PDFPage.Edit;
+using ComPDFKit.Tool.DrawTool;
 using ComPDFKit.Tool.Help;
 using ComPDFKit.Viewer.Layer;
 using System;
@@ -207,13 +208,16 @@ namespace ComPDFKit.Tool
                 selectedRect.SetRect(selectedRects, currentZoom);
                 selectedRect.SetMaxRect(MaxRect);
                 EditAreaObject editAreaObject = GetEditAreaObjectForRect(lastSelectedRect);
-                if (startSelectedIndex != editAreaIndex || startSelectedPageIndex != pageIndex)
+                if (editAreaObject.cPDFEditArea is CPDFEditPathArea == false)
                 {
-                    startSelectedIndex = editAreaIndex;
-                    startSelectedPageIndex = pageIndex;
-                    startSelectedEditAreaObject = editAreaObject;
-                    startSelectedRect = selectedRect;
-                    editAreaList.Add(startSelectedRect, editAreaObject);
+                    if (startSelectedIndex != editAreaIndex || startSelectedPageIndex != pageIndex)
+                    {
+                        startSelectedIndex = editAreaIndex;
+                        startSelectedPageIndex = pageIndex;
+                        startSelectedEditAreaObject = editAreaObject;
+                        startSelectedRect = selectedRect;
+                        editAreaList.Add(startSelectedRect, editAreaObject);
+                    }
                 }
             }
         }
@@ -235,6 +239,13 @@ namespace ComPDFKit.Tool
             MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
             if (multiSelectedRect != null)
             {
+                if(editAreaList.Count != 0)
+                {
+                    cachePathList.Clear();
+                    cachePathList = new List<CPDFEditPathArea>();
+                    GetDrawPathList(Mouse.GetPosition(this));
+                }
+
                 multiSelectedRect.Children.Clear();
                 multiSelectedRect.CleanMulitSelectedRect();
                 editAreaMultiIndex.Clear();
@@ -246,7 +257,6 @@ namespace ComPDFKit.Tool
         public void DrawStartSelectedMultiRect()
         {
             MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
-
             if (multiSelectedRect != null)
             {
                 Point point = Mouse.GetPosition(this);
@@ -258,7 +268,6 @@ namespace ComPDFKit.Tool
         public void DrawMoveSelectedMultiRect()
         {
             MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
-
             if (multiSelectedRect != null&& multiSelectedRect.Children.Count>0)
             {
                 Point point = Mouse.GetPosition(this);
@@ -269,7 +278,6 @@ namespace ComPDFKit.Tool
         public void DrawEndSelectedMultiRect()
         {
             MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
-
             if (multiSelectedRect != null)
             {
                 Point point = Mouse.GetPosition(this);
@@ -285,9 +293,6 @@ namespace ComPDFKit.Tool
             {
                 multiSelectedRect.ClearDraw();
                 multiSelectedRect.CleanMulitSelectedRect();
-
-                Point point = Mouse.GetPosition(this);
-
                 switch (multiSelectedRect.GetSelectedType())
                 {
                     case SelectedType.Annot:

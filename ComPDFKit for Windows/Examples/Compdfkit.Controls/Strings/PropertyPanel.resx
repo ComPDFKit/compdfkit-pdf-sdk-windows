@@ -594,4 +594,19 @@
   <data name="Title_Caption" xml:space="preserve">
     <value>Show Caption</value>
   </data>
+  <data name="Title_Cloud" xml:space="preserve">
+    <value>Cloud</value>
+  </data>
+  <data name="Property_LineShape" xml:space="preserve">
+    <value>Line and Border Shape</value>
+  </data>
+  <data name="Option_MultiSelect" xml:space="preserve">
+    <value>Multi Select</value>
+  </data>
+  <data name="Option_ShowBorder" xml:space="preserve">
+    <value>Show Border</value>
+  </data>
+  <data name="Title_PathProperty" xml:space="preserve">
+    <value>Path Properties</value>
+  </data>
 </root>

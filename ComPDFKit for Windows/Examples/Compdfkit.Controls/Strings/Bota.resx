@@ -244,7 +244,7 @@
     <value>Ignore Case</value>
   </data>
   <data name="Chb_Match" xml:space="preserve">
-    <value>Match Whole Word</value>
+    <value>Whole Words Only</value>
   </data>
   <data name="Button_Search" xml:space="preserve">
     <value>Search</value>

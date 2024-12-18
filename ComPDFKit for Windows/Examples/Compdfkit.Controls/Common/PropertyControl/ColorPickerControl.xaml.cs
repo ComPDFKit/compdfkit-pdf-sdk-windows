@@ -25,8 +25,7 @@ namespace ComPDFKit.Controls.Common
         // Using a DependencyProperty as the backing store for TransparentBtnProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TransparentBtnPropertyProperty =
             DependencyProperty.Register("TransparentBtnProperty", typeof(Visibility), typeof(ColorPickerControl), new PropertyMetadata(Visibility.Visible));
-
-
+         
         public void SetIsChecked(int index)
         {
             switch (index)
@@ -97,7 +96,7 @@ namespace ComPDFKit.Controls.Common
 
         public bool GetTransparentBtnVisibility()
         {
-            if (TransparentBtn.Visibility == Visibility.Visible)
+            if (TransparentBtnProperty == Visibility.Visible)
             {
                 return true;
             }

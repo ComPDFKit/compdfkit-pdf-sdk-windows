@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Drawing.Printing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -32,7 +31,7 @@ namespace AnnotationTest
             #endregion
 
             #region Sample 1: Create annotations
-            
+
             if (CreateAnnots(document))
             {
                 Console.WriteLine("Create annots done.");
@@ -47,7 +46,7 @@ namespace AnnotationTest
             if (DeleteAnnotations(annotsDocument))
             {
                 Console.WriteLine("Create annots done.");
-            } 
+            }
 
             Console.WriteLine("--------------------");
 
@@ -92,7 +91,7 @@ namespace AnnotationTest
             ink.SetTransparency(128);
             List<List<CPoint>> points = new List<List<CPoint>>();
             ink.SetInkPath(points);
-            ink.SetThickness(8); 
+            ink.SetThickness(8);
             points.Clear();
             points.Add(new List<CPoint>()
             {
@@ -100,7 +99,7 @@ namespace AnnotationTest
                 new CPoint(100,10),
             });
             ink.SetInkPath(points);
-            ink.SetRect(new CRect(10, 10, 200, 200));
+            ink.SetRect(new CRect(10, 200, 200, 20));
 
             ink.UpdateAp();
         }
@@ -110,7 +109,7 @@ namespace AnnotationTest
         /// Include:
         /// Square, Circle, Line
         /// </summary>
-        /// <param name="document"></param>
+        /// <param name="document"></param>7
         static private void CreateShapeAnnotation(CPDFDocument document)
         {
             CPDFPage page = document.PageAtIndex(0);
@@ -118,24 +117,30 @@ namespace AnnotationTest
             byte[] lineColor = { 255, 0, 0 };
             byte[] bgColor = { 0, 255, 0 };
 
+            CPDFBorderEffector borderEffect = new CPDFBorderEffector( C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_TWO);
+            
             // Square
             CPDFSquareAnnotation square = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE) as CPDFSquareAnnotation;
-            square.SetRect(new CRect(10, 250, 200, 200));
+            square.SetSourceRect(new CRect(10, 250, 200, 200)); 
             square.SetLineColor(lineColor);
             square.SetBgColor(bgColor);
             square.SetTransparency(120);
             square.SetLineWidth(1);
-            square.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, dashArray); 
+            square.SetBorderWidth(1);
+            square.SetAnnotBorderEffector(borderEffect); 
+            square.AnnotationRotator.SetRotation(45); 
             square.UpdateAp();
 
             // Circle
             CPDFCircleAnnotation circle = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE) as CPDFCircleAnnotation;
-            circle.SetRect(new CRect(10, 300, 110, 410));
+            circle.SetRect(new CRect(10, 410, 110, 300));
             circle.SetLineColor(lineColor);
             circle.SetBgColor(bgColor);
             circle.SetTransparency(120);
             circle.SetLineWidth(1);
             circle.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, dashArray);
+            circle.SetAnnotBorderEffect(borderEffect);
+            square.SetBorderWidth(1);
             circle.UpdateAp();
 
             // Line
@@ -160,7 +165,7 @@ namespace AnnotationTest
             textAnnotation.SetColor(new byte[] { 255, 0, 0 });
             textAnnotation.SetTransparency(255);
             textAnnotation.SetContent("ComPDFKit");
-            textAnnotation.SetRect(new CRect(300, 600, 350, 650));
+            textAnnotation.SetRect(new CRect(300, 650, 350, 600));
             textAnnotation.UpdateAp();
         }
 
@@ -172,8 +177,8 @@ namespace AnnotationTest
         {
             CPDFPage page = document.PageAtIndex(0);
             CPDFSoundAnnotation sound = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_SOUND) as CPDFSoundAnnotation;
-            sound.SetRect(new CRect(400, 700, 450, 750));
-            sound.SetSoundPath("","Bird.wav");
+            sound.SetRect(new CRect(400, 750, 450, 700));
+            sound.SetSoundPath("", "Bird.wav");
             sound.UpdateAp();
         }
 
@@ -184,7 +189,7 @@ namespace AnnotationTest
         static private void CreateMarkupAnnotation(CPDFDocument document)
         {
             List<CRect> cRectList = new List<CRect>();
-            CRect rect = new CRect(300, 240, 400, 300);
+            CRect rect = new CRect(300, 300, 400, 240);
             cRectList.Add(rect);
             byte[] color = { 255, 0, 0 };
 
@@ -228,9 +233,7 @@ namespace AnnotationTest
 
         public static byte[] BitmapToByteArray(Bitmap bitmap)
         {
-
             BitmapData bmpdata = null;
-
             try
             {
                 bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
@@ -257,31 +260,34 @@ namespace AnnotationTest
         static private void CreateStampAnnotation(CPDFDocument document)
         {
             CPDFPage page = document.PageAtIndex(0);
-            // Standard
             CPDFStampAnnotation standard = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
             standard.SetStandardStamp("Approved");
-            standard.SetRect(new CRect(300, 100, 450, 160)); 
+             
+            standard.SetSourceRect(new CRect(100, 150, 250, 100));
+            standard.AnnotationRotator.SetRotation(45);
+
             standard.UpdateAp();
 
             // Text
             CPDFStampAnnotation text = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
             text.SetTextStamp("test", "detail text", C_TEXTSTAMP_SHAPE.TEXTSTAMP_LEFT_TRIANGLE, C_TEXTSTAMP_COLOR.TEXTSTAMP_RED);
-            text.SetRect(new CRect(300, 220, 450, 300)); 
+            text.SetRect(new CRect(300, 300, 450, 220));
             text.UpdateAp();
 
             // Image
             Bitmap bitmap = new Bitmap("logo.png");
             CPDFStampAnnotation image = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_STAMP) as CPDFStampAnnotation;
             image.SetImageStamp(BitmapToByteArray(bitmap), bitmap.Width, bitmap.Height);
-            image.SetRect(new CRect(300, 320, 380, 400));
-            image.SetTransparency(255); 
+            image.SetRect(new CRect(300, 400, 380, 320));
+            image.SetTransparency(255);
+            standard.AnnotationRotator.SetRotation(45);
             image.UpdateAp();
         }
 
 
         private static void CreateLinkAnnotation(CPDFDocument document)
         {
-            CPDFPage page = document.PageAtIndex(0); 
+            CPDFPage page = document.PageAtIndex(0);
             CPDFDestination dest = new CPDFDestination();
             dest.PageIndex = 1;
             CPDFLinkAnnotation link = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_LINK) as CPDFLinkAnnotation;
@@ -322,7 +328,7 @@ namespace AnnotationTest
         /// <param name="document"></param>
         /// <returns></returns>
         static private bool DeleteAnnotations(CPDFDocument document)
-        { 
+        {
             CPDFPage page = document.PageAtIndex(0);
 
             List<CPDFAnnotation> annotList = page.GetAnnotations();
@@ -331,7 +337,7 @@ namespace AnnotationTest
                 return false;
             }
 
-            string path = Path.Combine(outputPath , "DeleteAnnotsTest.pdf"); 
+            string path = Path.Combine(outputPath, "DeleteAnnotsTest.pdf");
             if (!document.WriteToFilePath(path))
             {
                 return false;

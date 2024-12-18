@@ -11,6 +11,7 @@ namespace ComPDFKit.Tool
         }
 
         public byte[] StickyNoteColor { get; set; }
+        public string IconName { get; set; } = string.Empty;
 
         public override bool CopyTo(AnnotParam transfer)
         {
@@ -29,6 +30,8 @@ namespace ComPDFKit.Tool
             {
                 stickynoteTransfer.StickyNoteColor = (byte[])StickyNoteColor.Clone();
             }
+
+            stickynoteTransfer.IconName = IconName;
 
             return true;
         }

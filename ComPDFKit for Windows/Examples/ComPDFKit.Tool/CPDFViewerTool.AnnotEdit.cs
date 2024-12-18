@@ -15,6 +15,7 @@ namespace ComPDFKit.Tool
         public event EventHandler<SelectedAnnotData> AnnotEditDataChanging;
         public event EventHandler<SelectedAnnotData> AnnotEditDataChanged;
         public event EventHandler<object> AnnotChanged;
+
         private void InsertAnnotEditView()
         {
             int selectedRectViewIndex = PDFViewer.GetMaxViewIndex();
@@ -74,12 +75,12 @@ namespace ComPDFKit.Tool
             AnnotEdit annotEdit = CommonHelper.FindVisualChild<AnnotEdit>(baseLayer as CustomizeLayer);
             if (annotEdit != null)
             {
-                annotEdit.Draw();
                 annotEdit.OnMouseLeftButtonUp(point);
+                annotEdit.Draw();
             }
         }
 
-        public void CleanEditAnnot()
+        public void CleanEditAnnot(bool isDrawEditAnnot = false)
         {
             Point point = Mouse.GetPosition(this);
             BaseLayer baseLayer = PDFViewer.GetViewForTag(annotEditViewTag);
@@ -87,9 +88,10 @@ namespace ComPDFKit.Tool
             if (annotEdit != null)  
             {
                 annotEdit.ClearDraw();
-                IsDrawEditAnnot = false;
+                IsDrawEditAnnot = isDrawEditAnnot;
             }
         }
+  
 
         private void DrawEditAnnotLayer()
         {
@@ -108,7 +110,6 @@ namespace ComPDFKit.Tool
         private bool DrawEditAnnotDownEvent()
         {
             BaseLayer baseLayer = PDFViewer.GetViewForTag(annotEditViewTag);
-
             AnnotEdit selectedRect = CommonHelper.FindVisualChild<AnnotEdit>(baseLayer as CustomizeLayer);
             if (selectedRect != null)
             {

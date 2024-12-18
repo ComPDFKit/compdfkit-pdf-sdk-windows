@@ -988,7 +988,7 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Oritation.
+        ///   Looks up a localized string similar to Orientation.
         /// </summary>
         internal static string Printer_Oritation {
             get {
@@ -1416,6 +1416,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Tooltip_Search {
             get {
                 return ResourceManager.GetString("Tooltip_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content Selection Tool.
+        /// </summary>
+        internal static string Tooltip_Select {
+            get {
+                return ResourceManager.GetString("Tooltip_Select", resourceCulture);
             }
         }
         

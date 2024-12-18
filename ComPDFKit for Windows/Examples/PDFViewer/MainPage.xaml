@@ -148,6 +148,19 @@
                         </ToggleButton.ToolTip>
                     </ToggleButton>
 
+                    <ToggleButton Name="SnapshotButton" Margin="13,0,0,0" BorderThickness="0" Width="30" Height="30" Style="{StaticResource ToggleButtonStyle}" Background="Transparent" Click="SnapShotButton_Click">
+                        <ToggleButton.Content>
+                            <Path Fill="#43474D" Width="30" Height="30">
+                                <Path.Data>
+                                    M10.75 6.75H6.25V11.25H10.75V6.75ZM23.75 6.75H19.25V11.25H23.75V6.75ZM10.75 18.75H6.25V23.25H10.75V18.75ZM23.75 18.75H19.25V23.25H23.75V18.75ZM14 9.75V8.25H12V9.75H14ZM18 9.75V8.25H16V9.75H18ZM9.25 14H7.75V12H9.25V14ZM9.25 18H7.75V16H9.25V18ZM20.75 14H22.25V12H20.75V14ZM20.75 18H22.25V16H20.75V18ZM14 20.25V21.75H12V20.25H14ZM18 20.25V21.75H16V20.25H18Z
+                                </Path.Data>
+                            </Path>
+                        </ToggleButton.Content>
+                        <ToggleButton.ToolTip>
+                            <ToolTip Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Tooltip_Select}"></ToolTip>
+                        </ToggleButton.ToolTip>
+                    </ToggleButton>
+
                     <Line Margin="13,0,13,0" Stroke="#E0E0E0" X1="0" Y1="5" X2="0" Y2="35"></Line>
 
                     <ToggleButton BorderThickness="0" Width="30" Height="30" Style="{StaticResource ToggleButtonStyle}" Background="Transparent" IsChecked="True" IsEnabled="False" Visibility="Collapsed">

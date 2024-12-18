@@ -4,15 +4,9 @@ using ComPDFKit.PDFPage;
 using ComPDFKit.Tool.DrawTool;
 using ComPDFKit.Tool.Help;
 using ComPDFKit.Viewer.Layer;
-using ComPDFKitViewer;
 using ComPDFKitViewer.Helper;
 using ComPDFKitViewer.Layer;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -213,7 +207,7 @@ namespace ComPDFKit.Tool
             if (pageSelectedRect != null)
             {
                 Point point = Mouse.GetPosition(this);
-                BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+                BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
                 PDFViewer.GetPointPageInfo(point, out int index, out Rect paintRect, out Rect pageBound);
                 if (index < 0)
                 {

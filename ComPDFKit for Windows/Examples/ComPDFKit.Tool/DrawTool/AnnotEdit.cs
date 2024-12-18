@@ -4,18 +4,13 @@ using ComPDFKit.PDFAnnotation;
 using ComPDFKit.Tool.SettingParam;
 using ComPDFKit.Viewer.Helper;
 using ComPDFKitViewer;
-using ComPDFKitViewer.Annot;
 using ComPDFKitViewer.Helper;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
-using static ComPDFKit.Tool.Help.ImportWin32;
 
 namespace ComPDFKit.Tool.DrawTool
 {
@@ -49,7 +44,11 @@ namespace ComPDFKit.Tool.DrawTool
         /// </summary>
         protected bool isMouseDown { get; set; }
 
-        protected DrawingContext drawDC { get; set; }
+        protected DrawingContext drawDC
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Current annotation's control points collection (96 DPI coordinate points, minus page offset)
@@ -188,17 +187,17 @@ namespace ComPDFKit.Tool.DrawTool
                 case C_ANNOTATION_TYPE.C_ANNOTATION_CIRCLE:
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
-                    for (int i = 0; i < (annotData.Annot as CPDFPolygonAnnotation).Points.Count; i++)
                     {
-                        Point point = DpiHelper.PDFPointToStandardPoint(new Point((annotData.Annot as CPDFPolygonAnnotation).Points[i].x, (annotData.Annot as CPDFPolygonAnnotation).Points[i].y));
-                        point = new Point(
-                            point.X * annotData.CurrentZoom + annotData.PaintOffset.X - annotData.CropLeft * annotData.CurrentZoom,
-                            point.Y * annotData.CurrentZoom + annotData.PaintOffset.Y - annotData.CropTop * annotData.CurrentZoom
-                            );
-                        activePoints.Add(point);
-                    }
-                    if ((annotData.Annot as CPDFPolygonAnnotation).IsMeasured())
-                    {
+                        for (int i = 0; i < (annotData.Annot as CPDFPolygonAnnotation).Points.Count; i++)
+                        {
+                            Point point = DpiHelper.PDFPointToStandardPoint(new Point((annotData.Annot as CPDFPolygonAnnotation).Points[i].x, (annotData.Annot as CPDFPolygonAnnotation).Points[i].y));
+                            point = new Point(
+                                point.X * annotData.CurrentZoom + annotData.PaintOffset.X - annotData.CropLeft * annotData.CurrentZoom,
+                                point.Y * annotData.CurrentZoom + annotData.PaintOffset.Y - annotData.CropTop * annotData.CurrentZoom
+                                );
+                            activePoints.Add(point);
+                        }
+
                         CRect rawRect = annotData.Annot.GetRect();
                         Rect rect = DataConversionForWPF.CRectConversionForRect(rawRect);
                         rect = DpiHelper.PDFRectToStandardRect(rect);
@@ -210,18 +209,19 @@ namespace ComPDFKit.Tool.DrawTool
                             );
                     }
                     break;
+
                 case C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE:
-                    for (int i = 0; i < (annotData.Annot as CPDFPolylineAnnotation).Points.Count; i++)
                     {
-                        Point point = DpiHelper.PDFPointToStandardPoint(new Point((annotData.Annot as CPDFPolylineAnnotation).Points[i].x, (annotData.Annot as CPDFPolylineAnnotation).Points[i].y));
-                        point = new Point(
-                            point.X * annotData.CurrentZoom + annotData.PaintOffset.X - annotData.CropLeft * annotData.CurrentZoom,
-                            point.Y * annotData.CurrentZoom + annotData.PaintOffset.Y - annotData.CropTop * annotData.CurrentZoom
-                            );
-                        activePoints.Add(point);
-                    }
-                    if ((annotData.Annot as CPDFPolylineAnnotation).IsMeasured())
-                    {
+                        for (int i = 0; i < (annotData.Annot as CPDFPolylineAnnotation).Points.Count; i++)
+                        {
+                            Point point = DpiHelper.PDFPointToStandardPoint(new Point((annotData.Annot as CPDFPolylineAnnotation).Points[i].x, (annotData.Annot as CPDFPolylineAnnotation).Points[i].y));
+                            point = new Point(
+                                point.X * annotData.CurrentZoom + annotData.PaintOffset.X - annotData.CropLeft * annotData.CurrentZoom,
+                                point.Y * annotData.CurrentZoom + annotData.PaintOffset.Y - annotData.CropTop * annotData.CurrentZoom
+                                );
+                            activePoints.Add(point);
+                        }
+
                         CRect rawRect = annotData.Annot.GetRect();
                         Rect rect = DataConversionForWPF.CRectConversionForRect(rawRect);
                         rect = DpiHelper.PDFRectToStandardRect(rect);
@@ -233,6 +233,7 @@ namespace ComPDFKit.Tool.DrawTool
                             );
                     }
                     break;
+
                 case C_ANNOTATION_TYPE.C_ANNOTATION_HIGHLIGHT:
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_UNDERLINE:
@@ -318,7 +319,7 @@ namespace ComPDFKit.Tool.DrawTool
             lineVector.Normalize();
             Vector leadEndVector = lineVector * (Math.Abs(LeadLength) + Math.Abs(LeadOffset) + Math.Abs(LeadExtension) * annotData.CurrentZoom);
             Vector leadStartVector = lineVector * (Math.Abs(LeadOffset)) * annotData.CurrentZoom;
-            Vector leadCrossVector = lineVector * (Math.Abs(LeadLength)  * annotData.CurrentZoom + Math.Abs(LeadOffset));
+            Vector leadCrossVector = lineVector * (Math.Abs(LeadLength) * annotData.CurrentZoom + Math.Abs(LeadOffset));
             Matrix rotateMatrix = new Matrix();
             double angle = LeadLength < 0 ? 90 : -90;
             rotateMatrix.Rotate(angle);
@@ -362,20 +363,20 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 Tag = isMouseDown;
                 mouseEndDrawPoint = mousePoint;
-
                 Point newOffset = new Point(
                     mouseEndDrawPoint.X - mouseDownPoint.X,
                     mouseEndDrawPoint.Y - mouseDownPoint.Y
                     );
 
                 Point movePoint = CheckMoveOffSet(activePoints.ToList(), maxRect, newOffset);
-                if(movePoint.X==0)
+
+                if (movePoint.X == 0)
                 {
-                    newOffset.X=moveOffset.X;
+                    newOffset.X = moveOffset.X;
                 }
-                if(movePoint.Y==0)
+                if (movePoint.Y == 0)
                 {
-                    newOffset.Y=moveOffset.Y;
+                    newOffset.Y = moveOffset.Y;
                 }
                 moveOffset = newOffset;
                 Draw();
@@ -385,26 +386,30 @@ namespace ComPDFKit.Tool.DrawTool
 
         public virtual void OnMouseLeftButtonUp(Point upPoint)
         {
+            if (annotData == null)
+                return;
+
             isMouseDown = false;
-            Draw();
-            if (annotData!=null&&annotData.AnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
+            if (annotData.AnnotType == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
             {
                 if ((annotData.Annot as CPDFLineAnnotation).IsMeasured())
                 {
                     activePoints.Clear();
-
                     if (moveLeftLine == null)
                     {
                         moveLeftLine = leftLine.ToArray();
                     }
+
                     if (moveRightLine == null)
                     {
                         moveRightLine = rightLine.ToArray();
                     }
+
                     if (moveCrossLine == null)
                     {
                         moveCrossLine = crossLine.ToArray();
                     }
+
                     activePoints.Add(moveLeftLine[0]);
                     activePoints.Add(moveLeftLine[1]);
                     activePoints.Add(moveRightLine[0]);
@@ -413,18 +418,21 @@ namespace ComPDFKit.Tool.DrawTool
                     activePoints.Add(moveCrossLine[1]);
                 }
             }
+
             moveLeftLine = null;
             moveRightLine = null;
             moveCrossLine = null;
-            if (moveOffset!= new Point(0, 0))
+            if (moveOffset != new Point(0, 0))
             {
                 InvokeDataChangEvent(true);
             }
+
             moveOffset = new Point(0, 0);
             mouseDownPoint = new Point();
-
             mouseEndDrawPoint = new Point();
             hitIndex = -1;
+
+            SetAnnotObject(annotData);
         }
 
         /// <summary>
@@ -511,7 +519,7 @@ namespace ComPDFKit.Tool.DrawTool
             });
         }
 
-        private Point CheckPointBound(Point checkPoint,Rect bound)
+        private Point CheckPointBound(Point checkPoint, Rect bound)
         {
             if (checkPoint.X < bound.Left)
             {
@@ -551,7 +559,7 @@ namespace ComPDFKit.Tool.DrawTool
 
             Point movePoint = moveOffset;
 
-            if(left+moveOffset.X<bound.Left || right+moveOffset.X>bound.Right)
+            if (left + moveOffset.X < bound.Left || right + moveOffset.X > bound.Right)
             {
                 movePoint.X = 0;
             }
@@ -572,7 +580,7 @@ namespace ComPDFKit.Tool.DrawTool
             PolyLineSegment polySegment = new PolyLineSegment();
             if (hitIndex != -1 && hitIndex < activePoints.Count)
             {
-                if (mouseEndDrawPoint!=new Point() && !activePoints.Contains(mouseEndDrawPoint))
+                if (mouseEndDrawPoint != new Point() && !activePoints.Contains(mouseEndDrawPoint))
                 {
                     activePoints[hitIndex] = CheckPointBound(mouseEndDrawPoint, maxRect);
                 }
@@ -584,7 +592,7 @@ namespace ComPDFKit.Tool.DrawTool
                 StartPoint.X += moveOffset.X;
                 StartPoint.Y += moveOffset.Y;
             }
-            
+
             drawFigure.StartPoint = StartPoint;
             for (int i = 1; i < activePoints.Count; i++)
             {
@@ -651,7 +659,7 @@ namespace ComPDFKit.Tool.DrawTool
                 moveRightLine = rightLine.ToArray();
                 moveCrossLine = crossLine.ToArray();
                 switch (hitIndex)
-                { 
+                {
                     case 0://Left
                         {
                             moveLeftLine[0].X += moveOffset.X;
@@ -825,11 +833,12 @@ namespace ComPDFKit.Tool.DrawTool
             PolyLineSegment polySegment = new PolyLineSegment();
             if (hitIndex != -1 && hitIndex < activePoints.Count)
             {
-                if (mouseEndDrawPoint != new Point())
+                if (mouseEndDrawPoint != new Point() && !activePoints.Contains(mouseEndDrawPoint))
                 {
-                    activePoints[hitIndex] = mouseEndDrawPoint;
+                    activePoints[hitIndex] = CheckPointBound(mouseEndDrawPoint, maxRect);
                 }
             }
+
 
             Point StartPoint = activePoints[0];
             if (hitIndex == -1)
@@ -889,11 +898,12 @@ namespace ComPDFKit.Tool.DrawTool
             PathFigure drawFigure = new PathFigure();
 
             PolyLineSegment polySegment = new PolyLineSegment();
+
             if (hitIndex != -1 && hitIndex < activePoints.Count)
             {
-                if (mouseEndDrawPoint!=new Point())
+                if (mouseEndDrawPoint != new Point() && !activePoints.Contains(mouseEndDrawPoint))
                 {
-                    activePoints[hitIndex] = mouseEndDrawPoint;
+                    activePoints[hitIndex] = CheckPointBound(mouseEndDrawPoint, maxRect);
                 }
             }
 
@@ -950,9 +960,10 @@ namespace ComPDFKit.Tool.DrawTool
             }
         }
 
+        int i = 0;
         public virtual void ClearDraw()
         {
-            drawDC = RenderOpen();
+            drawDC = RenderOpen(); 
             drawDC?.Close();
             drawDC = null;
         }

@@ -48,7 +48,7 @@
         <Grid Grid.Column="1">
             <Button Name="SearchBtn" Style="{StaticResource ButtonStyle}"  Width="56" Height="30" FontSize="14" Click="SearchBtn_Click"
                     IsEnabled="{Binding ElementName=SearchTextBox,Path=Text,Converter={StaticResource TextLengthToBoolConverter}}"
-                    Content="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Button_Done}">
+                    Content="{Binding Converter={StaticResource BotaResourceConverter},ConverterParameter=Button_Search}">
             </Button>
         </Grid>
 

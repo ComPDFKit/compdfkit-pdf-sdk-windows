@@ -8,11 +8,6 @@ using ComPDFKitViewer.BaseObject;
 using ComPDFKitViewer.Helper;
 using ComPDFKitViewer.Layer;
 using ComPDFKitViewer.Widget;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -27,6 +22,7 @@ namespace ComPDFKit.Tool
         {
             return cacheMoveWidget;
         }
+
         private void InsertWidgetView()
         {
             CreateWidgetTool createAnnotTool = new CreateWidgetTool();

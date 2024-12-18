@@ -13,7 +13,7 @@ using static ComPDFKit.Controls.PDFControlUI.CPDFAnnotationListUI;
 using ComPDFKit.Controls.PDFControlUI;
 using System.Windows.Input;
 using System;
-using System.Linq;
+using ComPDFKit.Import;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -97,8 +97,8 @@ namespace ComPDFKit.Controls.PDFControl
             if (pdfViewer != null)
             {
                 pdfViewer.PDFToolManager.ClearSelect();
-                ParamConverter.RemovePageAnnot(e, pdfViewer.PDFViewTool.GetCPDFViewer().GetDocument());
-                pdfViewer.PDFViewTool.GetCPDFViewer().UpdateAnnotFrame();
+                ParamConverter.RemovePageAnnot(e, pdfViewer.GetCPDFViewer());
+                pdfViewer.GetCPDFViewer().UpdateAnnotFrame();
                 LoadAnnotationList();
             }
         }
@@ -145,6 +145,7 @@ namespace ComPDFKit.Controls.PDFControl
             pdfViewer.UpdateAnnotFrame();
             for (int i = 0; i < pageCount; i++)
             {
+
                 List<AnnotParam> annotList = GetAnnotCommentList(i, pdfViewer.PDFViewTool.GetCPDFViewer().GetDocument());
                 List<CPDFAnnotation> annotCoreList = pdfViewer?.GetCPDFViewer()?.GetDocument()?.PageAtIndex(i, false)?.GetAnnotations();
                 if (annotList != null && annotList.Count > 0)
@@ -153,6 +154,10 @@ namespace ComPDFKit.Controls.PDFControl
                     {
                         foreach (AnnotParam annot in annotList)
                         {
+                            if(annot.ClientRect.height() == 0 && annot.ClientRect.width() == 0)
+                            {
+                                continue;
+                            }
                             CPDFAnnotation annotCore = annotCoreList[annot.AnnotIndex];
                             if (annotCore == null || annotCore.IsReplyAnnot() || annotCore.Type == C_ANNOTATION_TYPE.C_ANNOTATION_LINK)
                             {
@@ -170,10 +175,10 @@ namespace ComPDFKit.Controls.PDFControl
 
                             List<CPDFTextAnnotation> replyAnnotations = annotCore?.GetReplies();
                             if (replyAnnotations != null && replyAnnotations.Count > 0)
-                            { 
+                            {
                                 foreach (CPDFTextAnnotation replyAnnot in replyAnnotations)
                                 {
-                                    if (replyAnnot == null || replyAnnot.IsMarkedStateAnnot())
+                                    if (replyAnnot == null)
                                     {
                                         continue;
                                     }

@@ -13,7 +13,6 @@ using ComPDFKitViewer.Helper;
 using ComPDFKitViewer.Layer;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -112,7 +111,7 @@ namespace ComPDFKit.Tool
         private int selectedEditAreaIndex = -1;
         private bool selectAllCharsForLine = false;
         private CPoint rawHitPos;
-        private CPDFEditType contentEditType = CPDFEditType.EditText | CPDFEditType.EditImage;
+        private CPDFEditType contentEditType = CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath;
 
         /// <summary>
         /// Save Current Crop Box
@@ -150,6 +149,10 @@ namespace ComPDFKit.Tool
         private List<SelectedRect> image = new List<SelectedRect>();
 
         private List<SelectedRect> text = new List<SelectedRect>();
+
+        private List<SelectedRect> path = new List<SelectedRect>();
+
+        private List<CPDFEditPathArea> cachePathList = new List<CPDFEditPathArea>();
 
         protected List<PointControlType> ignoreTextPoints { get; set; } = new List<PointControlType>();
 
@@ -234,6 +237,18 @@ namespace ComPDFKit.Tool
             selectedEditPageIndex = pageIndex;
             selectedEditAreaIndex = editAreaIndex;
             this.drawCaret = drawCaret;
+        }
+
+        public void ClearLastSelectChars()
+        {
+            if (lastSelectedRect != null)
+            {
+                editArea.TryGetValue(lastSelectedRect, out EditAreaObject editAreaObject);
+                if (editAreaObject.cPDFEditArea is CPDFEditTextArea)
+                {
+                    (editAreaObject.cPDFEditArea as CPDFEditTextArea).ClearSelectChars();
+                }
+            }
         }
 
         /// <summary>
@@ -384,36 +399,42 @@ namespace ComPDFKit.Tool
             hitTestRects.Clear();
             image.Clear();
             text.Clear();
-            BaseLayer customizeLayer = PDFViewer.GetViewForTag(textEditTag);
+            path.Clear();
 
+            BaseLayer customizeLayer = PDFViewer.GetViewForTag(textEditTag);
             customizeLayer.Children.Clear();
             operateChildrenIndex = -1;
             CaretVisual caretVisual = new CaretVisual(GetDefaultDrawParam());
             customizeLayer.Children.Add(caretVisual);
 
-            currentZoom = currentRenderFrame.ZoomFactor;
-
+            MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
             foreach (RenderData item in currentRenderFrame.GetRenderDatas())
             {
                 if (item.CPDFEditPageObj == null)
-                {
                     continue;
-                }
-                foreach (CPDFEditArea editArea in item.CPDFEditPageObj.GetEditAreaList())
+
+                foreach (CPDFEditArea editArea in item.CPDFEditPageObj.GetEditAreaList().AsEnumerable().Reverse())
                 {
+                    if (editArea is CPDFEditPathArea)
+                    {
+                        if (!cachePathList.Contains(editArea))
+                            continue;
+                    }
+
                     SelectedRect selectedRect = new SelectedRect(GetDefaultDrawParam(), SelectedType.PDFEdit);
                     selectedRect.SetEditPen(editPen, editHoverPen);
                     selectedRect.SetDrawMoveType(DrawMoveType.kReferenceLine);
                     customizeLayer.Children.Add(selectedRect);
 
-                    Rect TextBlock = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
+                    Rect editAreaRect = new Rect();
                     if (editArea.Type == CPDFEditType.EditImage)
                     {
                         if ((contentEditType & CPDFEditType.EditImage) != CPDFEditType.EditImage)
                         {
                             continue;
                         }
-                        TextBlock = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditImageArea).GetClipRect());
+
+                        editAreaRect = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditImageArea).GetClipRect());
                     }
                     else if (editArea.Type == CPDFEditType.EditText)
                     {
@@ -421,24 +442,51 @@ namespace ComPDFKit.Tool
                         {
                             continue;
                         }
+
+                        editAreaRect = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
                     }
-                    Rect rect = TextBlock;
+                    else if (editArea.Type == CPDFEditType.EditPath)
+                    {
+                        if ((contentEditType & CPDFEditType.EditPath) != CPDFEditType.EditPath)
+                        {
+                            continue;
+                        }
 
-                    rect.X = (rect.X) * currentRenderFrame.ZoomFactor;
-                    rect.Y = (rect.Y) * currentRenderFrame.ZoomFactor;
-                    rect.Width *= currentRenderFrame.ZoomFactor;
-                    rect.Height *= currentRenderFrame.ZoomFactor;
-                    rect = DpiHelper.PDFRectToStandardRect(rect);
+                        editAreaRect = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditPathArea).GetClipRect());
+                    }
 
-                    rect.X += item.PageBound.X;
-                    rect.Y += item.PageBound.Y;
+                    editAreaRect.X = (editAreaRect.X) * currentZoom;
+                    editAreaRect.Y = (editAreaRect.Y) * currentZoom;
+                    editAreaRect.Width *= currentZoom;
+                    editAreaRect.Height *= currentZoom;
+                    editAreaRect = DpiHelper.PDFRectToStandardRect(editAreaRect);
+                    editAreaRect.X += item.PageBound.X;
+                    editAreaRect.Y += item.PageBound.Y;
 
-                    //PDF对象设置界面矩形
+                    if (editArea is CPDFEditPathArea)
+                    {
+                        selectedRect.RectMinHeight = 1;
+                        selectedRect.RectMinWidth = 1;
+                    }
+
                     selectedRect.SetRectPadding(5);
-                    selectedRect.SetRect(rect, currentZoom);
+                    selectedRect.SetRect(editAreaRect, currentZoom);
                     selectedRect.SetMaxRect(item.PageBound);
                     selectedRect.SetIgnorePointsAll();
-                    selectedRect.Draw();
+                    if ((editArea is CPDFEditPathArea))
+                    {
+                        if (multiSelectedRect.selectedRects.Count==0)
+                        {
+                            selectedRect.Draw();
+                        }
+
+                        selectedRect.IsPath = true;
+                    }
+                    else
+                    {
+                        selectedRect.Draw();
+                    }
+
                     EditAreaObject editAreaObject = new EditAreaObject();
                     editAreaObject.ControlType = PointControlType.None;
                     editAreaObject.cPDFEditArea = editArea;
@@ -459,13 +507,18 @@ namespace ComPDFKit.Tool
                         case CPDFEditType.EditImage:
                             image.Add(selectedRect);
                             break;
+                        case CPDFEditType.EditPath:
+                            path.Add(selectedRect);
+                            break;
                         default:
                             break;
                     }
                 }
             }
+
             hitTestRects.AddRange(text);
             hitTestRects.AddRange(image);
+            hitTestRects.AddRange(path);
         }
 
         public void DrawStartTextEdit(SelectedRect selectedRect, EditAreaObject editAreaObject)
@@ -759,6 +812,41 @@ namespace ComPDFKit.Tool
             return multiSelectedRect;
         }
 
+        private void GetDrawPathList(Point point)
+        {
+            if ((contentEditType & CPDFEditType.EditPath) != CPDFEditType.EditPath)
+                return;
+
+            PDFViewer.GetePointToPage(point, out RenderData renderData, out Point pagePoint);
+            pagePoint = new Point(pagePoint.X / currentZoom, pagePoint.Y / currentZoom);
+            if (renderData == null || renderData.CPDFEditPageObj == null)
+                return;
+
+            foreach (CPDFEditArea editArea in renderData.CPDFEditPageObj.GetEditAreaList())
+            {
+                if (editArea is CPDFEditPathArea)
+                {
+                    CPDFEditPathArea pathArea = editArea as CPDFEditPathArea;
+                    Rect rect = DataConversionForWPF.CRectConversionForRect(pathArea.GetClipRect());
+                    rect = DpiHelper.PDFRectToStandardRect(rect);
+                    if(rect.Width <=1)
+                        rect.Width += 1;
+
+                    if (rect.Height <= 1)
+                        rect.Height += 1;
+
+                    if (rect.Contains(pagePoint))
+                    {
+                        if (cachePathList.Contains(pathArea) == false)
+                        {
+                            cachePathList.Add(pathArea);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Select
         /// </summary>
@@ -787,17 +875,17 @@ namespace ComPDFKit.Tool
             }
 
             //Prioritize the selected status
-            List<SelectedRect> checkList = new List<SelectedRect>();
-            if (hitTestRects != null && hitTestRects.Count > 0)
-            {
-                List<SelectedRect> checkedList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == true).ToList();
-                List<SelectedRect> unCheckList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == false).ToList();
+            //List<SelectedRect> checkList = new List<SelectedRect>();
+            //if (hitTestRects != null && hitTestRects.Count > 0)
+            //{
+            //    List<SelectedRect> checkedList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == true).ToList();
+            //    List<SelectedRect> unCheckList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == false).ToList();
 
-                checkList.AddRange(checkedList);
-                checkList.AddRange(unCheckList);
-            }
+            //    checkList.AddRange(checkedList);
+            //    checkList.AddRange(unCheckList);
+            //}
 
-            foreach (SelectedRect rect in checkList)
+            foreach (SelectedRect rect in hitTestRects)
             {
                 rect.SetIsHover(false);
                 rect.SetIsSelected(false);
@@ -808,9 +896,9 @@ namespace ComPDFKit.Tool
                 }
                 else
                 {
-
                     pointControlType = rect.GetHitControlIndex(point);
                 }
+
                 editArea.TryGetValue(rect, out EditAreaObject editObject);
                 if (pointControlType != PointControlType.None)
                 {
@@ -954,7 +1042,6 @@ namespace ComPDFKit.Tool
                     lastSelectedRect.Draw();
                 }
 
-
                 if (editAreaObject.cPDFEditArea is CPDFEditTextArea)
                 {
                     string chars = (editAreaObject.cPDFEditArea as CPDFEditTextArea).GetAllChars();
@@ -966,16 +1053,23 @@ namespace ComPDFKit.Tool
                         lastSelectedRect.ClearDraw();
                     }
                 }
+
                 lastSelectedRect.DataChanged -= LastSelectedRect_DataChanged;
                 if (lastSelectedRect.GetCurrentDrawPointType() != DrawPointType.Crop)
                 {
                     lastSelectedRect = null;
                 }
             }
+
+            if(editAreaList.Count == 0)
+            {
+                cachePathList.Clear();
+                cachePathList = new List<CPDFEditPathArea>();
+                GetDrawPathList(point);
+            }
+
             caretVisual?.StopTimer();
             caretVisual?.CleanDraw();
-
-            return;
         }
 
         /// <summary>
@@ -1009,6 +1103,7 @@ namespace ComPDFKit.Tool
                     }
                 }
             }
+
             return false;
         }
 
@@ -1060,7 +1155,6 @@ namespace ComPDFKit.Tool
 
                 keyValuePairs.Add(currentEditAreaObject.PageIndex, OldRect);
                 DrawUpdateText(keyValuePairs, currentEditAreaObject.PageBound);
-
                 UpdateSelectRect(editAreaObject.cPDFEditArea);
 
                 // Move the moved selected box to the top layer of the selected logic
@@ -1074,10 +1168,19 @@ namespace ComPDFKit.Tool
                         image.Remove(selectedRect);
                         image.Insert(0, selectedRect);
                         break;
+                    case CPDFEditType.EditPath:
+                        path.Remove(selectedRect);
+                        path.Insert(0, selectedRect);
+                        break;
+
+                    default:
+                        break;
                 }
+
                 hitTestRects.Clear();
                 hitTestRects.AddRange(text);
                 hitTestRects.AddRange(image);
+                hitTestRects.AddRange(path);
             }
         }
 
@@ -1279,6 +1382,7 @@ namespace ComPDFKit.Tool
                     {
                         continue;
                     }
+
                     if (editAreaObject.cPDFEditArea is CPDFEditTextArea)
                     {
                         CPDFEditPage editPage = editAreaObject.cPDFEditPage;
@@ -1289,7 +1393,6 @@ namespace ComPDFKit.Tool
                         Rect.ClearDraw();
                     }
                 }
-                SelectedEditAreaForIndex(-1, -1);
             }
             else
             {
@@ -1298,15 +1401,13 @@ namespace ComPDFKit.Tool
                     if (areaObject.cPDFEditArea is CPDFEditTextArea)
                     {
                         CPDFEditPage editPage = areaObject.cPDFEditPage;
-                        CPDFEditTextArea textArea = areaObject.cPDFEditArea as CPDFEditTextArea;
-                        int index = areaObject.EditAreaIndex;
-                        editPage.RemoveEditArea(index);
+                        editPage.RemoveEditArea(areaObject.EditAreaIndex);
                         editPage.EndEdit();
-
                     }
                 }
-                SelectedEditAreaForIndex(-1, -1);
             }
+
+            SelectedEditAreaForIndex(-1, -1);
         }
 
         /// <summary>
@@ -1324,17 +1425,17 @@ namespace ComPDFKit.Tool
                     {
                         continue;
                     }
+
                     if (editAreaObject.cPDFEditArea is CPDFEditImageArea)
                     {
                         CPDFEditPage editPage = editAreaObject.cPDFEditPage;
-                        CPDFEditImageArea textArea = editAreaObject.cPDFEditArea as CPDFEditImageArea;
-                        int index = editAreaObject.cPDFEditPage.GetEditAreaList().IndexOf(textArea);
+                        CPDFEditImageArea imageArea = editAreaObject.cPDFEditArea as CPDFEditImageArea;
+                        int index = editAreaObject.cPDFEditPage.GetEditAreaList().IndexOf(imageArea);
                         editPage.RemoveEditArea(index);
                         editPage.EndEdit();
                         Rect.ClearDraw();
                     }
                 }
-                SelectedEditAreaForIndex(-1, -1);
             }
             else
             {
@@ -1343,14 +1444,51 @@ namespace ComPDFKit.Tool
                     if (areaObject.cPDFEditArea is CPDFEditImageArea)
                     {
                         CPDFEditPage editPage = areaObject.cPDFEditPage;
-                        CPDFEditImageArea textArea = areaObject.cPDFEditArea as CPDFEditImageArea;
-                        int index = areaObject.EditAreaIndex;
-                        editPage.RemoveEditArea(index);
+                        editPage.RemoveEditArea(areaObject.EditAreaIndex);
                         editPage.EndEdit();
                     }
                 }
-                SelectedEditAreaForIndex(-1, -1);
             }
+
+            SelectedEditAreaForIndex(-1, -1);
+        }
+
+        public void RemovePathBlock(EditAreaObject areaObject = null)
+        {
+            if (currentEditAreaObject != null && currentEditAreaObject.cPDFEditPage != null)
+            {
+                foreach (var Rect in hitTestRects)
+                {
+                    editArea.TryGetValue(Rect, out EditAreaObject editAreaObject);
+                    if (editAreaObject != currentEditAreaObject)
+                    {
+                        continue;
+                    }
+                    if (editAreaObject.cPDFEditArea is CPDFEditPathArea)
+                    {
+                        CPDFEditPage editPage = editAreaObject.cPDFEditPage;
+                        CPDFEditPathArea pathArea = editAreaObject.cPDFEditArea as CPDFEditPathArea;
+                        int index = editAreaObject.cPDFEditPage.GetEditAreaList().IndexOf(pathArea);
+                        editPage.RemoveEditArea(index);
+                        editPage.EndEdit();
+                        Rect.ClearDraw();
+                    }
+                }
+            }
+            else
+            {
+                if (areaObject != null && areaObject.cPDFEditPage != null)
+                {
+                    if (areaObject.cPDFEditArea is CPDFEditPathArea)
+                    {
+                        CPDFEditPage editPage = areaObject.cPDFEditPage;
+                        editPage.RemoveEditArea(areaObject.EditAreaIndex);
+                        editPage.EndEdit();
+                    }
+                }
+            }
+
+            SelectedEditAreaForIndex(-1, -1);
         }
 
         public void CleanEditView()
@@ -1422,6 +1560,9 @@ namespace ComPDFKit.Tool
             editHistory.EditPage = currentEditAreaObject.cPDFEditPage;
             editHistory.PageIndex = currentEditAreaObject.PageIndex;
             CPDFEditTextArea textArea = currentEditAreaObject.cPDFEditArea as CPDFEditTextArea;
+            if (textArea == null)
+                return;
+
             Rect OldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
             GroupHistory groupHistory = new GroupHistory();
             if (content == "\b")
@@ -1580,20 +1721,35 @@ namespace ComPDFKit.Tool
                 }
 
                 //Prioritize the selected status
-                List<SelectedRect> checkList = new List<SelectedRect>();
-                if (hitTestRects != null && hitTestRects.Count > 0)
-                {
-                    List<SelectedRect> checkedList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == true).ToList();
-                    List<SelectedRect> unCheckList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == false).ToList();
+                //List<SelectedRect> checkList = new List<SelectedRect>();
+                //if (hitTestRects != null && hitTestRects.Count > 0)
+                //{
+                //    List<SelectedRect> checkedList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == true).ToList();
+                //    List<SelectedRect> unCheckList = hitTestRects.AsEnumerable().Where(x => x.GetIsSelected() == false).ToList();
 
-                    checkList.AddRange(checkedList);
-                    checkList.AddRange(unCheckList);
+                //    checkList.AddRange(checkedList);
+                //    checkList.AddRange(unCheckList);
+                //}
+
+                //Multiple selection of mouse styles
+                MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
+                if (multiSelectedRect != null && multiSelectedRect.selectedRects.Count > 0)
+                {
+                    PointControlType pointMultiControlType = multiSelectedRect.GetHitControlIndex(point);
+                    if (pointMultiControlType != PointControlType.None)
+                    {
+                        cursor = GetCursors(pointMultiControlType, true);
+                        return cursor;
+                    }
                 }
 
-                foreach (SelectedRect rect in checkList)
+                foreach (SelectedRect rect in hitTestRects)
                 {
-                    PointControlType pointControlType = rect.GetHitControlIndex(point, false);
-                    MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
+                    if (multiSelectedRect != null && multiSelectedRect.selectedRects.Contains(rect))
+                    {
+                        continue;
+                    }
+
                     if (GetIsCropMode())
                     {
                         PointControlType pointCropControlType = rect.GetHitCropControlIndex(point, false);
@@ -1605,16 +1761,11 @@ namespace ComPDFKit.Tool
                     }
                     else
                     {
-                        //Multiple selection of mouse styles
-                        if (multiSelectedRect != null && multiSelectedRect.Children.Count > 0)
-                        {
-                            PointControlType pointMultiControlType = multiSelectedRect.GetHitControlIndex(Mouse.GetPosition(this));
-                            cursor = GetCursors(pointMultiControlType, true);
-                        }
+                        PointControlType pointControlType = rect.GetHitControlIndex(point, false);
                         if (pointControlType != PointControlType.None)
                         {
                             EditAreaObject editAreaObject = GetEditAreaObjectForRect(rect);
-                            if (editAreaObject.cPDFEditArea.Type == CPDFEditType.EditImage)
+                            if (editAreaObject.cPDFEditArea.Type == CPDFEditType.EditImage || editAreaObject.cPDFEditArea.Type == CPDFEditType.EditPath)
                             {
                                 //image hover
                                 if (selectedRect1 == null)
@@ -1678,7 +1829,7 @@ namespace ComPDFKit.Tool
             return cursor;
         }
 
-        private Cursor GetCursors(PointControlType controlType, bool isImage)
+        private Cursor GetCursors(PointControlType controlType, bool notText)
         {
             switch (controlType)
             {
@@ -1694,12 +1845,12 @@ namespace ComPDFKit.Tool
                 case PointControlType.RightTop:
                     return Cursors.SizeNESW;
 
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                 case PointControlType.MiddleTop:
                     return Cursors.SizeNS;
 
                 case PointControlType.Body:
-                    if (isImage)
+                    if (notText)
                     {
                         return Cursors.SizeAll;
                     }
@@ -1874,15 +2025,30 @@ namespace ComPDFKit.Tool
                     selectedRect = item.Key;
                 }
             }
+
             if (selectedRect != null)
             {
                 Rect maxrect = selectedRect.GetMaxRect();
-                Rect rect = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
-                if (editArea.Type == CPDFEditType.EditImage)
+                Rect rect = new Rect();
+                if (editArea.Type == CPDFEditType.EditText)
+                {
+                    if ((contentEditType & CPDFEditType.EditText) == CPDFEditType.EditText)
+                    {
+                        rect = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
+                    }
+                }
+                else if (editArea.Type == CPDFEditType.EditImage)
                 {
                     if ((contentEditType & CPDFEditType.EditImage) == CPDFEditType.EditImage)
                     {
                         rect = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditImageArea).GetClipRect());
+                    }
+                }
+                else if (editArea.Type == CPDFEditType.EditPath)
+                {
+                    if ((contentEditType & CPDFEditType.EditPath) == CPDFEditType.EditPath)
+                    {
+                        rect = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditPathArea).GetClipRect());
                     }
                 }
 
@@ -2002,7 +2168,6 @@ namespace ComPDFKit.Tool
             caretVisual.Draw(true, false);
             caretVisual.StopCaret();
         }
-
 
         /// <summary>
         /// Jump cursor to a specific position in a text area.
@@ -2174,61 +2339,90 @@ namespace ComPDFKit.Tool
         /// <param name="rectFrameSelect"></param>
         public void FrameSelectAddRect(Rect rectFrameSelect)
         {
-            if (rectFrameSelect.Width == 0 || rectFrameSelect.Height == 0)
-            {
+            if (rectFrameSelect.Width == 0 || rectFrameSelect.Height == 0 || PDFViewer.CurrentRenderFrame == null)
                 return;
-            }
-            if (PDFViewer.CurrentRenderFrame == null)
-            {
-                return;
-            }
+
             RenderFrame currentRenderFrame = PDFViewer.CurrentRenderFrame;
             BaseLayer customizeLayer = PDFViewer.GetViewForTag(textEditTag);
-
             customizeLayer.Children.Clear();
             CaretVisual caretVisual = new CaretVisual(GetDefaultDrawParam());
             customizeLayer.Children.Add(caretVisual);
 
-            currentZoom = currentRenderFrame.ZoomFactor;
             MultiSelectedRect multiSelectedRect = CommonHelper.FindVisualChild<MultiSelectedRect>(PDFViewer.GetViewForTag(MultiSelectedRectViewTag));
             foreach (RenderData item in currentRenderFrame.GetRenderDatas())
             {
-                if (item.PageIndex == FrameSelectPageIndex)
+                if (item.PageIndex == FrameSelectPageIndex && item.CPDFEditPageObj != null)
                 {
-                    if (item.CPDFEditPageObj == null)
-                    {
-                        continue;
-                    }
                     foreach (CPDFEditArea editArea in item.CPDFEditPageObj.GetEditAreaList())
                     {
-                        Rect TextBlock = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
+                        Rect editAreaRect = new Rect();
                         if (editArea.Type == CPDFEditType.EditImage)
                         {
                             if ((contentEditType & CPDFEditType.EditImage) != CPDFEditType.EditImage)
-                            {
                                 continue;
-                            }
-                            TextBlock = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditImageArea).GetClipRect());
+
+                            editAreaRect = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditImageArea).GetClipRect());
                         }
                         else if (editArea.Type == CPDFEditType.EditText)
                         {
                             if ((contentEditType & CPDFEditType.EditText) != CPDFEditType.EditText)
-                            {
                                 continue;
-                            }
+
+                            editAreaRect = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
                         }
-                        Rect rect = TextBlock;
-                        if (rectFrameSelect.IntersectsWith(rect))
+                        else if (editArea.Type == CPDFEditType.EditPath)
                         {
-                            SelectedRect selectedRects = GetSelectedRectForEditAreaObject(editArea);
+                            if ((contentEditType & CPDFEditType.EditPath) != CPDFEditType.EditPath)
+                                continue;
+
+                            editAreaRect = DataConversionForWPF.CRectConversionForRect((editArea as CPDFEditPathArea).GetClipRect());
+                        }
+
+                        if (rectFrameSelect.IntersectsWith(editAreaRect))
+                        {
+                            SelectedRect editAreaSelectedRect = GetSelectedRectForEditAreaObject(editArea);
+                            if (editAreaSelectedRect == null && editArea is CPDFEditPathArea)
+                            {
+                                cachePathList.Add(editArea as CPDFEditPathArea);
+
+                                editAreaRect.X = (editAreaRect.X) * currentZoom;
+                                editAreaRect.Y = (editAreaRect.Y) * currentZoom;
+                                editAreaRect.Width *= currentZoom;
+                                editAreaRect.Height *= currentZoom;
+                                editAreaRect = DpiHelper.PDFRectToStandardRect(editAreaRect);
+                                editAreaRect.X += item.PageBound.X;
+                                editAreaRect.Y += item.PageBound.Y;
+
+                                editAreaSelectedRect = new SelectedRect(GetDefaultDrawParam(), SelectedType.PDFEdit);
+                                editAreaSelectedRect.SetEditPen(editPen, editHoverPen);
+                                editAreaSelectedRect.SetDrawMoveType(DrawMoveType.kReferenceLine);
+                                customizeLayer.Children.Add(editAreaSelectedRect);
+
+                                editAreaSelectedRect.SetRectPadding(5);
+                                editAreaSelectedRect.SetRect(editAreaRect, currentZoom);
+                                editAreaSelectedRect.SetMaxRect(item.PageBound);
+                                editAreaSelectedRect.SetIgnorePointsAll();
+
+                                EditAreaObject editAreaObjects = new EditAreaObject();
+                                editAreaObjects.ControlType = PointControlType.None;
+                                editAreaObjects.cPDFEditArea = editArea;
+                                editAreaObjects.cPDFEditPage = item.CPDFEditPageObj;
+                                editAreaObjects.PageIndex = item.PageIndex;
+                                editAreaObjects.EditAreaIndex = item.CPDFEditPageObj.GetEditAreaList().IndexOf(editArea);
+                                editAreaObjects.PageBound = item.PageBound;
+                                editAreaObjects.PaintRect = item.PaintRect;
+
+                                this.editArea.Add(editAreaSelectedRect, editAreaObjects);
+                            }
+
                             SelectedRect selectedRect = new SelectedRect(GetDefaultDrawParam(), SelectedType.PDFEdit);
                             selectedRect.SetEditPen(editPen, editHoverPen);
                             multiSelectedRect.SetSelectedType(SelectedType.PDFEdit);
                             selectedRect.SetDrawMoveType(DrawMoveType.kReferenceLine);
-                            selectedRect.SetRect(selectedRects.GetRect(), currentZoom);
-                            selectedRect.SetMaxRect(selectedRects.GetMaxRect());
-                            EditAreaObject editAreaObject = null;
+                            selectedRect.SetRect(editAreaSelectedRect.GetRect(), currentZoom);
+                            selectedRect.SetMaxRect(editAreaSelectedRect.GetMaxRect());
 
+                            EditAreaObject editAreaObject = null;
                             foreach (var eitem in this.editArea)
                             {
                                 if (eitem.Value.cPDFEditArea == editArea)
@@ -2237,36 +2431,38 @@ namespace ComPDFKit.Tool
                                     break;
                                 }
                             }
+
                             int pageIndex = editAreaObject.PageIndex;
                             if (multiPage != pageIndex && editAreaList.Count > 0)
                             {
                                 foreach (int itemIndex in editAreaMultiIndex)
                                 {
-                                    SelectedRect OldRect = GetEditAreaForIndex(multiPage, itemIndex);
-                                    if (OldRect != null)
-                                    {
-                                        OldRect.Draw();
-                                    }
+                                    SelectedRect oldRect = GetEditAreaForIndex(multiPage, itemIndex);
+                                    oldRect?.Draw();
                                 }
+
                                 editAreaMultiIndex.Clear();
                                 multiSelectedRect.ClearDraw();
                                 multiSelectedRect.CleanMulitSelectedRect();
-                                multiPage = pageIndex;
                             }
-                            multiPage = editAreaObject.PageIndex;
+
+                            multiPage = pageIndex;
                             editAreaMultiIndex.Add(editAreaObject.EditAreaIndex);
                             editAreaList.Add(selectedRect, editAreaObject);
                             multiSelectedRect.Children.Add(selectedRect);
                             multiSelectedRect.SetMulitSelectedRect(selectedRect, editAreaObject.PageIndex, editAreaObject.EditAreaIndex);
 
-                            multiSelectedRect.SetRect(selectedRects.GetRect());
-                            multiSelectedRect.SetMaxRect(selectedRects.GetMaxRect());
-                            multiSelectedRect.Draw();
+                            multiSelectedRect.SetRect(editAreaSelectedRect.GetRect());
+                            multiSelectedRect.SetMaxRect(editAreaSelectedRect.GetMaxRect());
+                            //multiSelectedRect.Draw();
                         }
                     }
                 }
             }
-            PDFViewer.UpdateRenderFrame();
+
+            //PDFViewer.UpdateRenderFrame();
+            SetEditTextRect(PDFViewer.CurrentRenderFrame);
+            ReDrawSelectedMultiRect();
         }
 
         #endregion
@@ -2362,7 +2558,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect checkItem in MultiSelectEditList.GetMulitSelectList())
             {
                 SelectedRect item = checkItem;
@@ -2422,7 +2618,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect checkItem in MultiSelectEditList.GetMulitSelectList())
             {
                 SelectedRect item = checkItem;
@@ -2495,7 +2691,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect checkItem in MultiSelectEditList.GetMulitSelectList())
             {
                 SelectedRect item = checkItem;
@@ -2570,7 +2766,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect checkItem in MultiSelectEditList.GetMulitSelectList())
             {
                 SelectedRect item = checkItem;
@@ -2630,7 +2826,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect checkItem in MultiSelectEditList.GetMulitSelectList())
             {
                 SelectedRect item = checkItem;
@@ -2687,7 +2883,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect checkItem in MultiSelectEditList.GetMulitSelectList())
             {
                 SelectedRect item = checkItem;
@@ -2746,7 +2942,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect item in MultiSelectEditList.GetMulitSelectList())
             {
                 Rect rect = item.GetRect();
@@ -2809,7 +3005,7 @@ namespace ComPDFKit.Tool
             CPDFDocument cPDFDocument = GetCPDFViewer().GetDocument();
             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(multiPage);
             CPDFEditPage cPDFEditPage = cPDFPage.GetEditPage();
-            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage);
+            cPDFEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             foreach (SelectedRect item in MultiSelectEditList.GetMulitSelectList())
             {
                 Rect rect = item.GetRect();

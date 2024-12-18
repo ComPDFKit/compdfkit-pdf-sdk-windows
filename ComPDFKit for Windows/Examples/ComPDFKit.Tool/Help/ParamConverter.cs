@@ -9,6 +9,8 @@ using ComPDFKit.PDFPage.Edit;
 using ComPDFKit.Tool.SettingParam;
 using ComPDFKit.Tool.UndoManger;
 using ComPDFKit.Viewer.Helper;
+using ComPDFKitViewer.Helper;
+using ComPDFKitViewer;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -169,12 +171,47 @@ namespace ComPDFKit.Tool.Help
             return annotHistory;
         }
 
-        public static bool RemovePageAnnot(Dictionary<int, List<int>> removeAnnots, CPDFDocument cPDFDocument)
+        public static bool RemovePageAnnot(Dictionary<int, List<int>> removeAnnots, CPDFViewer cPDFViewer)
         {
+            CPDFDocument cPDFDocument = cPDFViewer.GetDocument();
             if (cPDFDocument == null || removeAnnots.Count <= 0)
             {
                 return false;
             }
+
+            GroupHistory historyGroup = new GroupHistory();
+            foreach (int pageIndex in removeAnnots.Keys)
+            {
+                CPDFPage pageCore = cPDFDocument.PageAtIndex(pageIndex);
+                List<CPDFAnnotation> cPDFAnnotations = pageCore.GetAnnotations();
+                foreach (int annotIndex in removeAnnots[pageIndex])
+                {
+                    CPDFAnnotation cPDFAnnotation = cPDFAnnotations.ElementAtOrDefault(annotIndex);
+                    if (cPDFAnnotation != null)
+                    {
+                        AnnotParam annotParam = CPDFDataConverterToAnnotParam(cPDFDocument, pageIndex, cPDFAnnotation);
+                        if (annotParam is StampParam stampParam)
+                        {
+                            if (stampParam.StampType == C_STAMP_TYPE.IMAGE_STAMP)
+                            {
+                                stampParam.CopyImageAnnot = CPDFAnnotation.CopyAnnot(cPDFAnnotation);
+                            }
+                        }
+
+                        AnnotHistory annotHistory = CreateHistory(cPDFAnnotation);
+                        annotHistory.CurrentParam = annotParam;
+                        annotHistory.PDFDoc = cPDFDocument;
+                        annotHistory.Action = HistoryAction.Remove;
+                        historyGroup.Histories.Add(annotHistory);
+                    }
+                }
+            }
+
+            if (historyGroup.Histories.Count > 0)
+            {
+                cPDFViewer.UndoManager.AddHistory(historyGroup);
+            }
+
             foreach (int pageIndex in removeAnnots.Keys)
             {
                 CPDFPage pageCore = cPDFDocument.PageAtIndex(pageIndex);
@@ -188,7 +225,8 @@ namespace ComPDFKit.Tool.Help
                     }
                 }
             }
-            return false;
+
+            return true;
         }
 
         public static FormField ConverterWidgetFormFlags(int Flags, bool IsHidden)
@@ -311,10 +349,10 @@ namespace ComPDFKit.Tool.Help
             return annotParam;
         }
 
-        public static PDFEditParam CPDFDataConverterToPDFEitParam(CPDFDocument cPDFDocument, CPDFEditArea cPDFEditArea, int PageIndex)
+        public static PDFEditParam CPDFDataConverterToPDFEitParam(CPDFDocument cPDFDocument, CPDFEditArea cPDFEditArea, int pageIndex)
         {
             PDFEditParam annotParam = null;
-            if (cPDFEditArea == null && !cPDFEditArea.IsValid() && cPDFDocument == null && !cPDFDocument.IsValid() && PageIndex >= 0)
+            if (cPDFEditArea == null && !cPDFEditArea.IsValid() && cPDFDocument == null && !cPDFDocument.IsValid() && pageIndex >= 0)
             {
                 return null;
             }
@@ -323,11 +361,15 @@ namespace ComPDFKit.Tool.Help
                 case CPDFEditType.None:
                     break;
                 case CPDFEditType.EditText:
-                    annotParam = GetTextEditParam(cPDFDocument, cPDFEditArea as CPDFEditTextArea, PageIndex);
+                    annotParam = GetTextEditParam(cPDFDocument, cPDFEditArea as CPDFEditTextArea, pageIndex);
                     break;
                 case CPDFEditType.EditImage:
-                    annotParam = GetImageEditParam(cPDFDocument, cPDFEditArea as CPDFEditImageArea, PageIndex);
+                    annotParam = GetImageEditParam(cPDFDocument, cPDFEditArea as CPDFEditImageArea, pageIndex);
                     break;
+                case CPDFEditType.EditPath:
+                    annotParam = GetPathEditParam(cPDFDocument, cPDFEditArea as CPDFEditPathArea, pageIndex);
+                    break;
+
                 default:
                     break;
             }
@@ -337,7 +379,7 @@ namespace ComPDFKit.Tool.Help
 
         #region PDFEdit
 
-        internal static TextEditParam GetTextEditParam(CPDFDocument cPDFDocument, CPDFEditTextArea cPDFEditArea, int PageIndex)
+        internal static TextEditParam GetTextEditParam(CPDFDocument cPDFDocument, CPDFEditTextArea cPDFEditArea, int pageIndex)
         {
             TextEditParam textEditParam = new TextEditParam();
             string fontName = "Helvetica";
@@ -354,10 +396,10 @@ namespace ComPDFKit.Tool.Help
             textEditParam.Transparency = transparency;
             textEditParam.TextAlign = cPDFEditArea.GetTextSectionAlign();
             textEditParam.EditType = CPDFEditType.EditText;
-            CPDFPage docPage = cPDFDocument.PageAtIndex(PageIndex);
-            CPDFEditPage EditPage = docPage.GetEditPage();
-            textEditParam.EditIndex = EditPage.GetEditAreaList().IndexOf(cPDFEditArea);
-            textEditParam.PageIndex = PageIndex;
+            CPDFPage docPage = cPDFDocument.PageAtIndex(pageIndex);
+            CPDFEditPage editPage = docPage.GetEditPage();
+            textEditParam.EditIndex = editPage.GetEditAreaList().IndexOf(cPDFEditArea);
+            textEditParam.PageIndex = pageIndex;
 
             if(string.IsNullOrEmpty(cPDFEditArea.SelectText))
             {
@@ -373,16 +415,36 @@ namespace ComPDFKit.Tool.Help
             return textEditParam;
         }
 
-        internal static ImageEditParam GetImageEditParam(CPDFDocument cPDFDocument, CPDFEditImageArea cPDFEditArea, int PageIndex)
+        internal static ImageEditParam GetImageEditParam(CPDFDocument cPDFDocument, CPDFEditImageArea cPDFEditArea, int pageIndex)
         {
             ImageEditParam imageEditParam = new ImageEditParam();
             imageEditParam.Transparency = cPDFEditArea.GetImageTransparency();
+            imageEditParam.Rotate = cPDFEditArea.GetRotation();
+            imageEditParam.ClipRect = cPDFEditArea.GetClipRect();
             imageEditParam.EditType = CPDFEditType.EditImage;
-            CPDFPage docPage = cPDFDocument.PageAtIndex(PageIndex);
-            CPDFEditPage EditPage = docPage.GetEditPage();
-            imageEditParam.EditIndex = EditPage.GetEditAreaList().IndexOf(cPDFEditArea);
-            imageEditParam.PageIndex = PageIndex;
+
+            CPDFPage docPage = cPDFDocument.PageAtIndex(pageIndex);
+            CPDFEditPage editPage = docPage.GetEditPage();
+            imageEditParam.EditIndex = editPage.GetEditAreaList().IndexOf(cPDFEditArea);
+            imageEditParam.PageIndex = pageIndex;
             return imageEditParam;
+        }
+
+        internal static PathEditParam GetPathEditParam(CPDFDocument cPDFDocument, CPDFEditPathArea cPDFEditArea, int pageIndex)
+        {
+            PathEditParam pathEditParam = new PathEditParam();
+            pathEditParam.Transparency = cPDFEditArea.GetTransparency();
+            pathEditParam.Rotate = cPDFEditArea.GetRotation();
+            pathEditParam.StrokeColor = cPDFEditArea.GetStrokeColor();
+            pathEditParam.FillColor = cPDFEditArea.GetFillColor();
+            pathEditParam.ClipRect = cPDFEditArea.GetClipRect();
+            pathEditParam.EditType = CPDFEditType.EditPath;
+
+            CPDFPage docPage = cPDFDocument.PageAtIndex(pageIndex);
+            CPDFEditPage editPage = docPage.GetEditPage();
+            pathEditParam.EditIndex = editPage.GetEditAreaList().IndexOf(cPDFEditArea);
+            pathEditParam.PageIndex = pageIndex;
+            return pathEditParam;
         }
 
         #endregion
@@ -941,7 +1003,7 @@ namespace ComPDFKit.Tool.Help
                 case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
                     {
                         CPDFPolygonAnnotation polygonAnnot= pdfAnnot as CPDFPolygonAnnotation;
-                        if(polygonAnnot!=null && polygonAnnot.IsMeasured())
+                        if(polygonAnnot!=null)
                         {
                             return GetPolygonMeasureParam(polygonAnnot);
                         }
@@ -975,6 +1037,7 @@ namespace ComPDFKit.Tool.Help
             {
                 annotParam.AnnotIndex = pdfAnnot.Page.GetAnnotCount() - 1;
             }
+
             annotParam.PageIndex = pdfAnnot.Page.PageIndex;
         }
 
@@ -1125,7 +1188,6 @@ namespace ComPDFKit.Tool.Help
             }
 
             PolygonMeasureParam polygonParam = new PolygonMeasureParam();
-
             if (polygonAnnot.LineColor != null && polygonAnnot.LineColor.Length == 3)
             {
                 polygonParam.LineColor = new byte[3]
@@ -1316,6 +1378,12 @@ namespace ComPDFKit.Tool.Help
                 }
             }
 
+            if(inkAnnot.Dash!=null && inkAnnot.Dash.Length>0)
+            {
+                inkParam.Dash =new float[inkAnnot.Dash.Length];
+                inkAnnot.Dash.CopyTo(inkParam.Dash, 0);
+            }
+
             GetAnnotCommonParam(inkAnnot, inkParam);
             return inkParam;
         }
@@ -1378,6 +1446,12 @@ namespace ComPDFKit.Tool.Help
 
                 freetextParam.FontSize = freetextAnnot.FreeTextDa.FontSize;
                 freetextParam.Alignment = freetextAnnot.Alignment;
+            }
+
+            if (freetextAnnot.Dash != null && freetextAnnot.Dash.Length > 0)
+            {
+                freetextParam.Dash = new float[freetextAnnot.Dash.Length];
+                freetextAnnot.Dash.CopyTo(freetextParam.Dash, 0);
             }
 
             GetAnnotCommonParam(freetextAnnot, freetextParam);
@@ -1539,6 +1613,7 @@ namespace ComPDFKit.Tool.Help
                 };
             }
 
+            stickyParam.IconName=stickyAnnot.GetIconName();
             GetAnnotCommonParam(stickyAnnot, stickyParam);
 
             return stickyParam;
@@ -1552,7 +1627,6 @@ namespace ComPDFKit.Tool.Help
             }
 
             StampParam stampParam = new StampParam();
-
             C_STAMP_TYPE stampType = stampAnnot.GetStampType();
             switch (stampType)
             {
@@ -1582,6 +1656,7 @@ namespace ComPDFKit.Tool.Help
                     }
                     break;
                 case C_STAMP_TYPE.IMAGE_STAMP:
+                case C_STAMP_TYPE.UNKNOWN_STAMP:
                     {
                         stampParam.StampType = stampType;
                         CRect rawRect = stampAnnot.GetRect();
@@ -1619,8 +1694,13 @@ namespace ComPDFKit.Tool.Help
                     return null;
             }
 
-            GetAnnotCommonParam(stampAnnot, stampParam);
+            stampParam.PageRotation = stampAnnot.Page.Rotation;
+            stampParam.Rotation = stampAnnot.AnnotationRotator.GetRotation();
+            CRect sourceRect = new CRect();
+            stampAnnot.GetSourceRect(ref sourceRect);
+            stampParam.SourceRect = sourceRect;
 
+            GetAnnotCommonParam(stampAnnot, stampParam);
             return stampParam;
         }
 
@@ -1632,7 +1712,6 @@ namespace ComPDFKit.Tool.Help
             }
 
             LinkParam linkParam = new LinkParam();
-
             CPDFAction linkAction = linkAnnot.GetLinkAction();
             if (linkAction != null)
             {
@@ -1713,7 +1792,7 @@ namespace ComPDFKit.Tool.Help
                     redactParam.FontColor = new byte[3] { redactAnnot.TextDa.FontColor[0], redactAnnot.TextDa.FontColor[1], redactAnnot.TextDa.FontColor[2] };
                 }
                 
-               redactParam.FontName= redactAnnot.TextDa.FontName;
+                redactParam.FontName= redactAnnot.TextDa.FontName;
                 redactParam.FontSize = redactAnnot.TextDa.FontSize;
                 redactParam.Alignment=redactAnnot.TextAlignment;
             }
@@ -1766,21 +1845,33 @@ namespace ComPDFKit.Tool.Help
 
         internal static PolygonMeasureParam GetPolygonMeasureParam(CPDFPolygonAnnotation polygonAnnot)
         {
-            if (polygonAnnot == null || polygonAnnot.IsValid() == false || polygonAnnot.IsMeasured() == false)
+            if (polygonAnnot == null || polygonAnnot.IsValid() == false)
             {
                 return null;
             }
 
             PolygonMeasureParam measureParam = new PolygonMeasureParam();
-            CPDFAreaMeasure areaMeasure = polygonAnnot.GetAreaMeasure();
-            measureParam.measureInfo = areaMeasure.MeasureInfo;
+            if(polygonAnnot.IsMeasured())
+            {
+                CPDFAreaMeasure areaMeasure = polygonAnnot.GetAreaMeasure();
+                measureParam.measureInfo = areaMeasure.MeasureInfo;
+                CTextAttribute textAttr = polygonAnnot.GetTextAttribute();
+                measureParam.FontName = textAttr.FontName;
+                measureParam.FontSize = textAttr.FontSize;
+                if (textAttr.FontColor != null && textAttr.FontColor.Length == 3)
+                {
+                    measureParam.FontColor = new byte[] { textAttr.FontColor[0], textAttr.FontColor[1], textAttr.FontColor[2] };
+                }
+                measureParam.IsBold = CFontNameHelper.IsBold(textAttr.FontName);
+                measureParam.IsItalic = CFontNameHelper.IsItalic(textAttr.FontName);
+            }
 
             if (polygonAnnot.LineColor != null && polygonAnnot.LineColor.Length == 3)
             {
                 measureParam.LineColor = new byte[] { polygonAnnot.LineColor[0], polygonAnnot.LineColor[1], polygonAnnot.LineColor[2] };
             }
 
-            if(polygonAnnot.BgColor!=null && polygonAnnot.BgColor.Length == 3)
+            if(polygonAnnot.HasBgColor && polygonAnnot.BgColor!=null && polygonAnnot.BgColor.Length == 3)
             {
                 measureParam.HasFillColor = true;
                 measureParam.FillColor = new byte[] { polygonAnnot.BgColor[0], polygonAnnot.BgColor[1], polygonAnnot.BgColor[2] };
@@ -1791,15 +1882,7 @@ namespace ComPDFKit.Tool.Help
             measureParam.LineWidth = polygonAnnot.LineWidth;
             measureParam.Transparency = polygonAnnot.Transparency;
             measureParam.LineDash = polygonAnnot.Dash;
-            CTextAttribute textAttr = polygonAnnot.GetTextAttribute();
-            measureParam.FontName = textAttr.FontName;
-            measureParam.FontSize = textAttr.FontSize;
-            if (textAttr.FontColor != null && textAttr.FontColor.Length == 3)
-            {
-                measureParam.FontColor = new byte[] { textAttr.FontColor[0], textAttr.FontColor[1], textAttr.FontColor[2] };
-            }
-            measureParam.IsBold = CFontNameHelper.IsBold(textAttr.FontName);
-            measureParam.IsItalic = CFontNameHelper.IsItalic(textAttr.FontName);
+            measureParam.BorderEffector = polygonAnnot.GetAnnotBorderEffector();
 
             GetAnnotCommonParam(polygonAnnot, measureParam);
             return measureParam;
@@ -2894,7 +2977,7 @@ namespace ComPDFKit.Tool.Help
                             {
                                 stampText = string.Empty;
                             }
-                            stampAnnot.SetStandardStamp(stampText, CurrentParam.Rotation);
+                            stampAnnot.SetStandardStamp(stampText, CurrentParam.PageRotation);
                             stampAnnot.SetRect(CurrentParam.ClientRect);
                         }
                         break;
@@ -2915,7 +2998,7 @@ namespace ComPDFKit.Tool.Help
                                 dateText,
                                 CurrentParam.TextStampShape,
                                 CurrentParam.TextStampColor,
-                                CurrentParam.Rotation);
+                                CurrentParam.PageRotation);
                             stampAnnot.SetRect(CurrentParam.ClientRect);
                         }
                         break;
@@ -2932,7 +3015,7 @@ namespace ComPDFKit.Tool.Help
                                     imageData,
                                     imageWidth,
                                     imageHeight,
-                                    CurrentParam.Rotation);
+                                    CurrentParam.PageRotation);
                             }
                         }
                         break;

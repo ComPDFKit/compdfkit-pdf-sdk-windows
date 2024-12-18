@@ -4,9 +4,6 @@ using ComPDFKit.PDFDocument.Action;
 using ComPDFKit.PDFDocument;
 using ComPDFKit.Tool.SettingParam;
 using ComPDFKitViewer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 using static ComPDFKit.PDFAnnotation.CTextAttribute;
 using ComPDFKit.Tool.Help;
@@ -24,9 +21,11 @@ namespace ComPDFKit.Tool
         }
 
         #region DefaultAnnot
-
         public void CreateDefaultAnnot(CPDFAnnotation cPDFAnnotation, C_ANNOTATION_TYPE annotType, AnnotParam annotParam)
         {
+            if (cPDFAnnotation == null || !cPDFAnnotation.IsValid())
+                return;
+
             switch (annotType)
             {
                 case C_ANNOTATION_TYPE.C_ANNOTATION_NONE:
@@ -65,7 +64,6 @@ namespace ComPDFKit.Tool
                         {
                             DefaultLineAnnot(cPDFAnnotation, annotParam);
                         }
-
                     }
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE:
@@ -183,6 +181,10 @@ namespace ComPDFKit.Tool
             }
 
             TextAnnotation.SetColor(StickyNoteParamDef.StickyNoteColor);
+            if (string.IsNullOrEmpty(StickyNoteParamDef.IconName) == false)
+            {
+                TextAnnotation.SetIconName(StickyNoteParamDef.IconName);
+            }
             DefaultAnnot(cPDFAnnotation, StickyNoteParamDef);
         }
 
@@ -254,7 +256,6 @@ namespace ComPDFKit.Tool
             {
                 freeTextAnnotation.SetLineColor(FreeTextParam.LineColor);
             }
-            freeTextAnnotation.SetBorderWidth(1);
             freeTextAnnotation.SetTransparency(FreeTextParam.Transparency);
             freeTextAnnotation.SetLineWidth((float)FreeTextParam.LineWidth);
 
@@ -262,6 +263,12 @@ namespace ComPDFKit.Tool
             {
                 freeTextAnnotation.SetBgColor(FreeTextParam.BgColor);
             }
+
+            if (FreeTextParam.Dash != null && FreeTextParam.Dash.Length > 0)
+            {
+                freeTextAnnotation.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, FreeTextParam.Dash);
+            }
+
             CTextAttribute textAttr = new CTextAttribute();
             textAttr.FontColor = FreeTextParam.FontColor;
             textAttr.FontSize = (float)FreeTextParam.FontSize;
@@ -525,8 +532,8 @@ namespace ComPDFKit.Tool
 
         private void DefaultStampAnnot(CPDFAnnotation cPDFAnnotation, AnnotParam annotParam)
         {
-            CPDFStampAnnotation strikeoutAnnotation = (cPDFAnnotation as CPDFStampAnnotation);
-            if (strikeoutAnnotation == null)
+            CPDFStampAnnotation stampAnnot = (cPDFAnnotation as CPDFStampAnnotation);
+            if (stampAnnot == null)
             {
                 return;
             }
@@ -535,7 +542,6 @@ namespace ComPDFKit.Tool
             if (annotParam == null)
             {
                 DefaultSettingParam defaultSettingParam = GetDefaultSettingParam();
-
                 stampParam = defaultSettingParam.StampParamDef;
             }
             else
@@ -552,7 +558,8 @@ namespace ComPDFKit.Tool
                         {
                             stampText = string.Empty;
                         }
-                        strikeoutAnnotation.SetStandardStamp(stampText, stampParam.Rotation);
+
+                        stampAnnot.SetStandardStamp(stampText, stampParam.PageRotation);
                     }
                     break;
                 case C_STAMP_TYPE.IMAGE_STAMP:
@@ -561,15 +568,14 @@ namespace ComPDFKit.Tool
                         int imageWidth = 0;
                         int imageHeight = 0;
                         PDFHelp.ImageStreamToByte(stampParam.ImageStream, ref imageData, ref imageWidth, ref imageHeight);
-
                         if (imageData != null && imageWidth > 0 && imageHeight > 0)
                         {
-                            strikeoutAnnotation.SetRect(new CRect(0, imageHeight, imageWidth, 0));
-                            strikeoutAnnotation.SetImageStamp(
+                            stampAnnot.SetRect(new CRect(0, imageHeight, imageWidth, 0));
+                            stampAnnot.SetImageStamp(
                                 imageData,
                                 imageWidth,
                                 imageHeight,
-                                stampParam.Rotation);
+                                stampParam.PageRotation);
                         }
                     }
                     break;
@@ -585,12 +591,12 @@ namespace ComPDFKit.Tool
                         {
                             stampText = string.Empty;
                         }
-                        strikeoutAnnotation.SetTextStamp(
+                        stampAnnot.SetTextStamp(
                             stampText,
                             dateText,
                             stampParam.TextStampShape,
                             stampParam.TextStampColor,
-                            stampParam.Rotation);
+                            stampParam.PageRotation);
                     }
                     break;
                 default:
@@ -625,7 +631,16 @@ namespace ComPDFKit.Tool
             }
 
             InkAnnotation.SetThickness((float)inkParam.Thickness);
-            (cPDFAnnotation as CPDFInkAnnotation).SetInkPath(inkParam.InkPath);
+            CPDFInkAnnotation inkAnnot = cPDFAnnotation as CPDFInkAnnotation;
+            inkAnnot.SetInkPath(inkParam.InkPath);
+            if (inkParam.Dash != null && inkParam.Dash.Length > 0)
+            {
+                inkAnnot.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, inkParam.Dash);
+            }
+            else
+            {
+                inkAnnot.SetBorderStyle(C_BORDER_STYLE.BS_SOLID, new float[0]);
+            }
             DefaultAnnot(cPDFAnnotation, inkParam);
         }
 
@@ -709,7 +724,6 @@ namespace ComPDFKit.Tool
             textAttr.FontSize = (float)redactParam.FontSize;
             textAttr.FontName = redactParam.FontName;
             redactAnnotation.SetTextAttribute(textAttr);
-
             DefaultAnnot(cPDFAnnotation, redactParam);
         }
 
@@ -779,68 +793,81 @@ namespace ComPDFKit.Tool
         private void DefaultPolygonMeasureAnnot(CPDFAnnotation cPDFAnnotation, AnnotParam annotParam)
         {
             CPDFPolygonAnnotation PolyAnnotation = (cPDFAnnotation as CPDFPolygonAnnotation);
+            bool IsOpenMeasure = true;
             if (PolyAnnotation == null)
             {
                 return;
             }
-            if (!PolyAnnotation.IsMeasured() && annotParam != null)
-            {
-                return;
-            }
-            PolygonMeasureParam MeasureParam;
+
+            PolygonMeasureParam polyonMeasureParam;
             if (annotParam == null)
             {
                 DefaultSettingParam defaultSettingParam = GetDefaultSettingParam();
-
-                MeasureParam = defaultSettingParam.PolygonMeasureParamDef;
+                polyonMeasureParam = defaultSettingParam.PolygonMeasureParamDef;
+                IsOpenMeasure = defaultSettingParam.IsOpenMeasure;
             }
             else
             {
-                MeasureParam = annotParam as PolygonMeasureParam;
+                polyonMeasureParam = annotParam as PolygonMeasureParam;
+                IsOpenMeasure = defaultSettingParam.IsOpenMeasure; 
             }
 
-            if (MeasureParam.LineColor != null)
+            if (polyonMeasureParam.LineColor != null)
             {
-                PolyAnnotation.SetLineColor(MeasureParam.LineColor);
+                PolyAnnotation.SetLineColor(polyonMeasureParam.LineColor);
             }
-            PolyAnnotation.SetLineWidth((float)MeasureParam.LineWidth);
 
-            if (MeasureParam.LineDash != null)
+            PolyAnnotation.SetLineWidth((float)polyonMeasureParam.LineWidth);
+            if (polyonMeasureParam.LineDash != null)
             {
-                if (MeasureParam.LineDash.Length == 0)
+                if (polyonMeasureParam.LineDash.Length == 0)
                 {
                     PolyAnnotation.SetBorderStyle(C_BORDER_STYLE.BS_SOLID, new float[0]);
                 }
                 else
                 {
-                    PolyAnnotation.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, MeasureParam.LineDash);
+                    PolyAnnotation.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, polyonMeasureParam.LineDash);
                 }
             }
 
-            if (MeasureParam.HasFillColor && MeasureParam.FillColor != null && MeasureParam.FillColor.Length == 3)
+            if (polyonMeasureParam.HasFillColor && polyonMeasureParam.FillColor != null && polyonMeasureParam.FillColor.Length == 3)
             {
-                PolyAnnotation.SetBgColor(MeasureParam.FillColor);
+                PolyAnnotation.SetBgColor(polyonMeasureParam.FillColor);
             }
 
-            CTextAttribute textAttribute = new CTextAttribute();
-            textAttribute.FontColor = MeasureParam.FontColor;
-            textAttribute.FontSize = (float)MeasureParam.FontSize;
-            textAttribute.FontName = CFontNameHelper.ObtainFontName(CFontNameHelper.GetFontType(MeasureParam.FontName),
-                        MeasureParam.IsBold,
-                        MeasureParam.IsItalic);
-            PolyAnnotation.SetTextAttribute(textAttribute);
-            if (MeasureParam.measureInfo != null)
+            if(polyonMeasureParam.BorderEffector != null)
             {
-                CPDFAreaMeasure polygonMeasure = PolyAnnotation.GetAreaMeasure();
-                if (polygonMeasure != null)
+                PolyAnnotation.SetAnnotBorderEffector(polyonMeasureParam.BorderEffector);
+            }
+
+            if (polyonMeasureParam.SavePoints != null && polyonMeasureParam.SavePoints.Count>0)
+            {
+                PolyAnnotation.SetPoints(polyonMeasureParam.SavePoints);
+            }
+
+            if (IsOpenMeasure)
+            {
+                CTextAttribute textAttribute = new CTextAttribute();
+                textAttribute.FontColor = polyonMeasureParam.FontColor;
+                textAttribute.FontSize = (float)polyonMeasureParam.FontSize;
+                textAttribute.FontName = CFontNameHelper.ObtainFontName(CFontNameHelper.GetFontType(polyonMeasureParam.FontName),
+                            polyonMeasureParam.IsBold,
+                            polyonMeasureParam.IsItalic);
+                PolyAnnotation.SetTextAttribute(textAttribute);
+                if (polyonMeasureParam.measureInfo != null)
                 {
-                    polygonMeasure.SetMeasureInfo(MeasureParam.measureInfo);
-                    polygonMeasure.SetMeasureScale(MeasureParam.measureInfo.RulerBase, MeasureParam.measureInfo.RulerBaseUnit,
-                                                   MeasureParam.measureInfo.RulerTranslate, MeasureParam.measureInfo.RulerTranslateUnit);
-                    polygonMeasure.UpdateAnnotMeasure();
+                    CPDFAreaMeasure polygonMeasure = PolyAnnotation.GetAreaMeasure();
+                    if (polygonMeasure != null)
+                    {
+                        polygonMeasure.SetMeasureInfo(polyonMeasureParam.measureInfo);
+                        polygonMeasure.SetMeasureScale(polyonMeasureParam.measureInfo.RulerBase, polyonMeasureParam.measureInfo.RulerBaseUnit,
+                                                       polyonMeasureParam.measureInfo.RulerTranslate, polyonMeasureParam.measureInfo.RulerTranslateUnit);
+                        polygonMeasure.UpdateAnnotMeasure();
+                    }
                 }
             }
-            DefaultAnnot(cPDFAnnotation, MeasureParam);
+
+            DefaultAnnot(cPDFAnnotation, polyonMeasureParam);
         }
 
         private void DefaultPolyLineMeasureAnnot(CPDFAnnotation cPDFAnnotation, AnnotParam annotParam)
@@ -999,11 +1026,7 @@ namespace ComPDFKit.Tool
             CTextAttribute textAttr = new CTextAttribute();
             textAttr.FontColor = pushButtonParam.FontColor;
             textAttr.FontSize = (float)pushButtonParam.FontSize;
-            FontType checkFontType = CFontNameHelper.GetFontType(pushButtonParam.FontName);
-            textAttr.FontName = CFontNameHelper.ObtainFontName(
-                checkFontType == FontType.Unknown ? FontType.Helvetica : checkFontType,
-                pushButtonParam.IsBold,
-                 pushButtonParam.IsItalic);
+            textAttr.FontName = pushButtonParam.FontName;
             widget.SetTextAttribute(textAttr);
 
             if (!string.IsNullOrEmpty(pushButtonParam.FieldName))
@@ -1156,11 +1179,7 @@ namespace ComPDFKit.Tool
             CTextAttribute textAttr = new CTextAttribute();
             textAttr.FontColor = textBoxParam.FontColor;
             textAttr.FontSize = (float)textBoxParam.FontSize;
-            FontType checkFontType = CFontNameHelper.GetFontType(textBoxParam.FontName);
-            textAttr.FontName = CFontNameHelper.ObtainFontName(
-                checkFontType == FontType.Unknown ? FontType.Helvetica : checkFontType,
-                textBoxParam.IsBold,
-                 textBoxParam.IsItalic);
+            textAttr.FontName = textBoxParam.FontName;
             widget.SetTextAttribute(textAttr);
 
             if (!string.IsNullOrEmpty(textBoxParam.FieldName))
@@ -1205,11 +1224,7 @@ namespace ComPDFKit.Tool
             CTextAttribute textAttr = new CTextAttribute();
             textAttr.FontColor = comboBoxParam.FontColor;
             textAttr.FontSize = (float)comboBoxParam.FontSize;
-            FontType checkFontType = CFontNameHelper.GetFontType(comboBoxParam.FontName);
-            textAttr.FontName = CFontNameHelper.ObtainFontName(
-                checkFontType == FontType.Unknown ? FontType.Helvetica : checkFontType,
-                comboBoxParam.IsBold,
-                 comboBoxParam.IsItalic);
+            textAttr.FontName = comboBoxParam.FontName;
             widget.SetTextAttribute(textAttr);
 
             if (!string.IsNullOrEmpty(comboBoxParam.FieldName))
@@ -1260,11 +1275,7 @@ namespace ComPDFKit.Tool
             CTextAttribute textAttr = new CTextAttribute();
             textAttr.FontColor = listBoxParam.FontColor;
             textAttr.FontSize = (float)listBoxParam.FontSize;
-            FontType checkFontType = CFontNameHelper.GetFontType(listBoxParam.FontName);
-            textAttr.FontName = CFontNameHelper.ObtainFontName(
-                checkFontType == FontType.Unknown ? FontType.Helvetica : checkFontType,
-                listBoxParam.IsBold,
-                 listBoxParam.IsItalic);
+            textAttr.FontName = listBoxParam.FontName;
             widget.SetTextAttribute(textAttr);
 
             if (!string.IsNullOrEmpty(listBoxParam.FieldName))
@@ -1316,11 +1327,7 @@ namespace ComPDFKit.Tool
             textAttr.FontSize = (float)signatureParam.FontSize;
             bool isBold = IsBold(textAttr.FontName);
             bool isItalic = IsItalic(textAttr.FontName);
-            FontType checkFontType = CFontNameHelper.GetFontType(signatureParam.FontName);
-            textAttr.FontName = CFontNameHelper.ObtainFontName(
-                checkFontType == FontType.Unknown ? FontType.Helvetica : checkFontType,
-                isBold,
-                 isItalic);
+            textAttr.FontName = signatureParam.FontName;
             widget.SetTextAttribute(textAttr);
 
             if (!string.IsNullOrEmpty(signatureParam.FieldName))

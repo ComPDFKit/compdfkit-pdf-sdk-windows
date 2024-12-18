@@ -1,15 +1,15 @@
-﻿using ComPDFKit.PDFAnnotation;
+﻿using ComPDFKit.Import;
+using ComPDFKit.PDFAnnotation;
 using System.IO;
 
 namespace ComPDFKit.Tool
 {
 	public class StampParam:AnnotParam
 	{
-		public  StampParam ()
+		public StampParam()
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_STAMP;
         }
-
 
 		public string StampText { get; set; } = string.Empty;
 		public string DateText {  get; set; }= string.Empty;
@@ -17,8 +17,10 @@ namespace ComPDFKit.Tool
 		public C_TEXTSTAMP_SHAPE TextStampShape {  get; set; }
 		public C_TEXTSTAMP_COLOR TextStampColor {  get; set; }
 		public MemoryStream ImageStream { get; set; }
+		public int PageRotation { get; set; }	
 		public int Rotation { get; set; }	
-
+		public CRect SourceRect { get; set; }
+        public CPDFAnnotation CopyImageAnnot { get; set; }
 
         public override bool CopyTo(AnnotParam transfer)
 		{
@@ -39,9 +41,11 @@ namespace ComPDFKit.Tool
 			stampTransfer.TextStampColor = TextStampColor;
 			stampTransfer.TextStampShape = TextStampShape;
 			stampTransfer.ImageStream = ImageStream;
-			stampTransfer.Rotation = Rotation;
-
-			return true;
+			stampTransfer.PageRotation = PageRotation;
+            stampTransfer.Rotation = Rotation;
+			stampTransfer.SourceRect = SourceRect;
+            stampTransfer.CopyImageAnnot = CopyImageAnnot;
+            return true;
 		}
-	}
+    }
 }

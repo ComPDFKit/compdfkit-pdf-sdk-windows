@@ -67,6 +67,7 @@ namespace ComPDFKit.Tool.DrawTool
         /// Standard DPI rectangle (without removing half of the pen thickness)
         /// </summary>
         protected Rect DPIRect { get; set; }
+        internal int ErasePageIndex {  get; set; }
         public SolidColorBrush FillBrush;
         public Pen DrawPen;
         public event EventHandler<List<AnnotParam>> DeleteChanged;
@@ -273,8 +274,17 @@ namespace ComPDFKit.Tool.DrawTool
             CPDFDocument pdfDoc = PDFViewer?.GetDocument();
             List<AnnotParam> paramList = new List<AnnotParam>();
             List<AnnotParam> paramNewList = new List<AnnotParam>();
+
+            PDFViewer.GetPointPageInfo(mouseEndPoint, out int index, out Rect checkpaintRect, out Rect checkpageBound);
+         
             foreach (var item in annotControlList)
             {
+                AnnotData coreAnnotData = item.GetAnnotData();
+
+                if (coreAnnotData == null || coreAnnotData.PageIndex != ErasePageIndex)
+                {
+                    continue;
+                }
                 InkAnnot ink = item as InkAnnot;
                 int Tag = ErasePoint(ink, eraseRect);
                 if (Tag == 1)

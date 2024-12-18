@@ -6,17 +6,17 @@ using System.Windows.Media;
 
 namespace ComPDFKit.Tool
 {
-	public class HighlightParam:AnnotParam
+    public class HighlightParam : AnnotParam
     {
 
-        public  HighlightParam()
+        public HighlightParam()
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_HIGHLIGHT;
         }
 
-        public byte[] HighlightColor { get; set; }
+        public byte[] HighlightColor { get; set; } = new byte[3] { 255, 0, 0 };
 
-        public List<CRect> QuardRects {  get; set; }
+        public List<CRect> QuardRects { get; set; }
 
         public override bool CopyTo(AnnotParam transfer)
         {
@@ -31,7 +31,7 @@ namespace ComPDFKit.Tool
                 return false;
             }
 
-            if(HighlightColor!=null )
+            if (HighlightColor != null)
             {
                 highlightTransfer.HighlightColor = (byte[])HighlightColor.Clone();
             }

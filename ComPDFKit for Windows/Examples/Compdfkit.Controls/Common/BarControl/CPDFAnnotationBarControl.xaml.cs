@@ -132,12 +132,12 @@ namespace ComPDFKit.Controls.PDFControl
                 };
                 canvas.Children.Add(path);
             }
-
+                                      
             else if (toggleButton.Tag.ToString() == CPDFAnnotationType.Note.ToString())
             {
                 annotationGeometry = Geometry.Parse("M18 3H2V15H5V18L10 15H18V3ZM5 6H11V7.5H5V6ZM5 9.5H15V11H5V9.5Z");
                 Path path = new Path
-                {
+                {                    
                     Width = 20,
                     Height = 20,
                     Data = annotationGeometry,
@@ -166,6 +166,20 @@ namespace ComPDFKit.Controls.PDFControl
                 {
                     Width = 20,
                     Height = 20,
+                    Data = annotationGeometry,
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#43474D"))
+                };
+                canvas.Children.Add(path);
+            }
+
+            else if (toggleButton.Tag.ToString() == CPDFAnnotationType.Polygon.ToString())
+            {
+                annotationGeometry = Geometry.Parse("M15.4546 15.0455H5.45456C2.44637 15.0455 0 12.5991 0 9.59091C0.0034549 8.36671 0.417066 7.17898 1.17477 6.21743C1.93247 5.25588 2.99055 4.57599 4.18 4.28636C4.68042 3.16029 5.49645 2.20338 6.52935 1.5314C7.56225 0.859419 8.76776 0.50117 10 0.5C13.2282 0.5 15.9028 2.91637 16.31 6.03546C17.3477 6.23556 18.2835 6.7905 18.9567 7.6051C19.63 8.41971 19.9989 9.44319 20 10.5C20 13.0064 17.9609 15.0455 15.4546 15.0455ZM5.67728 5.43546C5.61644 5.58223 5.5182 5.7105 5.39235 5.80748C5.2665 5.90446 5.11743 5.96676 4.96 5.98818C4.09017 6.10951 3.29338 6.54078 2.71615 7.2027C2.13892 7.86461 1.82005 8.71266 1.81818 9.59091C1.81818 11.5964 3.44909 13.2273 5.45456 13.2273H15.4546C16.9582 13.2273 18.1818 12.0036 18.1818 10.5C18.1818 8.99639 16.9582 7.77273 15.4546 7.77273C15.2135 7.77273 14.9822 7.67695 14.8117 7.50646C14.6412 7.33598 14.5455 7.10474 14.5455 6.86363C14.5455 4.35727 12.5064 2.31818 10 2.31818C9.06005 2.31898 8.14337 2.61065 7.37576 3.15315C6.60815 3.69565 6.02724 4.4624 5.71273 5.34818C5.70201 5.37771 5.69019 5.40682 5.67728 5.43546Z");
+                Path path = new Path
+                {
+                    Width = 20,
+                    Height = 20,
+                    VerticalAlignment = VerticalAlignment.Center,
                     Data = annotationGeometry,
                     Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#43474D"))
                 };
@@ -330,7 +344,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 AnnotationPropertyChanged?.Invoke(sender, CPDFAnnotationDictionary.GetAnnotationFromTag[(sender as ToggleButton).Tag.ToString()]);
                 CurrentMode = (sender as ToggleButton).Tag.ToString();
-                if(CurrentMode == "Image")
+                if (CurrentMode == "Image")
                 {
                     (sender as ToggleButton).IsChecked = false;
                 }
@@ -367,7 +381,7 @@ namespace ComPDFKit.Controls.PDFControl
         }
 
         public void SetAnnotationType(CPDFAnnotationType annotationType)
-        { 
+        {
             ToggleButton toggleButton = FindToggleButtonByTag(this, annotationType.ToString());
             if (toggleButton != null)
             {
@@ -375,7 +389,7 @@ namespace ComPDFKit.Controls.PDFControl
                 ClearToolState(toggleButton);
                 AnnotationPropertyChanged?.Invoke(toggleButton, CPDFAnnotationDictionary.GetAnnotationFromTag[toggleButton.Tag.ToString()]);
                 CurrentMode = toggleButton.Tag.ToString();
-            } 
+            }
         }
 
         public void InitAnnotationBar(CPDFAnnotationType[] annotationProperties)

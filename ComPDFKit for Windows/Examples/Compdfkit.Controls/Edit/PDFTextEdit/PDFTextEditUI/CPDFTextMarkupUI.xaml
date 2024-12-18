@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.Edit.CPDFTextMarkupUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.Edit"
+             xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../../Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <common:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></common:PropertyPanelResourceConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Name="TextMarkupUI">
+        <StackPanel Orientation="Horizontal">
+            <Button Padding="0,5,0,5" Width="50" Height="30" BorderThickness="1" Click="AddUnderline_Click" Style="{StaticResource LightButtonStyle}" Background="White" BorderBrush="#1A000000">
+                <Button.Content>
+                    <Path Fill="#43474D">
+                        <Path.Data>
+                            M4.75 7V1H3.25V7C3.25 9.62335 5.37665 11.75 8 11.75C10.6234 11.75 12.75 9.62335 12.75 7V1H11.25V7C11.25 8.79493 9.79493 10.25 8 10.25C6.20507 10.25 4.75 8.79493 4.75 7ZM3 13.25V14.75H13V13.25H3Z
+                        </Path.Data>
+                    </Path>
+                </Button.Content>
+            </Button>
+            <Button Padding="0,5,0,5" Width="50" Height="30" BorderThickness="1" Click="RemoveUnderline_Click" Style="{StaticResource LightButtonStyle}" Background="White" BorderBrush="#1A000000">
+                <Button.Content>
+                    <Path Fill="#43474D">
+                        <Path.Data>
+                            M5.15064 1V7C5.15064 7.75459 5.40781 8.44911 5.83927 9.00071L11.6506 3.18934V1H13.1506V1.68934L13.7703 1.06967L14.831 2.13033L13.1506 3.81066V7C13.1506 9.62335 11.024 11.75 8.40064 11.75C7.48882 11.75 6.637 11.4931 5.91363 11.0477L3.7113 13.25H13.4006V14.75H3.40064V13.25H3.55064L2.57031 12.2697L4.7732 10.0668C4.0729 9.23928 3.65064 8.16895 3.65064 7V1H5.15064ZM7.01884 9.94247C7.43817 10.1397 7.90653 10.25 8.40064 10.25C10.1956 10.25 11.6506 8.79493 11.6506 7V5.31066L7.01884 9.94247Z
+                        </Path.Data>
+                    </Path>
+                </Button.Content>
+            </Button>
+            <Button Padding="0,5,0,5" Width="50" Height="30" BorderThickness="1" Click="AddStrikethrough_Click" Style="{StaticResource LightButtonStyle}" Background="White" BorderBrush="#1A000000">
+                <Button.Content>
+                    <Path Fill="#43474D">
+                        <Path.Data>
+                            M11.168 9.5V11C11.168 12.3807 10.0487 13.5 8.66797 13.5C7.85006 13.5 7.12389 13.1072 6.66779 12.5H4.95873C5.55211 13.9659 6.98928 15 8.66797 15C10.8771 15 12.668 13.2091 12.668 11V9.5H11.168ZM6.16797 6.5V5C6.16797 3.61929 7.28726 2.5 8.66797 2.5C9.48588 2.5 10.212 2.89278 10.6682 3.5H12.3772C11.7838 2.03408 10.3467 1 8.66797 1C6.45883 1 4.66797 2.79086 4.66797 5V6.5H6.16797ZM2.66797 7.25V8.75H14.668V7.25H2.66797Z</Path.Data>
+                    </Path>
+                </Button.Content>
+            </Button>
+            <Button Padding="0,5,0,5" Width="50" Height="30" BorderThickness="1" Click="RemoveStrikethrough_Click" Style="{StaticResource LightButtonStyle}" Background="White" BorderBrush="#1A000000">
+                <Button.Content>
+                    <Path Fill="#43474D">
+                        <Path.Data>
+                            M11.1016 11V9.5H12.6016V11C12.6016 13.2091 10.8107 15 8.60156 15C6.92287 15 5.48571 13.9659 4.89232 12.5H6.60138C7.05748 13.1072 7.78365 13.5 8.60156 13.5C9.98227 13.5 11.1016 12.3807 11.1016 11ZM6.10156 5V6.5H4.60156V5C4.60156 2.79086 6.39242 1 8.60156 1C10.1279 1 11.4546 1.85492 12.1289 3.11204L14.1712 1.06967L15.2319 2.13033L10.1122 7.25H14.6016V8.75H8.61222L4.03189 13.3303L2.97123 12.2697L6.4909 8.75H2.60156V7.25H7.9909L11.7409 3.5H10.6017C10.1456 2.89278 9.41947 2.5 8.60156 2.5C7.22085 2.5 6.10156 3.61929 6.10156 5Z
+                        </Path.Data>
+                    </Path>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -40,12 +40,11 @@ namespace ComPDFKit.Tool.UndoManger
         internal override bool Add()
 		{
             SquigglyParam currentParam = CurrentParam as SquigglyParam;
-
-
             if (currentParam == null || PDFDoc == null || !PDFDoc.IsValid())
 			{
 				return false;
 			}
+
 			CPDFPage pdfPage = PDFDoc.PageAtIndex(currentParam.PageIndex);
 			CPDFSquigglyAnnotation squigglyAnnot = pdfPage?.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_SQUIGGLY) as CPDFSquigglyAnnotation;
 			if (squigglyAnnot != null)

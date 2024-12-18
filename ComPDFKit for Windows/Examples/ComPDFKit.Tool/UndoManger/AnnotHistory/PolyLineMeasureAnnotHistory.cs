@@ -11,7 +11,7 @@ using static ComPDFKit.PDFAnnotation.CTextAttribute;
 
 namespace ComPDFKit.Tool.UndoManger
 {
-    internal class PolyLineMeasureAnnotHistory : AnnotHistory
+    public class PolyLineMeasureAnnotHistory : AnnotHistory
     {
         public override int GetAnnotIndex()
         {

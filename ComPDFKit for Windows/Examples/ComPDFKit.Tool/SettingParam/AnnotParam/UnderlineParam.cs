@@ -6,46 +6,46 @@ using System.Windows.Media;
 
 namespace ComPDFKit.Tool
 {
-	public class UnderlineParam:AnnotParam
-	{
-		public UnderlineParam ()
+    public class UnderlineParam : AnnotParam
+    {
+        public UnderlineParam()
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_UNDERLINE;
         }
-		public byte[] UnderlineColor { get; set; }
+        public byte[] UnderlineColor { get; set; } = new byte[3] { 255, 0, 0 };
 
-		public List<CRect> QuardRects { get; set; }
+        public List<CRect> QuardRects { get; set; }
 
-		public override bool CopyTo(AnnotParam transfer)
-		{
-			UnderlineParam underlineTransfer = transfer as UnderlineParam;
-			if (underlineTransfer == null)
-			{
-				return false;
-			}
+        public override bool CopyTo(AnnotParam transfer)
+        {
+            UnderlineParam underlineTransfer = transfer as UnderlineParam;
+            if (underlineTransfer == null)
+            {
+                return false;
+            }
 
-			if (!base.CopyTo(underlineTransfer))
-			{
-				return false;
-			}
+            if (!base.CopyTo(underlineTransfer))
+            {
+                return false;
+            }
 
-			if(UnderlineColor != null)
-			{
+            if (UnderlineColor != null)
+            {
                 underlineTransfer.UnderlineColor = (byte[])UnderlineColor.Clone();
             }
 
-			if (QuardRects != null)
-			{
-				List<CRect> rectList = new List<CRect>();
-				foreach (CRect saveRect in QuardRects)
-				{
-					rectList.Add(saveRect);
-				}
+            if (QuardRects != null)
+            {
+                List<CRect> rectList = new List<CRect>();
+                foreach (CRect saveRect in QuardRects)
+                {
+                    rectList.Add(saveRect);
+                }
 
-				underlineTransfer.QuardRects = rectList;
-			}
+                underlineTransfer.QuardRects = rectList;
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 }

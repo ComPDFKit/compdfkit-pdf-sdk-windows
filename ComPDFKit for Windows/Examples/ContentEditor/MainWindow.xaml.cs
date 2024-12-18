@@ -89,6 +89,7 @@ namespace ContentEditorViewControl
             get { return Assembly.GetExecutingAssembly().GetName().Name + " " + string.Join(".", Assembly.GetExecutingAssembly().GetName().Version.ToString().Split('.').Take(3)); }
         }
         #endregion
+
         public MainWindow()
         {
             InitializeComponent();
@@ -267,7 +268,6 @@ namespace ContentEditorViewControl
         private void LeftToolPanelButton_Click(object sender, RoutedEventArgs e)
         {
             panelState.IsLeftPanelExpand = (sender as ToggleButton).IsChecked == true;
-            contentEditControl.PdfViewControl.GetCPDFViewer().GoToPage(pageIndex: 1, new Point(100, 100));
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -12,24 +12,35 @@ namespace ComPDFKit.Tool
 {
     public class LineMeasureParam : AnnotParam
     {
-        public LineMeasureParam() 
+        public LineMeasureParam()
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_LINE;
+            Transparency = 255;
         }
-        public byte[] LineColor { get; set; }
-        public float LineWidth { get; set; }
-        public float[] LineDash { get; set; }
+        public byte[] LineColor { get; set; } = new byte[] { 255, 0, 0 };
+        public float LineWidth { get; set; } = 2;
+        public float[] LineDash { get; set; } = new float[] { };
         public CPoint HeadPoint { get; set; }
         public CPoint TailPoint { get; set; }
-        public C_LINE_TYPE HeadLineType { get; set; }
-        public C_LINE_TYPE TailLineType { get; set; }
-        public string FontName { get; set; }
-        public double FontSize { get; set; }
-        public byte[] FontColor { get; set; }
-        public bool IsBold { get; set; }
-        public bool IsItalic { get; set; }
-        public C_BORDER_STYLE BorderStyle { get; set; }
+        public C_LINE_TYPE HeadLineType { get; set; } = C_LINE_TYPE.LINETYPE_ARROW;
+        public C_LINE_TYPE TailLineType { get; set; } = C_LINE_TYPE.LINETYPE_ARROW;
+        public string FontName { get; set; } = "Arial";
+        public double FontSize { get; set; } = 14;
+        public byte[] FontColor { get; set; } = new byte[] { 255, 0, 0 };
+        public bool IsBold { get; set; } = false;
+        public bool IsItalic { get; set; } = false;
+        public C_BORDER_STYLE BorderStyle { get; set; } = C_BORDER_STYLE.BS_SOLID;
         public CPDFMeasureInfo measureInfo { get; set; }
+            = new CPDFMeasureInfo
+            {
+                Unit = CPDFMeasure.CPDF_CM,
+                Precision = CPDFMeasure.PRECISION_VALUE_TWO,
+                RulerBase = 1,
+                RulerBaseUnit = CPDFMeasure.CPDF_CM,
+                RulerTranslate = 1,
+                RulerTranslateUnit = CPDFMeasure.CPDF_CM,
+                CaptionType = CPDFCaptionType.CPDF_CAPTION_LENGTH,
+            };
 
         public override bool CopyTo(AnnotParam transfer)
         {
@@ -75,7 +86,7 @@ namespace ComPDFKit.Tool
                     RulerBase = measureInfo.RulerBase,
                     RulerBaseUnit = measureInfo.RulerBaseUnit,
                     RulerTranslateUnit = measureInfo.RulerTranslateUnit,
-                    RulerTranslate= measureInfo.RulerTranslate,
+                    RulerTranslate = measureInfo.RulerTranslate,
                     CaptionType = measureInfo.CaptionType,
                 };
                 polygonTransfer.measureInfo = cPDFMeasureInfo;

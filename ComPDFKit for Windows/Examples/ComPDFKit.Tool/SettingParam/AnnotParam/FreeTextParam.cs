@@ -20,11 +20,11 @@ namespace ComPDFKit.Tool
         public bool IsItalic { get; set; }
         public string FontName { get; set; } = string.Empty;
         public double FontSize { get; set; }
-        public C_TEXT_ALIGNMENT Alignment {  get; set; }
+        public C_TEXT_ALIGNMENT Alignment { get; set; }
+        public float[] Dash { get; set; }
 
         public override bool CopyTo(AnnotParam transfer)
         {
-            
             FreeTextParam freetextTransfer = transfer as FreeTextParam;
             if (freetextTransfer == null)
             {
@@ -49,6 +49,14 @@ namespace ComPDFKit.Tool
             if(FontColor != null)
             {
                 freetextTransfer.FontColor = (byte[])FontColor.Clone();
+            }
+
+            freetextTransfer.Dash = null;
+            if (Dash != null)
+            {
+                float[] DashCopy = new float[Dash.Length];
+                Dash.CopyTo(DashCopy, 0);
+                freetextTransfer.Dash = DashCopy;
             }
 
             freetextTransfer.HasBgColor = HasBgColor;

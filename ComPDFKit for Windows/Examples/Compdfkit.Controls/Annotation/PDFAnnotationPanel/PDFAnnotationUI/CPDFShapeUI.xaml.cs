@@ -419,8 +419,7 @@ namespace ComPDFKit.Controls.PDFControlUI
                 pdfShapeData.DashStyle = CPDFLineStyleControl.DashStyle;
                 pdfShapeData.Note = NoteTextBox.Text;
                 return pdfShapeData;
-            }
-
+            } 
             else
             {
                 CPDFLineShapeData pdfLineShapeData = new CPDFLineShapeData();

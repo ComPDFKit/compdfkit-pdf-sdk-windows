@@ -294,6 +294,9 @@ namespace ComPDFKit.Controls.PDFControl
 
             panelState.PropertyChanged -= PanelState_PropertyChanged;
             panelState.PropertyChanged += PanelState_PropertyChanged;
+
+            OnPropertyChanged("CanRedo");
+            OnPropertyChanged("CanUndo");
         }
 
         public void SetBOTAContainer(CPDFBOTABarControl botaControl)

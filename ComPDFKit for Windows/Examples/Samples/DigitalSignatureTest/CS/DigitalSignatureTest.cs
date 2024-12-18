@@ -1,20 +1,18 @@
 ﻿using ComPDFKit.DigitalSign;
 using ComPDFKit.Import;
-using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFAnnotation.Form;
 using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFPage;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Xml.Linq;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace DigitalSignatureTest
 {
     internal class DigitalSignatureTest
     {
-
         static private string parentPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())));
         static private string outputPath = Path.Combine(parentPath, "Output", "CS");
 
@@ -111,6 +109,37 @@ namespace DigitalSignatureTest
             Console.WriteLine("--------------------");
         }
 
+        private static void ImagePathToByte(string imagePath, ref byte[] imageData, ref int imageWidth, ref int imageHeight)
+        {
+            if (!File.Exists(imagePath))
+                return;
+
+            imagePath = Path.GetFullPath(imagePath);
+            BitmapFrame frame = null;
+            BitmapDecoder decoder = BitmapDecoder.Create(new Uri(imagePath), BitmapCreateOptions.None, BitmapCacheOption.Default);
+            if (decoder != null && decoder.Frames.Count > 0)
+            {
+                frame = decoder.Frames[0];
+            }
+            if (frame != null)
+            {
+                imageData = new byte[frame.PixelWidth * frame.PixelHeight * 4];
+                if (frame.Format != PixelFormats.Bgra32)
+                {
+                    FormatConvertedBitmap covert = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, frame.Palette, 0);
+                    covert.CopyPixels(imageData, frame.PixelWidth * 4, 0);
+                }
+                else
+                {
+                    frame.CopyPixels(imageData, frame.PixelWidth * 4, 0);
+                }
+
+                imageWidth = frame.PixelWidth;
+                imageHeight = frame.PixelHeight;
+            }
+        }
+
+
         /// <summary>
         /// 
         /// Adding a signature is divided into two steps:
@@ -148,7 +177,6 @@ namespace DigitalSignatureTest
             signatureField.SetWidgetBgRGBColor(new byte[] { 150, 180, 210 });
             signatureField.UpdateAp();
 
-
             string name = GetGrantorFromDictionary(certificate.SubjectDict) + "\n";
             string date = DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss");
             string reason = "I am the owner of the document.";
@@ -165,11 +193,34 @@ namespace DigitalSignatureTest
                 "DN: " + DN + "\n",
                 IsContentAlignLeft = false,
                 IsDrawLogo = true,
-                LogoBitmap = new Bitmap("Logo.png"),
                 TextColor = new float[] { 0, 0, 0 },
                 ContentColor = new float[] { 0, 0, 0 }
             };
-            string filePath = outputPath + "\\" + document.FileName + "_Signed.pdf";
+
+            //using (var image = new MagickImage("Logo.png"))
+            //{
+            //    byte[] byteArray = image.ToByteArray(MagickFormat.Bgra);
+            //    signatureConfig.LogoData = byteArray;
+            //    signatureConfig.LogoHeight = (int)image.Height;
+            //    signatureConfig.LogoWidth = (int)image.Width;
+            //}
+
+            byte[] imageData = null;
+            int imageWidth = 0;
+            int imageHeight = 0;
+            ImagePathToByte("Logo.png", ref imageData, ref imageWidth, ref imageHeight);
+            if (imageData != null && imageWidth > 0 && imageHeight > 0)
+            {
+                signatureConfig.LogoData = imageData;
+                signatureConfig.LogoWidth = imageWidth;
+                signatureConfig.LogoHeight = imageHeight;
+            }
+            else
+            {
+                signatureConfig.IsDrawLogo = false;
+            }
+
+            string filePath = Path.Combine(outputPath, document.FileName + "_Signed.pdf");
             signatureField.UpdataApWithSignature(signatureConfig);
             if (document.WriteSignatureToFilePath(signatureField,
                 filePath,

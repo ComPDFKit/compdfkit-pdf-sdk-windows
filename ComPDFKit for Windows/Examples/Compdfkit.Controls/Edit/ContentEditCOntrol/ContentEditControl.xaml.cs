@@ -28,6 +28,7 @@ using MenuItem = System.Windows.Controls.MenuItem;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 using System.Linq;
+using ComPDFKit.Tool.UndoManger;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -152,7 +153,7 @@ namespace ComPDFKit.Controls.PDFControl
             }
 
             PdfViewControl.PDFToolManager.SetCreateContentEditType(CPDFEditType.None);
-            PdfViewControl.PDFViewTool.SetCurrentEditType(CPDFEditType.EditText | CPDFEditType.EditImage);
+            PdfViewControl.PDFViewTool.SetCurrentEditType(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
             PdfViewControl.PDFViewTool.GetCPDFViewer().SetIsVisibleCustomMouse(false);
             PdfViewControl.PDFViewTool.GetCPDFViewer().SetIsShowStampMouse(false);
             PdfViewControl.PDFViewTool.SelectedEditAreaForIndex(-1, -1);
@@ -253,33 +254,69 @@ namespace ComPDFKit.Controls.PDFControl
                 return;
             }
 
+            Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
+            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+            {
+                if(e.Key == Key.S)
+                {
+                    bool result = textArea.AddStrikethrough();
+                    if (result)
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        CPDFPage page = PdfViewControl.PDFViewTool.GetCPDFViewer().GetDocument().PageAtIndex(pageIndex);
+                        editHistory.EditPage = page.GetEditPage();
+                        editHistory.PageIndex = pageIndex;
+                        PdfViewControl.PDFViewTool.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                        UpdateEditArea(oldRect, textArea);
+                    }
+
+                    e.Handled = true;
+                }
+            }
+
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (e.Key == Key.Left)
                 {
                     textArea.GetPreWordCharPlace();
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
                 if (e.Key == Key.Right)
                 {
                     textArea.GetNextWordCharPlace();
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
                 if (e.Key == Key.Up)
                 {
                     textArea.GetSectionBeginCharPlace();
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
                 if (e.Key == Key.Down)
                 {
                     textArea.GetSectionEndCharPlace();
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
+                    e.Handled = true;
+                }
+
+                if (e.Key == Key.U)
+                {
+                    bool result = textArea.AddUnderline();
+                    if(result)
+                    {
+                        PDFEditHistory editHistory = new PDFEditHistory();
+                        CPDFPage page = PdfViewControl.PDFViewTool.GetCPDFViewer().GetDocument().PageAtIndex(pageIndex);
+                        editHistory.EditPage = page.GetEditPage();
+                        editHistory.PageIndex = pageIndex;
+                        PdfViewControl.PDFViewTool.GetCPDFViewer().UndoManager.AddHistory(editHistory);
+                        UpdateEditArea(oldRect, textArea);
+                    }
+
                     e.Handled = true;
                 }
             }
@@ -296,7 +333,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetPrevCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
@@ -305,7 +342,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetNextCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
@@ -314,7 +351,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetUpCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
@@ -323,7 +360,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetDownCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
             }
@@ -333,14 +370,14 @@ namespace ComPDFKit.Controls.PDFControl
                 if (e.SystemKey == Key.Up)
                 {
                     textArea.GetLineBeginCharPlace();
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
                 if (e.SystemKey == Key.Down)
                 {
                     textArea.GetLineEndCharPlace();
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
             }
@@ -390,7 +427,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetPreWordCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
@@ -399,7 +436,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetNextWordCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
@@ -408,7 +445,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetSectionBeginCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
 
@@ -417,7 +454,7 @@ namespace ComPDFKit.Controls.PDFControl
                     textArea.GetSectionEndCharPlace();
                     endPoint = GetPoint(textArea);
                     textArea.GetSelectChars(startPoint, endPoint);
-                    UpdateTextArea(textArea);
+                    UpdateEditArea(oldRect, textArea);
                     e.Handled = true;
                 }
             }
@@ -499,7 +536,6 @@ namespace ComPDFKit.Controls.PDFControl
                     PdfViewControl.PDFViewTool.SetCurrentEditType(CPDFEditType.EditText);
                 }
             }
-
         }
 
         private void PDFImageEditButton_Click(object sender, RoutedEventArgs e)
@@ -534,6 +570,8 @@ namespace ComPDFKit.Controls.PDFControl
             if (PdfViewControl != null && PdfViewControl.PDFViewTool != null)
             {
                 PdfViewControl.PDFViewTool.GetCPDFViewer()?.UndoManager?.Undo();
+                PdfViewControl.PDFViewTool.SelectedEditAreaForIndex(-1, -1, false);
+                PdfViewControl.PDFViewTool.ClearLastSelectChars();
                 PdfViewControl.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
             }
         }
@@ -543,6 +581,8 @@ namespace ComPDFKit.Controls.PDFControl
             if (PdfViewControl != null && PdfViewControl.PDFViewTool != null)
             {
                 PdfViewControl.PDFViewTool.GetCPDFViewer()?.UndoManager?.Redo();
+                PdfViewControl.PDFViewTool.SelectedEditAreaForIndex(-1, -1, false);
+                PdfViewControl.PDFViewTool.ClearLastSelectChars();
                 PdfViewControl.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
             }
         }
@@ -594,21 +634,11 @@ namespace ComPDFKit.Controls.PDFControl
         }
 
         /// <summary>
-        /// Update the text appearance after the text area is changed
+        /// Update the edit area appearance after the edit area is changed
         /// </summary> 
-        private void UpdateTextArea(CPDFEditTextArea textArea)
+        private void UpdateEditArea(Rect oldRect, CPDFEditArea editArea)
         {
-            Rect oldRect = DataConversionForWPF.CRectConversionForRect(textArea.GetFrame());
-            PdfViewControl.PDFViewTool.UpdateRender(oldRect, textArea);
-        }
-
-        /// <summary>
-        /// Update the image appearance after the image area is changed
-        /// </summary> 
-        private void UpdateImageArea(CPDFEditImageArea imageArea)
-        {
-            Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageArea.GetFrame());
-            PdfViewControl.PDFViewTool.UpdateRender(oldRect, imageArea);
+            PdfViewControl.PDFViewTool.UpdateRender(oldRect, editArea);
         }
 
         private void PdfViewControl_MouseRightButtonDownHandler(object sender, MouseEventObject e)
@@ -625,6 +655,9 @@ namespace ComPDFKit.Controls.PDFControl
                     break;
                 case MouseHitTestType.ImageEdit:
                     CreateImageEditMenu(sender, ref ContextMenu);
+                    break;
+                case MouseHitTestType.PathEdit:
+                    CreatePathEditMenu(sender, ref ContextMenu);
                     break;
                 case MouseHitTestType.Unknown:
                     List<int> pageInts = new List<int>();
@@ -654,7 +687,6 @@ namespace ComPDFKit.Controls.PDFControl
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-
         public void UndoManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(e.PropertyName);
@@ -669,11 +701,15 @@ namespace ComPDFKit.Controls.PDFControl
 
         private void AppendOpacityMenu(MenuItem parentMenu, CPDFEditArea editArea, CPDFEditType editType)
         {
+            if (editArea == null)
+                return;
+
             List<int> opacityList = new List<int>()
             {
                 25,50,75,100
             };
 
+            Rect oldRect = DataConversionForWPF.CRectConversionForRect(editArea.GetFrame());
             foreach (int opacity in opacityList)
             {
                 MenuItem opacityMenu = new MenuItem();
@@ -685,16 +721,22 @@ namespace ComPDFKit.Controls.PDFControl
                         CPDFEditImageArea editImageArea = editArea as CPDFEditImageArea;
                         editImageArea?.SetImageTransparency((byte)Math.Ceiling(opacity * 255 / 100D));
                         pdfContentEditControl.RefreshThumb();
-                        UpdateImageArea(editImageArea);
+                        UpdateEditArea(oldRect, editImageArea);
                     }
                     else if (editArea != null && editType == CPDFEditType.EditText)
                     {
                         CPDFEditTextArea editTextArea = editArea as CPDFEditTextArea;
                         editTextArea?.SetCharsFontTransparency((byte)Math.Ceiling(opacity * 255 / 100D));
-                        pdfContentEditControl.RefreshThumb();
-                        UpdateTextArea(editTextArea);
+                        UpdateEditArea(oldRect, editTextArea);
+                    }
+                    else if (editArea != null && editType == CPDFEditType.EditPath)
+                    {
+                        CPDFEditPathArea editPathArea = editArea as CPDFEditPathArea;
+                        editPathArea?.SetTransparency((byte)Math.Ceiling(opacity * 255 / 100D));
+                        UpdateEditArea(oldRect, editPathArea);
                     }
                 };
+
                 parentMenu.Items.Add(opacityMenu);
             }
         }
@@ -732,6 +774,9 @@ namespace ComPDFKit.Controls.PDFControl
             else if (editAreas != null && editAreas.Count != 0)
             {
                 List<CPDFEditTextArea> editTextAreas = editAreas.OfType<CPDFEditTextArea>().ToList();
+                List<CPDFEditImageArea> editImageAreas = editAreas.OfType<CPDFEditImageArea>().ToList();
+                List<CPDFEditPathArea> editPathAreas = editAreas.OfType<CPDFEditPathArea>().ToList();
+
                 editTextAreas.ForEach(textArea => textArea.SelectAllChars());
                 if (editAreas.Count == editTextAreas.Count)
                 {
@@ -741,12 +786,20 @@ namespace ComPDFKit.Controls.PDFControl
                     pdfContentEditControl.SetPDFTextEditData(editParams, true);
                     PropertyContainer.Child = pdfContentEditControl;
                 }
-                else if (editTextAreas.Count == 0)
+                else if (editAreas.Count == editImageAreas.Count)
                 {
-                    List<ImageEditParam> editParams = editAreas.
+                    List<ImageEditParam> editParams = editImageAreas.
                         Select(area => ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), area, pageInts.FirstOrDefault())).
                         Cast<ImageEditParam>().ToList();
                     pdfContentEditControl.SetPDFImageEditData(editParams);
+                    PropertyContainer.Child = pdfContentEditControl;
+                }
+                else if (editAreas.Count == editPathAreas.Count)
+                {
+                    List<PathEditParam> editParams = editPathAreas.
+                        Select(area => ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), area, pageInts.FirstOrDefault())).
+                        Cast<PathEditParam>().ToList();
+                    pdfContentEditControl.SetPDFPathEditData(editParams);
                     PropertyContainer.Child = pdfContentEditControl;
                 }
                 else
@@ -787,8 +840,7 @@ namespace ComPDFKit.Controls.PDFControl
                     pdfContentEditControl.SetPDFTextEditData(new List<TextEditParam> { (TextEditParam)pDFEditParam }, true);
                     PropertyContainer.Child = pdfContentEditControl;
                 }
-
-                else if (editAreaArea.Type == CPDFEditType.EditImage && PdfViewControl != null)
+                else if (editAreaArea.Type == CPDFEditType.EditImage)
                 {
                     UIElement pageView = sender as UIElement;
                     if (pageView != null)
@@ -800,10 +852,17 @@ namespace ComPDFKit.Controls.PDFControl
                     pdfContentEditControl.SetPDFImageEditData(new List<ImageEditParam> { (ImageEditParam)pDFEditParam });
                     PropertyContainer.Child = pdfContentEditControl;
                 }
-
-                else
+                else if (editAreaArea.Type == CPDFEditType.EditPath)
                 {
-
+                    UIElement pageView = sender as UIElement;
+                    if (pageView != null)
+                    {
+                        pageView.MouseLeftButtonUp -= PageView_MouseLeftButtonUp;
+                        pageView.MouseLeftButtonUp += PageView_MouseLeftButtonUp;
+                    }
+                    PDFEditParam pDFEditParam = ParamConverter.CPDFDataConverterToPDFEitParam(PdfViewControl.PDFToolManager.GetDocument(), editAreaArea, pageIndex);
+                    pdfContentEditControl.SetPDFPathEditData(new List<PathEditParam> { (PathEditParam)pDFEditParam });
+                    PropertyContainer.Child = pdfContentEditControl;
                 }
             }
         }
@@ -841,6 +900,7 @@ namespace ComPDFKit.Controls.PDFControl
             if (PdfViewControl != null && PdfViewControl.PDFViewTool != null && CanUndo)
             {
                 PdfViewControl.PDFViewTool.GetCPDFViewer()?.UndoManager?.Undo();
+                PdfViewControl.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
             }
         }
 
@@ -849,6 +909,7 @@ namespace ComPDFKit.Controls.PDFControl
             if (PdfViewControl != null && PdfViewControl.PDFViewTool != null && CanRedo)
             {
                 PdfViewControl.PDFViewTool.GetCPDFViewer()?.UndoManager?.Redo();
+                PdfViewControl.PDFViewTool.GetCPDFViewer().UpdateRenderFrame();
             }
         }
 
@@ -878,17 +939,22 @@ namespace ComPDFKit.Controls.PDFControl
         {
             int index = -1;
             CPDFEditImageArea imageArea = PdfViewControl.PDFToolManager.GetSelectedEditAreaObject(ref index) as CPDFEditImageArea;
+            if (imageArea == null)
+                return;
+
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Cut"), Command = ApplicationCommands.Cut, CommandTarget = (UIElement)sender });
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Delete"), Command = ApplicationCommands.Delete, CommandTarget = (UIElement)sender });
+            menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Paste"), Command = ApplicationCommands.Paste, CommandTarget = (UIElement)sender });
 
             MenuItem rotateLeftMenu = new MenuItem();
             rotateLeftMenu.Header = LanguageHelper.CommonManager.GetString("Menu_RotateLeft");
             rotateLeftMenu.Click += (o, p) =>
             {
-                if (imageArea != null)
-                {
-                    imageArea.Rotate(-90);
-                    pdfContentEditControl.RefreshThumb();
-                    UpdateImageArea(imageArea);
-                }
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageArea.GetFrame());
+                imageArea.Rotate(90);
+                pdfContentEditControl.RefreshThumb();
+                UpdateEditArea(oldRect,imageArea);
             };
             menu.Items.Add(rotateLeftMenu);
 
@@ -896,12 +962,10 @@ namespace ComPDFKit.Controls.PDFControl
             rotateRightMenu.Header = LanguageHelper.CommonManager.GetString("Menu_RotateRight");
             rotateRightMenu.Click += (o, p) =>
             {
-                if (imageArea != null)
-                {
-                    imageArea.Rotate(90);
+                    Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageArea.GetFrame());
+                    imageArea.Rotate(-90);
                     pdfContentEditControl.RefreshThumb();
-                    UpdateImageArea(imageArea);
-                }
+                    UpdateEditArea(oldRect, imageArea);
             };
             menu.Items.Add(rotateRightMenu);
 
@@ -909,42 +973,40 @@ namespace ComPDFKit.Controls.PDFControl
             replaceMenu.Header = LanguageHelper.CommonManager.GetString("Menu_Replace");
             replaceMenu.Click += (o, p) =>
             {
-                if (imageArea != null)
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Image Files(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp;";
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    OpenFileDialog openFileDialog = new OpenFileDialog();
-                    openFileDialog.Filter = "Image Files(*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp;";
-                    if (openFileDialog.ShowDialog() == true)
+                    int imageWidth = 0;
+                    int imageHeight = 0;
+                    byte[] imageData = null;
+
+                    BitmapFrame frame = null;
+                    BitmapDecoder decoder = BitmapDecoder.Create(new Uri(openFileDialog.FileName), BitmapCreateOptions.None, BitmapCacheOption.Default);
+                    if (decoder.Frames.Count > 0)
                     {
-                        int imageWidth = 0;
-                        int imageHeight = 0;
-                        byte[] imageData = null;
-
-                        BitmapFrame frame = null;
-                        BitmapDecoder decoder = BitmapDecoder.Create(new Uri(openFileDialog.FileName), BitmapCreateOptions.None, BitmapCacheOption.Default);
-                        if (decoder.Frames.Count > 0)
-                        {
-                            frame = decoder.Frames[0];
-                        }
-                        if (frame != null)
-                        {
-                            imageData = new byte[frame.PixelWidth * frame.PixelHeight * 4];
-                            if (frame.Format != PixelFormats.Bgra32)
-                            {
-                                FormatConvertedBitmap covert = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, frame.Palette, 0);
-                                covert.CopyPixels(imageData, frame.PixelWidth * 4, 0);
-                            }
-                            else
-                            {
-                                frame.CopyPixels(imageData, frame.PixelWidth * 4, 0);
-                            }
-                            imageWidth = frame.PixelWidth;
-                            imageHeight = frame.PixelHeight;
-                        }
-
-                        imageArea.ReplaceImageArea(imageArea.GetFrame(), imageData, imageWidth, imageHeight);
-                        pdfContentEditControl.RefreshThumb();
-                        UpdateImageArea(imageArea);
+                        frame = decoder.Frames[0];
                     }
+                    if (frame != null)
+                    {
+                        imageData = new byte[frame.PixelWidth * frame.PixelHeight * 4];
+                        if (frame.Format != PixelFormats.Bgra32)
+                        {
+                            FormatConvertedBitmap covert = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, frame.Palette, 0);
+                            covert.CopyPixels(imageData, frame.PixelWidth * 4, 0);
+                        }
+                        else
+                        {
+                            frame.CopyPixels(imageData, frame.PixelWidth * 4, 0);
+                        }
+                        imageWidth = frame.PixelWidth;
+                        imageHeight = frame.PixelHeight;
+                    }
+
+                    Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageArea.GetFrame());
+                    imageArea.ReplaceImageArea(imageArea.GetFrame(), imageData, imageWidth, imageHeight);
+                    pdfContentEditControl.RefreshThumb();
+                    UpdateEditArea(oldRect, imageArea);
                 }
             };
             menu.Items.Add(replaceMenu);
@@ -989,9 +1051,10 @@ namespace ComPDFKit.Controls.PDFControl
             horizonMirror.Header = LanguageHelper.CommonManager.GetString("Menu_HFlip");
             horizonMirror.Click += (o, p) =>
             {
-                imageArea?.HorizontalMirror();
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageArea.GetFrame());
+                imageArea.HorizontalMirror();
                 pdfContentEditControl.RefreshThumb();
-                UpdateImageArea(imageArea);
+                UpdateEditArea(oldRect, imageArea);
             };
             menu.Items.Add(horizonMirror);
 
@@ -1001,9 +1064,10 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 if (imageArea != null)
                 {
-                    imageArea?.VerticalMirror();
+                    Rect oldRect = DataConversionForWPF.CRectConversionForRect(imageArea.GetFrame());
+                    imageArea.VerticalMirror();
                     pdfContentEditControl.RefreshThumb();
-                    UpdateImageArea(imageArea);
+                    UpdateEditArea(oldRect, imageArea);
                 }
             };
             menu.Items.Add(verticalMirror);
@@ -1017,12 +1081,77 @@ namespace ComPDFKit.Controls.PDFControl
                     PdfViewControl.PDFViewTool.SetCropMode(!PdfViewControl.PDFViewTool.GetIsCropMode());
                 }
             };
+
             menu.Items.Add(cropMenu);
+        }
+
+        private void CreatePathEditMenu(object sender, ref ContextMenu menu)
+        {
+            int index = -1;
+            CPDFEditPathArea pathArea = PdfViewControl.PDFToolManager.GetSelectedEditAreaObject(ref index) as CPDFEditPathArea;
+            if (pathArea == null)
+                return;
 
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Cut"), Command = ApplicationCommands.Cut, CommandTarget = (UIElement)sender });
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Delete"), Command = ApplicationCommands.Delete, CommandTarget = (UIElement)sender });
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Paste"), Command = ApplicationCommands.Paste, CommandTarget = (UIElement)sender });
+
+            MenuItem rotateLeftMenu = new MenuItem();
+            rotateLeftMenu.Header = LanguageHelper.CommonManager.GetString("Menu_RotateLeft");
+            rotateLeftMenu.Click += (o, p) =>
+            {
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(pathArea.GetFrame());
+                pathArea.Rotate(90);
+                UpdateEditArea(oldRect, pathArea);
+            };
+            menu.Items.Add(rotateLeftMenu);
+
+            MenuItem rotateRightMenu = new MenuItem();
+            rotateRightMenu.Header = LanguageHelper.CommonManager.GetString("Menu_RotateRight");
+            rotateRightMenu.Click += (o, p) =>
+            {
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(pathArea.GetFrame());
+                pathArea.Rotate(-90);
+                UpdateEditArea(oldRect, pathArea);
+            };
+            menu.Items.Add(rotateRightMenu);
+
+            MenuItem opacityMenu = new MenuItem();
+            opacityMenu.Header = LanguageHelper.CommonManager.GetString("Menu_Opacity");
+            menu.Items.Add(opacityMenu);
+            AppendOpacityMenu(opacityMenu, pathArea, CPDFEditType.EditPath);
+
+            MenuItem horizonMirror = new MenuItem();
+            horizonMirror.Header = LanguageHelper.CommonManager.GetString("Menu_HFlip");
+            horizonMirror.Click += (o, p) =>
+            {
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(pathArea.GetFrame());
+                pathArea.HorizontalMirror();
+                UpdateEditArea(oldRect, pathArea);
+            };
+            menu.Items.Add(horizonMirror);
+
+            MenuItem verticalMirror = new MenuItem();
+            verticalMirror.Header = LanguageHelper.CommonManager.GetString("Menu_VFlip");
+            verticalMirror.Click += (o, p) =>
+            {
+                Rect oldRect = DataConversionForWPF.CRectConversionForRect(pathArea.GetFrame());
+                pathArea.VerticalMirror();
+                UpdateEditArea(oldRect, pathArea);
+            };
+            menu.Items.Add(verticalMirror);
+
+            MenuItem cropMenu = new MenuItem();
+            cropMenu.Header = LanguageHelper.CommonManager.GetString("Menu_Crop");
+            cropMenu.Click += (o, p) =>
+            {
+                if (pathArea != null)
+                {
+                    PdfViewControl.PDFViewTool.SetCropMode(!PdfViewControl.PDFViewTool.GetIsCropMode());
+                }
+            };
+            menu.Items.Add(cropMenu);
         }
 
         private void CreateMultiTextEditMenu(object sender, ref ContextMenu menu)

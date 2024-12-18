@@ -15,18 +15,29 @@ namespace ComPDFKit.Tool
         public PolyLineMeasureParam()
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE;
+            Transparency = 255;
         }
-        public byte[] LineColor { get; set; }
-        public float LineWidth { get; set; }
+        public byte[] LineColor { get; set; } = new byte[] { 255, 0, 0, };
+        public float LineWidth { get; set; } = 2;
         public float[] LineDash { get; set; }
         public List<CPoint> SavePoints { get; set; }
-        public string FontName { get; set; }
-        public double FontSize { get; set; }
-        public byte[] FontColor { get; set; }
+        public string FontName { get; set; } = "Arial";
+        public double FontSize { get; set; } = 14;
+        public byte[] FontColor { get; set; } = new byte[] { 255, 0, 0, };
         public bool IsBold { get; set; }
         public bool IsItalic { get; set; }
         public C_BORDER_STYLE BorderStyle { get; set; }
-        public CPDFMeasureInfo measureInfo { get; set; }
+        public CPDFMeasureInfo measureInfo { get; set; } =
+            new CPDFMeasureInfo
+            {
+                Unit = CPDFMeasure.CPDF_CM,
+                Precision = CPDFMeasure.PRECISION_VALUE_TWO,
+                RulerBase = 1,
+                RulerBaseUnit = CPDFMeasure.CPDF_CM,
+                RulerTranslate = 1,
+                RulerTranslateUnit = CPDFMeasure.CPDF_CM,
+                CaptionType = CPDFCaptionType.CPDF_CAPTION_LENGTH,
+            };
 
         public override bool CopyTo(AnnotParam transfer)
         {
@@ -78,7 +89,7 @@ namespace ComPDFKit.Tool
                     RulerBaseUnit = measureInfo.RulerBaseUnit,
                     RulerTranslateUnit = measureInfo.RulerTranslateUnit,
                     CaptionType = measureInfo.CaptionType,
-                    RulerTranslate= measureInfo.RulerTranslate,
+                    RulerTranslate = measureInfo.RulerTranslate,
                 };
                 polygonTransfer.measureInfo = cPDFMeasureInfo;
             }

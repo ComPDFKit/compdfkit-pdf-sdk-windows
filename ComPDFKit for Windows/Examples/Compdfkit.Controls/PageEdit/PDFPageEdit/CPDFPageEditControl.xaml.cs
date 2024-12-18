@@ -1219,6 +1219,7 @@ namespace ComPDFKit.Controls.PDFControl
                 item.VerticalContentAlignment = VerticalAlignment.Center;
                 bindPageList.Add(item);
             }
+
             PageEditListBox.ItemsSource = bindPageList;
         }
          

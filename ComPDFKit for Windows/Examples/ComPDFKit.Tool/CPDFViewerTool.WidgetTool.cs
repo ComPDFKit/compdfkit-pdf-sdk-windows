@@ -39,6 +39,7 @@ namespace ComPDFKit.Tool
         public static DependencyProperty PopupAttachDataProperty = DependencyProperty.Register("PopupAttachData", typeof(BaseAnnot), typeof(CPDFViewerTool));
 
         public event EventHandler<WidgetClickArgs> WidgetActionHandler;
+        public event EventHandler<CPDFAnnotation> WidgetCreatedHandler;
 
         private CustomizeLayer formPopLayer=null;
         // Inner default pop-up control
@@ -869,6 +870,14 @@ namespace ComPDFKit.Tool
                 {
 
                 }
+            }
+        }
+
+        internal void InvokeWidgetCreated(CPDFAnnotation annot)
+        {
+            if(annot!=null && annot.IsValid())
+            {
+                WidgetCreatedHandler?.Invoke(this, annot);
             }
         }
     }

@@ -21,7 +21,7 @@ namespace ComPDFKit.Tool.SettingParam
 
         #region Measure
 
-        public bool IsOpenMeasure = false;
+        public bool IsOpenMeasure { get; set; } = false;
 
         public bool IsCreateSquarePolygonMeasure = false;
 
@@ -722,8 +722,7 @@ namespace ComPDFKit.Tool.SettingParam
             InitFreeText();
             InitCircle();
             InitStickyNote();
-            InitSound();
-
+            InitSound(); 
             #endregion
 
             #region Widget
@@ -745,6 +744,8 @@ namespace ComPDFKit.Tool.SettingParam
 
             #endregion
         }
+
+
 
         public bool SetAnnotParam(AnnotParam annotParam)
         {
@@ -811,14 +812,14 @@ namespace ComPDFKit.Tool.SettingParam
                     {
                         PolygonMeasureParamDef = annotParam as PolygonMeasureParam;
                         IsOK = true;
-                    }
+                    } 
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE:
                     if (annotParam is PolyLineMeasureParam)
                     {
                         PolyLineMeasureParamDef = annotParam as PolyLineMeasureParam;
                         IsOK = true;
-                    }
+                    } 
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_HIGHLIGHT:
                     if (annotParam is HighlightParam)
@@ -874,8 +875,7 @@ namespace ComPDFKit.Tool.SettingParam
                         SoundParamDef = annotParam as SoundParam;
                         IsOK = true;
                     }
-                    break;
-                    break;
+                    break; 
                 case C_ANNOTATION_TYPE.C_ANNOTATION_MOVIE:
                     break;
                 case C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET:

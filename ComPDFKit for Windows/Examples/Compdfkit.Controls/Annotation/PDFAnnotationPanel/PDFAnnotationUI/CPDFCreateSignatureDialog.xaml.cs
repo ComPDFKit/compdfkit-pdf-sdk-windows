@@ -15,7 +15,6 @@ using System.Globalization;
 using System.Windows.Ink;
 using ComPDFKit.Controls.Common;
 using ComPDFKitViewer.Helper;
-using ComPDFKit.PDFDocument;
 
 namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
 {
@@ -29,7 +28,6 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
         private double StrokeWidth = 3;
         private double StrokeHigh = 3;
         private bool IsPageLoaded = false;
-
         private string postScriptName;
 
         public CPDFCreateSignatureDialog()
@@ -48,9 +46,7 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
 
             DrawinkCanvas.DefaultDrawingAttributes.Color = solidColorBrush.Color;
             InPutTextBox.Foreground = solidColorBrush;
-
-            FontNameCmb.Items.Clear();
-            FontNameCmb.ItemsSource = CPDFFont.GetFontNameDictionary().Keys;
+            InPutTextBox.FontFamily = new System.Windows.Media.FontFamily("Courier New");
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
@@ -104,7 +100,7 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             }
         }
 
-        private void SaveToImage(string FilePath)
+        private void SaveToImage(string filePath)
         {
             string path = SignaturePath;
             string name = Guid.NewGuid().ToString();
@@ -112,7 +108,7 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             {
                 try
                 {
-                    BitmapImage image = new BitmapImage(new Uri(FilePath));
+                    BitmapImage image = new BitmapImage(new Uri(filePath));
                     double scale = Math.Min((double)600 / image.PixelWidth, (double)600 / image.PixelHeight);
                     scale = Math.Min(scale, 1);
                     BitmapEncoder encoder = new PngBitmapEncoder();
@@ -123,6 +119,7 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
                     {
                         encoder.Save(stream);
                     }
+
                     if (!string.IsNullOrEmpty(SaveToPath))
                     {
                         DirectoryInfo CreatedFilePathFolder = new DirectoryInfo(SaveToPath);
@@ -131,8 +128,8 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
                             Directory.Delete(SaveToPath, true);
                         }
                     }
-                    SaveToPath = path;
 
+                    SaveToPath = path;
                     AddImageBackground.Visibility = Visibility.Collapsed;
                     ImageImage.Source = targetBitmap;
                     SaveBtn.IsEnabled = true;
@@ -190,7 +187,7 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             }
             System.Windows.Media.Brush fontcolor = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#252629"));
             fontcolor = TextColorPickerControl.Brush;
-            Bitmap bmp = TextToBitmap(InPutTextBox.Text, postScriptName, 50, System.Drawing.Rectangle.Empty, fontcolor, System.Drawing.Color.Transparent);
+            Bitmap bmp = TextToBitmap(InPutTextBox.Text, TextName.SelectionBoxItem.ToString(), 50, Rectangle.Empty, fontcolor, System.Drawing.Color.Transparent);
             string guid = Guid.NewGuid().ToString();
             string path = System.IO.Path.Combine(SignaturePath, guid);
             bmp.Save(path, ImageFormat.Png);
@@ -368,7 +365,6 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             dc.DrawText(formatText, new System.Windows.Point(2, 10));
             dc.Close();
 
-
             Rect x = drawingVisual.ContentBounds;
             Rect DrawRect = new Rect(0, 0, x.Width + (x.X / 2), x.Height + x.Y);
 
@@ -382,7 +378,6 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             encoder.Save(stream);
 
             Bitmap bitmap = new Bitmap(stream);
-
             return bitmap;
         }
 
@@ -545,21 +540,29 @@ namespace ComPDFKit.Controls.Annotation.PDFAnnotationPanel.PDFAnnotationUI
             }
         }
 
-        private void FontNameCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TextName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //StyleNameCmb.ItemsSource = CPDFFont.GetFontNameDictionary()[FontNameCmb.SelectedValue.ToString()];  
-            StyleNameCmb.SelectedIndex = 0;
-            CPDFFont.GetPostScriptName(FontNameCmb.SelectedValue.ToString(), StyleNameCmb.SelectedValue.ToString(),ref postScriptName);
-            InPutTextBox.FontFamily = new System.Windows.Media.FontFamily(postScriptName);
-        }
-
-        private void StyleNameCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(StyleNameCmb.SelectedValue?.ToString()))
+            if (TextName.SelectedIndex != -1 && IsPageLoaded)
             {
-                InPutTextBox.FontStyle = GetFontStyle(StyleNameCmb.SelectedValue.ToString());
-                InPutTextBox.FontWeight = GetFontWeight(StyleNameCmb.SelectedValue.ToString());
-            } 
+                switch (TextName.SelectedIndex)
+                {
+                    case 0:
+                        InPutTextBox.FontFamily = new System.Windows.Media.FontFamily("Arial");
+                        break;
+
+                    case 1:
+                        InPutTextBox.FontFamily = new System.Windows.Media.FontFamily("Courier New");
+                        break;
+
+                    case 2:
+                        InPutTextBox.FontFamily = new System.Windows.Media.FontFamily("Times New Roman");
+                        break;
+
+                    default:
+                        InPutTextBox.FontFamily = new System.Windows.Media.FontFamily("Arial");
+                        break;  
+                }
+            }
         }
 
         private FontWeight GetFontWeight(string toString)

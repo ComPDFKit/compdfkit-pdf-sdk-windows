@@ -15,20 +15,11 @@ namespace ComPDFKit.Tool
         public override bool CopyTo(PDFEditParam transfer)
         {
             ImageEditParam imageTransfer = transfer as ImageEditParam;
-            if (imageTransfer == null)
-            {
+            if (imageTransfer == null || !base.CopyTo(imageTransfer))
                 return false;
-            }
 
-            if (!base.CopyTo(imageTransfer))
-            {
-                return false;
-            }
-
-           
             imageTransfer.ClipRect = ClipRect;
             imageTransfer.Rotate = Rotate;
-
             return true;
         }
     }

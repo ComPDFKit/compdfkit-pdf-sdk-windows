@@ -15,7 +15,7 @@ namespace ComPDFKit.Tool
         public byte[] InkColor { get; set; }
         public double Thickness { get; set; }
         public List<List<CPoint>> InkPath { get; set; }
-
+        public float[] Dash { get; set; }
         public override bool CopyTo(AnnotParam transfer)
         {
             InkParam inkTransfer = transfer as InkParam;
@@ -51,7 +51,14 @@ namespace ComPDFKit.Tool
 
                 inkTransfer.InkPath = inkPoints;
             }
-
+            inkTransfer.Dash = null;
+            if (Dash != null)
+            {
+                float[] DashCopy=new float[Dash.Length];
+                Dash.CopyTo(DashCopy,0);
+                inkTransfer.Dash = DashCopy;
+            }
+            
             return true;
         }
     }

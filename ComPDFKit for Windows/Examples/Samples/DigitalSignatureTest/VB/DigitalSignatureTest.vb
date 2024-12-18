@@ -146,7 +146,7 @@ Module DigitalSignatureTest
                    "Location: " & location & Environment.NewLine &
                    "DN: " & DN & Environment.NewLine,
         .IsContentAlignLeft = False,
-        .IsDrawLogo = True,
+        .IsDrawLogo = False,
         .LogoData = File.ReadAllBytes("logo.png"),
         .TextColor = New Single() {0, 0, 0},
         .ContentColor = New Single() {0, 0, 0}

@@ -68,9 +68,15 @@ namespace ComPDFKit.Tool.UndoManger
                 {
                     stickynoteAnnot.SetContent(currentParam.Content);
                 }
+
+                if (string.IsNullOrEmpty(currentParam.IconName) == false)
+                {
+                    stickynoteAnnot.SetIconName(currentParam.IconName);
+                }
+
                 stickynoteAnnot.SetIsLocked(currentParam.Locked);
                 stickynoteAnnot.SetCreationDate(PDFHelp.GetCurrentPdfTime());
-                stickynoteAnnot.UpdateAp();
+                CommonHelper.UpdateStickyAP(stickynoteAnnot);
                 stickynoteAnnot.ReleaseAnnot();
 
                 if (currentParam != null)
@@ -134,13 +140,18 @@ namespace ComPDFKit.Tool.UndoManger
                     stickynoteAnnot.SetContent(updateParam.Content);
                 }
 
+                if(updateParam.IconName!=checkParam.IconName && !string.IsNullOrEmpty(updateParam.IconName))
+                {
+                    stickynoteAnnot.SetIconName(updateParam.IconName);
+                }
+
                 if (updateParam.Locked != checkParam.Locked)
                 {
                     stickynoteAnnot.SetIsLocked(updateParam.Locked);
                 }
 
                 stickynoteAnnot.SetModifyDate(PDFHelp.GetCurrentPdfTime());
-                stickynoteAnnot.UpdateAp();
+                CommonHelper.UpdateStickyAP(stickynoteAnnot);
 
                 return true;
             }

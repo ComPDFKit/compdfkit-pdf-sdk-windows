@@ -562,7 +562,7 @@
     <value>Only Odd Pages</value>
   </data>
   <data name="Printer_Oritation" xml:space="preserve">
-    <value>Oritation</value>
+    <value>Orientation</value>
   </data>
   <data name="Printer_PageRange" xml:space="preserve">
     <value>Page Range</value>
@@ -602,5 +602,8 @@
   </data>
   <data name="Printer_FitPrintable" xml:space="preserve">
     <value>Fit to Printable Area</value>
+  </data>
+  <data name="Tooltip_Select" xml:space="preserve">
+    <value>Content Selection Tool</value>
   </data>
 </root>

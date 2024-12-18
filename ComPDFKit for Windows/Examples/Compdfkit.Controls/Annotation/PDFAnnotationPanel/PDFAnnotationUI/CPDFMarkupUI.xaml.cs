@@ -39,7 +39,7 @@ namespace ComPDFKit.Controls.PDFControlUI
                 switch (markupAnnot.Type)
                 {
                     case C_ANNOTATION_TYPE.C_ANNOTATION_HIGHLIGHT:
-                        return new LineAnnotHistory();
+                        return new HighlightAnnotHistory();
                     case C_ANNOTATION_TYPE.C_ANNOTATION_UNDERLINE:
                         return new UnderlineAnnotHistory();
                     case C_ANNOTATION_TYPE.C_ANNOTATION_STRIKEOUT:

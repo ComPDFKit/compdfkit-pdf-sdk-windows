@@ -1,5 +1,4 @@
-﻿using ComPDFKit.Import;
-using ComPDFKit.PDFAnnotation;
+﻿using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFDocument.Action;
 using ComPDFKit.PDFPage;
@@ -28,6 +27,7 @@ namespace ComPDFKit.Tool
         public MouseEventArgs mouseButtonEventArgs;
         public MouseHitTestType hitTestType;
         public C_ANNOTATION_TYPE annotType;
+
         /// <summary>
         /// Identifies whether the object is created
         /// </summary>
@@ -46,6 +46,7 @@ namespace ComPDFKit.Tool
         Widget,
         TextEdit,
         ImageEdit,
+        PathEdit,
         ImageSelect,
         MultiTextEdit,
         SelectedPageRect,
@@ -65,6 +66,7 @@ namespace ComPDFKit.Tool
 
     public partial class CPDFViewerTool : UserControl
     {
+        public Cursor RotationCursor;
         public bool IsDocumentModified
         {
             get => isDocumentModified;
@@ -110,6 +112,7 @@ namespace ComPDFKit.Tool
         public event EventHandler<MouseEventObject> MouseLeftButtonUpHandler;
         public event EventHandler<MouseEventObject> MouseMoveHandler;
         public event EventHandler<MouseEventObject> MouseRightButtonDownHandler;
+        public event EventHandler<ScrollChangedEventArgs> ScrollChangedHandler;
         public event EventHandler DrawChanged;
         public event EventHandler DocumentModifiedChanged;
 
@@ -124,8 +127,6 @@ namespace ComPDFKit.Tool
 
         private bool isMultiSelected;
         private bool isDocumentModified = false;
-
-
 
         public bool CanAddTextEdit = true;
 
@@ -142,12 +143,10 @@ namespace ComPDFKit.Tool
         /// <param name="isContinueCreateTextEdit"></param>
         public void SetContinueCreateTextEdit(bool isContinueCreateTextEdit)
         {
-
             this.isContinueCreateTextEdit = isContinueCreateTextEdit;
             CanAddTextEdit = true;
         }
-
-
+        
         /// <summary>
         ///  Does it support multiple selection
         /// </summary>
@@ -322,7 +321,6 @@ namespace ComPDFKit.Tool
         {
             if (isContinueCreateTextEdit)
             {
-
                 if (lastSelectedRect != null)
                 {
                     CanAddTextEdit = false;
@@ -333,7 +331,7 @@ namespace ComPDFKit.Tool
                 }
             }
 
-            if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null)
+            if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null || PDFViewer.IsRendering)
             {
                 return;
             }
@@ -342,6 +340,7 @@ namespace ComPDFKit.Tool
             {
                 RemovePopTextUI();
             }
+
             Focus();
             Mouse.Capture(this, CaptureMode.SubTree);
             MouseEventObject mouseEventObject = new MouseEventObject
@@ -456,6 +455,11 @@ namespace ComPDFKit.Tool
             }
             else if ((currentModel == ToolType.Pan || currentModel == ToolType.Viewer))
             {
+                if (AnnotHitTest() && cacheHitTestAnnot.CurrentType == C_ANNOTATION_TYPE.C_ANNOTATION_LINK)
+                {
+                    LinkAnnotAction(cacheHitTestAnnot);
+                }
+
                 if (DrawDownSelectImage(true))
                 {
                     mouseEventObject.hitTestType = MouseHitTestType.ImageSelect;
@@ -473,7 +477,7 @@ namespace ComPDFKit.Tool
                 {
                     cacheHitTestAnnot = PDFViewer?.AnnotHitTest() as BaseWidget;
                     SelectedAnnot();
-                    mouseEventObject.hitTestType = MouseHitTestType.Annot;
+                    mouseEventObject.hitTestType = MouseHitTestType.Annot;                              
 
                     mouseEventObject.annotType = cacheMoveWidget.GetAnnotData().AnnotType;
                 }
@@ -575,7 +579,7 @@ namespace ComPDFKit.Tool
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null)
+            if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null || PDFViewer.IsRendering)
             {
                 return;
             }
@@ -607,9 +611,9 @@ namespace ComPDFKit.Tool
             ReleaseMouseCapture();
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null)
+        protected override async void OnMouseMove(MouseEventArgs e)
+        {  
+            if (PDFViewer == null || PDFViewer.CurrentRenderFrame == null || PDFViewer.IsRendering)
             {
                 return;
             }
@@ -718,6 +722,7 @@ namespace ComPDFKit.Tool
             }
 
             MouseMoveHandler?.Invoke(this, mouseEventObject);
+
             PDFViewer.SetCustomMousePoint(Mouse.GetPosition(this).Y, Mouse.GetPosition(this).X);
             if (oldCursor != newCursor)
             {
@@ -727,6 +732,14 @@ namespace ComPDFKit.Tool
 
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
+            bool isCreating = (baseLayer as CreateAnnotTool).IsCreating();
+            if (PDFViewer.IsRendering || isCreating)
+            {
+                ContextMenu = null;
+                return;
+            }
+
             MouseEventObject mouseEventObject = new MouseEventObject
             {
                 mouseButtonEventArgs = e,
@@ -768,13 +781,11 @@ namespace ComPDFKit.Tool
             }
 
             Point = e.GetPosition(this);
-
             // Annotation selection effect
             if ((currentModel == ToolType.Pan || currentModel == ToolType.CreateAnnot))
             {
                 if (AnnotHitTest())
                 {
-
                     if (!isCacheRedaction)
                     {
                         if (cacheHitTestAnnot?.CurrentType == C_ANNOTATION_TYPE.C_ANNOTATION_LINK && currentModel != ToolType.CreateAnnot)
@@ -815,6 +826,7 @@ namespace ComPDFKit.Tool
                 else
                 {
                     CleanSelectedRect();
+                    CleanEditAnnot();
                 }
             }
 
@@ -861,10 +873,13 @@ namespace ComPDFKit.Tool
                             case CPDFEditType.EditImage:
                                 mouseEventObject.hitTestType = MouseHitTestType.ImageEdit;
                                 break;
+                            case CPDFEditType.EditPath:
+                                mouseEventObject.hitTestType = MouseHitTestType.PathEdit;
+                                break;
                             default:
                                 break;
                         }
-                    } 
+                    }
                 }
             }
             else
@@ -1021,6 +1036,7 @@ namespace ComPDFKit.Tool
                     else
                     {
                         SelectedAnnot(null);
+                        CleanEditAnnot(true);
                     }
                 }
                 else if (selectedPageIndex != -1 && selectedAnnotIndex != -1)
@@ -1077,6 +1093,26 @@ namespace ComPDFKit.Tool
         private void ScrollViewer_MouseDown(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            ScrollChangedHandler?.Invoke(this, e);
+        }
+
+        public void SetPageImageScale(float imageScale)
+        {
+            if (imageScale <= 0)
+            {
+                imageScale = 1;
+            }
+
+            CPDFViewer.PageImageScale = imageScale;
+        }
+
+        public float GetPageImageScale()
+        {
+            return CPDFViewer.PageImageScale;
         }
     }
 }

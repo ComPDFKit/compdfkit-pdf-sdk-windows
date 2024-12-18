@@ -81,15 +81,17 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal"  Margin="0,0,0,8">
                         <TextBlock                                            
-                             Width="64"
+                            Width="74"
                             Height="22" 
                             FontFamily="Segoe UI"
-                            FontSize="14" Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Oritation}"></TextBlock>
+                            FontSize="14" 
+                            Text="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Printer_Oritation}"></TextBlock> 
+
                         <ComboBox       
                             x:Name="cmbOrientation"
                             Style="{StaticResource ComboBoxStyle1}" 
                             SelectionChanged="cmbOrientation_SelectionChanged"
-                            Width="155"
+                            Width="145"
                             Height="24" 
                             Loaded="cmbOrientation_Loaded" >
                             <ComboBoxItem Tag="Portrait">

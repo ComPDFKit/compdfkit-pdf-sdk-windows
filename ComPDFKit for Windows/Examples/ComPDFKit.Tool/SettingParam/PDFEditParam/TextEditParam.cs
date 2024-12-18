@@ -19,26 +19,17 @@ namespace ComPDFKit.Tool
         public override bool CopyTo(PDFEditParam transfer)
         {
             TextEditParam texteditTransfer = transfer as TextEditParam;
-            if (texteditTransfer == null)
-            {
+            if (texteditTransfer == null || !base.CopyTo(texteditTransfer))
                 return false;
-            }
-
-            if (!base.CopyTo(texteditTransfer))
-            {
-                return false;
-            }
 
             texteditTransfer.FontSize = FontSize;
             if (FontColor != null)
-            {
                 texteditTransfer.FontColor = (byte[])FontColor.Clone();
-            }
+
             texteditTransfer.TextAlign = TextAlign;
             texteditTransfer.FontName = FontName;
             texteditTransfer.IsItalic = IsItalic;
             texteditTransfer.IsBold = IsBold;
-
             return true;
         }
     }

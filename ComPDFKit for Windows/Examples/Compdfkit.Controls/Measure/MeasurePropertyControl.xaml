@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ComPDFKit.Controls.Measure"
              xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="#FAFCFF">
+             d:DesignHeight="800" d:DesignWidth="300" Background="#FAFCFF">
     <Grid>
         <Grid.Resources>
             <common:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter" />

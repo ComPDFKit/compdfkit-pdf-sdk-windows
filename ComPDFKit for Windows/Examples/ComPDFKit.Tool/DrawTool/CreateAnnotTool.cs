@@ -9,27 +9,16 @@ using ComPDFKit.Tool.UndoManger;
 using ComPDFKit.Viewer.Helper;
 using ComPDFKit.Viewer.Layer;
 using ComPDFKitViewer;
-using ComPDFKitViewer.Annot;
-using ComPDFKitViewer.BaseObject;
 using ComPDFKitViewer.Helper;
 using ComPDFKitViewer.Layer;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Annotations;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Media3D;
 using static ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
-using static ComPDFKit.Tool.Help.ImportWin32;
 
 namespace ComPDFKit.Tool.DrawTool
 {
@@ -245,6 +234,7 @@ namespace ComPDFKit.Tool.DrawTool
         {
             RemoveTextBox();
             mouseStartPoint = downPoint;
+            mouseEndPoint = downPoint;
             isDrawAnnot = true;
             this.maxRect = maxRect;
             zoomFactor = zoom;
@@ -299,7 +289,17 @@ namespace ComPDFKit.Tool.DrawTool
                         DPIRect = drawRect = new Rect(mouseEndPoint.X, mouseEndPoint.Y, 32 * zoomFactor, 32 * zoomFactor);
                     }
                 }
-                Rect StandardRect = new Rect(
+
+                if (cPDFAnnotation is CPDFPolylineAnnotation)
+                {
+                    double left = drawPoints.AsEnumerable().Select(x => x.X).Min();
+                    double right = drawPoints.AsEnumerable().Select(x => x.X).Max();
+                    double top = drawPoints.AsEnumerable().Select(x => x.Y).Min();
+                    double bottom = drawPoints.AsEnumerable().Select(x => x.Y).Max();
+                    DPIRect = new Rect(left, top, right - left, bottom - top);
+                }
+
+                Rect standardRect = new Rect(
                         (DPIRect.Left - pageBound.X + (cropPoint.X * zoomFactor)) / zoomFactor, (DPIRect.Top - pageBound.Y + (cropPoint.Y * zoomFactor)) / zoomFactor,
                         DPIRect.Width / zoomFactor, DPIRect.Height / zoomFactor);
                 isDrawAnnot = false;
@@ -312,7 +312,7 @@ namespace ComPDFKit.Tool.DrawTool
                 cPDFAnnotation = null;
                 inkDrawPoints.Clear();
                 drawPoints.Clear();
-                return DpiHelper.StandardRectToPDFRect(StandardRect);
+                return DpiHelper.StandardRectToPDFRect(standardRect);
             }
             return new Rect();
         }
@@ -321,7 +321,6 @@ namespace ComPDFKit.Tool.DrawTool
         {
             Dispatcher.Invoke(() =>
             {
-
                 if (cPDFAnnotation == null)
                 {
                     return;
@@ -680,6 +679,16 @@ namespace ComPDFKit.Tool.DrawTool
                 lineSegment.IsSmoothJoin = true;
                 pathFigure.Segments.Add(lineSegment);
             }
+            if (annotLine.Dash != null && annotLine.Dash.Length > 0)
+            {
+                DashStyle dash = new DashStyle();
+                foreach (var offset in annotLine.Dash)
+                {
+                    dash.Dashes.Add(offset);
+                }
+                DrawPen.DashStyle = dash;
+                DrawPen.DashCap = PenLineCap.Flat;
+            }
             Rect checkRect = pageBound;
             RectangleGeometry rectGeometry = new RectangleGeometry();
             drawRect = rectGeometry.Rect = checkRect;
@@ -1029,34 +1038,33 @@ namespace ComPDFKit.Tool.DrawTool
 
                 MeasureChanged?.Invoke(this, measureEvent);
             }
-
         }
 
         private void DrawPolygonMeasure(DrawingContext drawingContext)
         {
-            CPDFPolygonAnnotation polyLine = (cPDFAnnotation as CPDFPolygonAnnotation);
-            byte[] bytes = polyLine.LineColor;
+            CPDFPolygonAnnotation polygonAnnot = (cPDFAnnotation as CPDFPolygonAnnotation);
+            byte[] bytes = polygonAnnot.LineColor;
             Color color = ParamConverter.ConverterByteForColor(bytes);
-            color.A = polyLine.GetTransparency();
-            Pen DrawPen = new Pen(new SolidColorBrush(color), polyLine.GetBorderWidth());
-            Pen EndDrawPen = new Pen(Brushes.Black, polyLine.GetBorderWidth());
+            color.A = polygonAnnot.GetTransparency();
+            Pen DrawPen = new Pen(new SolidColorBrush(color), polygonAnnot.GetBorderWidth());
+            Pen EndDrawPen = new Pen(Brushes.Black, polygonAnnot.GetBorderWidth());
             SolidColorBrush TextBrush = Brushes.Red;
 
-            if (polyLine.IsMeasured())
+            if (polygonAnnot.IsMeasured())
             {
-                CPDFAreaMeasure measureInfo = polyLine.GetAreaMeasure();
+                CPDFAreaMeasure measureInfo = polygonAnnot.GetAreaMeasure();
                 if (measureInfo != null && measureInfo.TextAttribute != null && measureInfo.TextAttribute.FontColor != null && measureInfo.TextAttribute.FontColor.Length >= 3)
                 {
                     byte[] fontColor = measureInfo.TextAttribute.FontColor;
                     TextBrush = new SolidColorBrush(Color.FromRgb(fontColor[0], fontColor[1], fontColor[2]));
                 }
 
-                if (polyLine.Dash != null && polyLine.Dash.Length > 0)
+                if (polygonAnnot.Dash != null && polygonAnnot.Dash.Length > 0)
                 {
                     DashStyle dash = new DashStyle();
-                    foreach (var offset in polyLine.Dash)
+                    foreach (var offset in polygonAnnot.Dash)
                     {
-                        dash.Dashes.Add(offset / polyLine.LineWidth);
+                        dash.Dashes.Add(offset / polygonAnnot.LineWidth);
                     }
                     DrawPen.DashStyle = dash;
                     DrawPen.DashCap = PenLineCap.Flat;
@@ -1070,6 +1078,7 @@ namespace ComPDFKit.Tool.DrawTool
                     mouseEndPoint = CalcAnglePoint(mouseEndPoint, drawPoints[drawPoints.Count - 1], pageBound);
                 }
             }
+
             Point checkPoint = mouseEndPoint;
             checkPoint.X = Math.Max(pageBound.Left, checkPoint.X);
             checkPoint.X = Math.Min(pageBound.Right, checkPoint.X);
@@ -1087,214 +1096,256 @@ namespace ComPDFKit.Tool.DrawTool
                 points.Add(rect.BottomRight);
                 points.Add(rect.TopRight);
             }
+
             if (points.Count > 0)
             {
-                PathGeometry drawPath = new PathGeometry();
-                PathFigure drawFigure = new PathFigure();
-
-                drawFigure.StartPoint = points[0];
-                PolyLineSegment polySegment = new PolyLineSegment();
-
-                for (int i = 1; i < points.Count; i++)
+                CPDFBorderEffector borderEffector = polygonAnnot.GetAnnotBorderEffector();
+                if (borderEffector != null && borderEffector.BorderIntensity != C_BORDER_INTENSITY.C_INTENSITY_ZERO && borderEffector.BorderType != C_BORDER_TYPE.C_BORDER_TYPE_STRAIGHT)
                 {
-                    polySegment.Points.Add(points[i]);
-                }
+                    //Draw the example line connected by the start point and the end point.
+                    if (points.Count == 1)
+                    {
+                        Pen dashedPen = new Pen(Brushes.Gray, 1);
+                        dashedPen.DashStyle = new DashStyle(new double[] { 2, 2 }, 0);
+                        drawingContext?.DrawLine(dashedPen, points[0], checkPoint);
+                    }
 
-                if (defaultSettingParam.IsCreateSquarePolygonMeasure)
-                {
-                    polySegment.Points.Add(points[0]);
+                    double left = drawPoints.AsEnumerable().Select(x => x.X).Min();
+                    double right = drawPoints.AsEnumerable().Select(x => x.X).Max();
+                    double top = drawPoints.AsEnumerable().Select(x => x.Y).Min();
+                    double bottom = drawPoints.AsEnumerable().Select(x => x.Y).Max();
+                    DPIRect = new Rect(left, top, right - left, bottom - top);
+
+                    polygonAnnot.SetAnnotBorderEffector(borderEffector);
+                    drawPoints.Add(checkPoint);
+                    List<Point> measurePoint = new List<Point>();
+                    measurePoint = GetMeasureDrawPoints();
+                    drawPoints.RemoveAt(drawPoints.Count - 1);
+                    List<CPoint> cPoints = new List<CPoint>();
+                    foreach (Point item in measurePoint)
+                    {
+                        cPoints.Add(DataConversionForWPF.PointConversionForCPoint(DpiHelper.StandardPointToPDFPoint(item)));
+                    }
+
+                    polygonAnnot.SetPoints(cPoints);
+                    polygonAnnot.UpdateAp();
+                    cPDFViewer.UpdateAnnotFrame();
                 }
                 else
                 {
-                    //Add the current point during the movement.
-                    polySegment.Points.Add(checkPoint);
-                }
+                    PathGeometry drawPath = new PathGeometry();
+                    PathFigure drawFigure = new PathFigure();
 
-                if (polySegment.Points.Count > 0)
-                {
-                    drawFigure.Segments.Add(polySegment);
-                }
-                if (drawFigure.Segments.Count > 0)
-                {
-                    drawPath.Figures.Add(drawFigure);
-                }
+                    drawFigure.StartPoint = points[0];
+                    PolyLineSegment polySegment = new PolyLineSegment();
 
-                //Draw the line segment.
-                drawingContext?.DrawGeometry(null, DrawPen, drawPath);
+                    for (int i = 1; i < points.Count; i++)
+                    {
+                        polySegment.Points.Add(points[i]);
+                    }
 
-                //Draw the example line connected by the start point and the end point.
-                if (points.Count > 1)
-                {
                     if (defaultSettingParam.IsCreateSquarePolygonMeasure)
                     {
-                        drawingContext?.DrawLine(DrawPen, points[0], polySegment.Points.Last());
+                        polySegment.Points.Add(points[0]);
                     }
                     else
                     {
-                        drawingContext?.DrawLine(EndDrawPen, points[0], polySegment.Points.Last());
+                        //Add the current point during the movement.
+                        polySegment.Points.Add(checkPoint);
                     }
-                }
 
-                //Calculate the length.
-                double totalInch = 0;
-                if (points.Count > 1)
-                {
-                    for (int i = 0; i < points.Count - 1; i++)
+                    if (polySegment.Points.Count > 0)
                     {
-                        totalInch += measureSetting.GetMeasureLength(points[i], points[i + 1], zoomFactor);
+                        drawFigure.Segments.Add(polySegment);
                     }
-                }
-                double currentInch = measureSetting.GetMeasureLength(points[points.Count - 1], checkPoint, zoomFactor);
-                if (defaultSettingParam.IsCreateSquarePolygonMeasure)
-                {
-                    currentInch = measureSetting.GetMeasureLength(points[points.Count - 1], points[0], zoomFactor);
-                }
-                totalInch += currentInch;
 
-                Point closePoint = points[points.Count - 1];
-                Vector movevector = checkPoint - closePoint;
-
-                FormattedText moveText = new FormattedText(
-                    string.Format("{0} {1}", measureSetting.GetPrecisionData(currentInch), measureSetting.RulerTranslateUnit),
-                    CultureInfo.GetCultureInfo("en-us"),
-                    FlowDirection.LeftToRight,
-                    new Typeface("YaHei"),
-                    16,
-                    TextBrush);
-
-                FormattedText totalText = new FormattedText(
-                   string.Format("{0} {1}", measureSetting.GetPrecisionData(totalInch), measureSetting.RulerTranslateUnit),
-                   CultureInfo.GetCultureInfo("en-us"),
-                   FlowDirection.LeftToRight,
-                   new Typeface("YaHei"),
-                   16,
-                 TextBrush);
-
-                //Judge the text display form.
-                if (movevector.Length > moveText.Width + textPadding || defaultSettingParam.IsCreateSquarePolygonMeasure)
-                {
-                    if (checkPoint.X >= closePoint.X)
+                    if (drawFigure.Segments.Count > 0)
                     {
-                        Point linePoint = new Point(closePoint.X + movevector.Length, closePoint.Y);
-                        Point drawPoint = new Point(
-                            linePoint.X - moveText.Width - textPadding,
-                            linePoint.Y - moveText.Height);
+                        drawPath.Figures.Add(drawFigure);
+                    }
 
-                        Vector anglevector = linePoint - closePoint;
+                    //Draw the line segment.
+                    drawingContext?.DrawGeometry(null, DrawPen, drawPath);
 
-                        RotateTransform transform = new RotateTransform();
-                        transform.CenterX = closePoint.X;
-                        transform.CenterY = closePoint.Y;
-                        double angle = Vector.AngleBetween(movevector, anglevector);
-                        transform.Angle = -angle;
-
-                        drawingContext?.PushTransform(transform);
-                        if (!defaultSettingParam.IsCreateSquarePolygonMeasure)
+                    //Draw the example line connected by the start point and the end point.
+                    if (points.Count > 1)
+                    {
+                        if (defaultSettingParam.IsCreateSquarePolygonMeasure)
                         {
-                            drawingContext?.DrawText(moveText, drawPoint);
+                            drawingContext?.DrawLine(DrawPen, points[0], polySegment.Points.Last());
                         }
-                        if (totalInch > currentInch)
+                        else
                         {
-                            drawingContext?.DrawText(totalText, new Point(
-                                drawPoint.X + moveText.Width + textPadding * 2,
-                                drawPoint.Y
-                                ));
+                            drawingContext?.DrawLine(EndDrawPen, points[0], polySegment.Points.Last());
                         }
-                        drawingContext.Pop();
+                    }
+
+                    //Calculate the length.
+                    double totalInch = 0;
+                    if (points.Count > 1)
+                    {
+                        for (int i = 0; i < points.Count - 1; i++)
+                        {
+                            totalInch += measureSetting.GetMeasureLength(points[i], points[i + 1], zoomFactor);
+                        }
+                    }
+
+                    double currentInch = measureSetting.GetMeasureLength(points[points.Count - 1], checkPoint, zoomFactor);
+                    if (defaultSettingParam.IsCreateSquarePolygonMeasure)
+                    {
+                        currentInch = measureSetting.GetMeasureLength(points[points.Count - 1], points[0], zoomFactor);
+                    }
+
+                    totalInch += currentInch;
+                    Point closePoint = points[points.Count - 1];
+                    Vector movevector = checkPoint - closePoint;
+                    if (polygonAnnot.IsMeasured())
+                    {
+                        FormattedText moveText = new FormattedText(
+                            string.Format("{0} {1}", measureSetting.GetPrecisionData(currentInch), measureSetting.RulerTranslateUnit),
+                            CultureInfo.GetCultureInfo("en-us"),
+                            FlowDirection.LeftToRight,
+                            new Typeface("YaHei"),
+                            16,
+                            TextBrush);
+
+                        FormattedText totalText = new FormattedText(
+                           string.Format("{0} {1}", measureSetting.GetPrecisionData(totalInch), measureSetting.RulerTranslateUnit),
+                           CultureInfo.GetCultureInfo("en-us"),
+                           FlowDirection.LeftToRight,
+                           new Typeface("YaHei"),
+                           16,
+                         TextBrush);
+
+                        //Judge the text display form.
+                        if (movevector.Length > moveText.Width + textPadding || defaultSettingParam.IsCreateSquarePolygonMeasure)
+                        {
+                            if (checkPoint.X >= closePoint.X)
+                            {
+                                Point linePoint = new Point(closePoint.X + movevector.Length, closePoint.Y);
+                                Point drawPoint = new Point(
+                                    linePoint.X - moveText.Width - textPadding,
+                                    linePoint.Y - moveText.Height);
+
+                                Vector anglevector = linePoint - closePoint;
+
+                                RotateTransform transform = new RotateTransform();
+                                transform.CenterX = closePoint.X;
+                                transform.CenterY = closePoint.Y;
+                                double angle = Vector.AngleBetween(movevector, anglevector);
+                                transform.Angle = -angle;
+
+                                drawingContext?.PushTransform(transform);
+                                if (!defaultSettingParam.IsCreateSquarePolygonMeasure)
+                                {
+                                    drawingContext?.DrawText(moveText, drawPoint);
+                                }
+                                if (totalInch > currentInch)
+                                {
+                                    drawingContext?.DrawText(totalText, new Point(
+                                        drawPoint.X + moveText.Width + textPadding * 2,
+                                        drawPoint.Y
+                                        ));
+                                }
+                                drawingContext.Pop();
+                            }
+                            else
+                            {
+                                Point linePoint = new Point(closePoint.X - movevector.Length, closePoint.Y);
+                                Point drawPoint = new Point(
+                                    linePoint.X + textPadding,
+                                    linePoint.Y - moveText.Height);
+
+                                Vector anglevector = linePoint - closePoint;
+                                RotateTransform transform = new RotateTransform();
+                                transform.CenterX = closePoint.X;
+                                transform.CenterY = closePoint.Y;
+                                double angle = Vector.AngleBetween(movevector, anglevector);
+                                transform.Angle = -angle;
+
+                                drawingContext?.PushTransform(transform);
+                                if (!defaultSettingParam.IsCreateSquarePolygonMeasure)
+                                {
+                                    drawingContext?.DrawText(moveText, drawPoint);
+                                }
+                                if (totalInch > currentInch)
+                                {
+                                    drawingContext?.DrawText(totalText,
+                                        new Point(
+                                        drawPoint.X - totalText.Width - textPadding * 2,
+                                        drawPoint.Y
+                                        ));
+                                }
+                                drawingContext.Pop();
+                            }
+                        }
+                    }
+
+                    if (defaultSettingParam.IsCreateSquarePolygonMeasure)
+                    {
+                        double deleft = points.AsEnumerable().Select(x => x.X).Min();
+                        double deright = points.AsEnumerable().Select(x => x.X).Max();
+                        double detop = points.AsEnumerable().Select(x => x.Y).Min();
+                        double debottom = points.AsEnumerable().Select(x => x.Y).Max();
+                        DPIRect = new Rect(deleft, detop, deright - deleft, debottom - detop);
                     }
                     else
                     {
-                        Point linePoint = new Point(closePoint.X - movevector.Length, closePoint.Y);
-                        Point drawPoint = new Point(
-                            linePoint.X + textPadding,
-                            linePoint.Y - moveText.Height);
-
-                        Vector anglevector = linePoint - closePoint;
-
-                        RotateTransform transform = new RotateTransform();
-                        transform.CenterX = closePoint.X;
-                        transform.CenterY = closePoint.Y;
-                        double angle = Vector.AngleBetween(movevector, anglevector);
-                        transform.Angle = -angle;
-
-                        drawingContext?.PushTransform(transform);
-                        if (!defaultSettingParam.IsCreateSquarePolygonMeasure)
-                        {
-                            drawingContext?.DrawText(moveText, drawPoint);
-                        }
-                        if (totalInch > currentInch)
-                        {
-                            drawingContext?.DrawText(totalText,
-                                new Point(
-                                drawPoint.X - totalText.Width - textPadding * 2,
-                                drawPoint.Y
-                                ));
-                        }
-                        drawingContext.Pop();
+                        double left = drawPoints.AsEnumerable().Select(x => x.X).Min();
+                        double right = drawPoints.AsEnumerable().Select(x => x.X).Max();
+                        double top = drawPoints.AsEnumerable().Select(x => x.Y).Min();
+                        double bottom = drawPoints.AsEnumerable().Select(x => x.Y).Max();
+                        DPIRect = new Rect(left, top, right - left, bottom - top);
                     }
-                }
-                double left = drawPoints.AsEnumerable().Select(x => x.X).Min();
-                double right = drawPoints.AsEnumerable().Select(x => x.X).Max();
-                double top = drawPoints.AsEnumerable().Select(x => x.Y).Min();
-                double bottom = drawPoints.AsEnumerable().Select(x => x.Y).Max();
-                DPIRect = new Rect(left, top, right - left, bottom - top);
-                if (defaultSettingParam.IsCreateSquarePolygonMeasure)
-                {
-                    double deleft = points.AsEnumerable().Select(x => x.X).Min();
-                    double deright = points.AsEnumerable().Select(x => x.X).Max();
-                    double detop = points.AsEnumerable().Select(x => x.Y).Min();
-                    double debottom = points.AsEnumerable().Select(x => x.Y).Max();
 
-                    DPIRect = new Rect(deleft, detop, deright - deleft, debottom - detop);
-                }
-
-                MeasureEventArgs measureEvent = new MeasureEventArgs();
-                if (points.Count < 2)
-                {
-                    measureEvent.Angle = 0;
-                }
-                else
-                {
-                    Vector standVector = points[points.Count - 1] - points[points.Count - 2];
-                    Vector endvector = closePoint - checkPoint;
-                    measureEvent.Angle = (int)Math.Abs(Vector.AngleBetween(endvector, standVector));
-                    if (defaultSettingParam.IsCreateSquarePolygonMeasure)
+                    MeasureEventArgs measureEvent = new MeasureEventArgs();
+                    if (points.Count < 2)
                     {
-                        measureEvent.Angle = 90;
+                        measureEvent.Angle = 0;
                     }
+                    else
+                    {
+                        Vector standVector = points[points.Count - 1] - points[points.Count - 2];
+                        Vector endvector = closePoint - checkPoint;
+                        measureEvent.Angle = (int)Math.Abs(Vector.AngleBetween(endvector, standVector));
+                        if (defaultSettingParam.IsCreateSquarePolygonMeasure)
+                        {
+                            measureEvent.Angle = 90;
+                        }
+                    }
+
+                    List<Point> pon = new List<Point>();
+                    if (!defaultSettingParam.IsCreateSquarePolygonMeasure)
+                    {
+                        points.Add(checkPoint);
+                    }
+                    foreach (Point drawPoint in points)
+                    {
+                        Point savePoint = new Point(
+                            (drawPoint.X - pageBound.Left) + cropPoint.X,
+                            (drawPoint.Y - pageBound.Top) + cropPoint.Y);
+                        pon.Add(DpiHelper.StandardPointToPDFPoint(new Point(
+                           (float)drawPoint.X / zoomFactor,
+                            (float)drawPoint.Y / zoomFactor
+                            )));
+                    }
+
+                    double area = measureSetting.ComputePolygonArea(pon.ToList());
+                    double ratio = measureSetting.GetMeasureAreaRatio();
+                    double rate = measureSetting.RulerTranslate / measureSetting.RulerBase;
+                    double inch = area * ratio * ratio * rate * rate;
+
+                    //measureEvent.RulerTranslateUnit = measureSetting.RulerTranslateUnit;
+                    //measureEvent.RulerTranslate = measureSetting.RulerTranslate;
+                    //measureEvent.RulerBase = measureSetting.RulerBase;
+                    //measureEvent.RulerBaseUnit = measureSetting.RulerBaseUnit;
+                    //measureEvent.Precision = measureSetting.Precision;
+                    //measureEvent.Type = CPDFMeasureType.CPDF_AREA_MEASURE;
+                    //measureEvent.Distance = totalText.Text;
+                    //  measureEvent.Area = string.Format("{0} sq {1}", measureSetting.GetPrecisionData(inch), measureSetting.RulerTranslateUnit);
+
+                    MeasureChanged?.Invoke(this, measureEvent);
                 }
-
-                List<Point> pon = new List<Point>();
-                if (!defaultSettingParam.IsCreateSquarePolygonMeasure)
-                {
-                    points.Add(checkPoint);
-                }
-                foreach (Point drawPoint in points)
-                {
-                    Point savePoint = new Point(
-                        (drawPoint.X - pageBound.Left) + cropPoint.X,
-                        (drawPoint.Y - pageBound.Top) + cropPoint.Y);
-                    pon.Add(DpiHelper.StandardPointToPDFPoint(new Point(
-                       (float)drawPoint.X / zoomFactor,
-                        (float)drawPoint.Y / zoomFactor
-                        )));
-                }
-
-                double area = measureSetting.ComputePolygonArea(pon.ToList());
-                double ratio = measureSetting.GetMeasureAreaRatio();
-                double rate = measureSetting.RulerTranslate / measureSetting.RulerBase;
-                double inch = area * ratio * ratio * rate * rate;
-
-                measureEvent.RulerTranslateUnit = measureSetting.RulerTranslateUnit;
-                measureEvent.RulerTranslate = measureSetting.RulerTranslate;
-                measureEvent.RulerBase = measureSetting.RulerBase;
-                measureEvent.RulerBaseUnit = measureSetting.RulerBaseUnit;
-                measureEvent.Precision = measureSetting.Precision;
-                measureEvent.Type = CPDFMeasureType.CPDF_AREA_MEASURE;
-                measureEvent.Distance = totalText.Text;
-                measureEvent.Area = string.Format("{0} sq {1}", measureSetting.GetPrecisionData(inch), measureSetting.RulerTranslateUnit);
-
-                MeasureChanged?.Invoke(this, measureEvent);
             }
         }
 
@@ -1434,7 +1485,10 @@ namespace ComPDFKit.Tool.DrawTool
         #endregion
         public void MultipleClick(Point downPoint)
         {
-            drawPoints.Add(downPoint);
+            if(!drawPoints.Contains(downPoint))
+            {
+                drawPoints.Add(downPoint);
+            }
         }
 
         public Rect GetMaxRect()
@@ -1452,7 +1506,7 @@ namespace ComPDFKit.Tool.DrawTool
 
                     TextBox textui = new TextBox();
 
-                    Border textBorder = new Border();
+                    DashedBorder textBorder = new DashedBorder();
                     textBorder.Child = textui;
                     textui.Width = 200;
                     CTextAttribute textAttribute = annotFreeText.FreeTextDa;
@@ -1487,7 +1541,20 @@ namespace ComPDFKit.Tool.DrawTool
 
                     textBorder.Padding = new Thickness(0);
                     textBorder.BorderBrush = new SolidColorBrush(borderColor);
-                    textBorder.BorderThickness = new Thickness(DpiHelper.PDFNumToStandardNum(annotFreeText.GetBorderWidth() * zoomFactor));
+                    double rawWidth = annotFreeText.GetBorderWidth();
+                    double drawWidth = DpiHelper.PDFNumToStandardNum(rawWidth * zoomFactor);
+                    textBorder.BorderThickness = new Thickness(drawWidth);
+                    if (annotFreeText.BorderStyle != C_BORDER_STYLE.BS_SOLID && annotFreeText.Dash != null && annotFreeText.Dash.Length > 0)
+                    {
+                        //补充保存虚线样式
+                        DoubleCollection dashCollection = new DoubleCollection();
+                        foreach (float num in annotFreeText.Dash)
+                        {
+                            dashCollection.Add(num);
+                        }
+                        textBorder?.DrawDashBorder(true, drawWidth, rawWidth, dashCollection);
+                    }
+
                     textui.BorderThickness = new Thickness(0);
                     textui.Text = annotFreeText.Content;
 
@@ -1532,7 +1599,7 @@ namespace ComPDFKit.Tool.DrawTool
                         CPDFAnnotation currentAnnot = textui.GetValue(PopupTextAttachDataProperty) as CPDFAnnotation;
                         AnnotParam annotParam = ParamConverter.AnnotConverter(cPDFViewer.GetDocument(), currentAnnot);
                         if (currentAnnot != null && currentAnnot.IsValid())
-                        { 
+                        {
                             CPDFFreeTextAnnotation updateFreeText = currentAnnot as CPDFFreeTextAnnotation;
                             if (textui.Text != string.Empty || updateFreeText.GetBorderWidth() != 0)
                             {
@@ -1551,7 +1618,7 @@ namespace ComPDFKit.Tool.DrawTool
                                     ));
                                 updateFreeText.UpdateAp();
                                 FreeTextAnnotHistory freeTextAnnotHistory = new FreeTextAnnotHistory();
-                                annotParam = ParamConverter.AnnotConverter(cPDFViewer.GetDocument(), currentAnnot); 
+                                annotParam = ParamConverter.AnnotConverter(cPDFViewer.GetDocument(), currentAnnot);
                                 annotParam.AnnotIndex = currentAnnot.Page.GetAnnotCount() - 1;
                                 freeTextAnnotHistory.CurrentParam = (FreeTextParam)annotParam;
                                 freeTextAnnotHistory.PDFDoc = cPDFViewer.GetDocument();
@@ -1713,10 +1780,23 @@ namespace ComPDFKit.Tool.DrawTool
                     lastTextui.Background = new SolidColorBrush(backgroundColor);
                     lastTextBorder.Padding = new Thickness(0);
                     lastTextBorder.BorderBrush = new SolidColorBrush(borderColor);
-                    lastTextBorder.BorderThickness = new Thickness(DpiHelper.PDFNumToStandardNum(annotFreeText.GetBorderWidth() * zoomFactor));
+                    double rawWidth = annotFreeText.GetBorderWidth();
+                    double drawWidth = DpiHelper.PDFNumToStandardNum(rawWidth * zoomFactor);
+                    lastTextBorder.BorderThickness = new Thickness(drawWidth);
                     lastTextui.BorderThickness = new Thickness(0);
                     lastTextui.Text = annotFreeText.Content;
                     lastTextui.Opacity = annotFreeText.Transparency;
+                    if (annotFreeText.BorderStyle != C_BORDER_STYLE.BS_SOLID && annotFreeText.Dash != null && annotFreeText.Dash.Length > 0)
+                    {
+                        //补充保存虚线样式
+                        DashedBorder dashBorder = (DashedBorder)lastTextBorder;
+                        DoubleCollection dashCollection = new DoubleCollection();
+                        foreach (float num in annotFreeText.Dash)
+                        {
+                            dashCollection.Add(num);
+                        }
+                        dashBorder.DrawDashBorder(true, drawWidth, rawWidth, dashCollection);
+                    }
 
                     string fontName = string.Empty;
                     string fontFamily = string.Empty;
@@ -1872,6 +1952,25 @@ namespace ComPDFKit.Tool.DrawTool
                 }
             }
             return anglePoint;
+        }
+
+        public bool IsCanSave()
+        {
+            if (cPDFAnnotation == null)
+                return false;
+
+            if (cPDFAnnotation is CPDFPolygonAnnotation)
+            {
+                if (drawPoints.Count <= 2)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool IsCreating()
+        {
+            return cPDFAnnotation != null;
         }
     }
 }

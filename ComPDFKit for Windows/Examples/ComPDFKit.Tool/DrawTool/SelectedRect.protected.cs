@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -8,7 +9,6 @@ namespace ComPDFKit.Tool.DrawTool
     public partial class SelectedRect
     {
         #region Properties
-
         /// <summary>
         /// Current control point drawing style.
         /// </summary>
@@ -18,7 +18,6 @@ namespace ComPDFKit.Tool.DrawTool
             set;
         }
 
-
         /// <summary>
         /// Current drag drawing style.
         /// </summary>
@@ -27,7 +26,11 @@ namespace ComPDFKit.Tool.DrawTool
         /// <summary>
         /// Current click hit control point.
         /// </summary>
-        protected PointControlType hitControlType { get; set; }
+        protected PointControlType hitControlType
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Mouse down position information.
@@ -38,6 +41,10 @@ namespace ComPDFKit.Tool.DrawTool
         /// Whether the mouse is pressed.
         /// </summary>
         protected bool isMouseDown { get; set; }
+
+        protected bool isInRotate { get; set; } = false;
+
+        protected bool isInScaling { get; set; } = false;
 
         /// <summary>
         /// Whether proportional scaling is required.
@@ -52,12 +59,12 @@ namespace ComPDFKit.Tool.DrawTool
         /// <summary>
         /// Rectangular minimum width.
         /// </summary>
-        protected int rectMinWidth { get; set; } = 10;
+        public int RectMinWidth { get; set; } = 10;
 
         /// <summary>
         /// Rectangular minimum height.
         /// </summary>
-        protected int RectMinHeight { get; set; } = 10;
+        public int RectMinHeight { get; set; } = 10;
 
         /// <summary>
         /// Current set of ignore points.
@@ -67,12 +74,20 @@ namespace ComPDFKit.Tool.DrawTool
         /// <summary>
         /// Current set of drawing rectangles (original data).
         /// </summary>
-        protected Rect SetDrawRect { get; set; } = new Rect(0, 0, 0, 0);
+        protected Rect SetDrawRect
+        {
+            get;
+            set;
+        } = new Rect(0, 0, 0, 0);
 
         /// <summary>
         /// Current drawing rectangle (calculated during operation).
         /// </summary>
-        protected Rect drawRect { get; set; } = new Rect(0, 0, 0, 0);
+        protected Rect drawRect
+        {
+            get;
+            set;
+        } = new Rect(0, 0, 0, 0);
 
         /// <summary>
         /// Maximum range that can be drawn.
@@ -93,6 +108,12 @@ namespace ComPDFKit.Tool.DrawTool
         /// Current control point coordinates.
         /// </summary>
         protected List<Point> controlPoints { get; set; } = new List<Point>();
+
+        protected Point centerPoint = new Point();
+
+        protected Point rotationPoint = new Point();
+
+        protected Point dragRotationPoint = new Point();
 
         /// <summary>
         /// Move offset during movement.
@@ -119,6 +140,10 @@ namespace ComPDFKit.Tool.DrawTool
 
         protected double PDFViewerActualHeight { get; set; } = 0;
 
+        protected int rotateAngle { get; set; } = 0;
+
+        protected int pageRotation { get; set; } = 0;
+
         protected double rectPadding = 6;
 
         protected double currentZoom = 1;
@@ -126,6 +151,12 @@ namespace ComPDFKit.Tool.DrawTool
         protected SelectedAnnotData selectedRectData = new SelectedAnnotData();
 
         protected bool disable = false;
+
+        protected List<Point> rotateControlPoints = new List<Point>();
+
+        protected Rect rotateRect = new Rect();
+
+        public bool IsPath { get; set; } = false;
 
         #endregion
 
@@ -140,17 +171,43 @@ namespace ComPDFKit.Tool.DrawTool
         protected void CalcControlPoint(Rect currentRect)
         {
             controlPoints.Clear();
-            int centerX = (int)(currentRect.Left + currentRect.Right) / 2;
-            int centerY = (int)(currentRect.Top + currentRect.Bottom) / 2;
+            centerPoint.X = (int)(currentRect.Left + currentRect.Right) / 2;
+            centerPoint.Y = (int)(currentRect.Top + currentRect.Bottom) / 2;
 
             controlPoints.Add(new Point(currentRect.Left, currentRect.Top));
-            controlPoints.Add(new Point(currentRect.Left, centerY));
+            controlPoints.Add(new Point(currentRect.Left, centerPoint.Y));
             controlPoints.Add(new Point(currentRect.Left, currentRect.Bottom));
-            controlPoints.Add(new Point(centerX, currentRect.Bottom));
+            controlPoints.Add(new Point(centerPoint.X, currentRect.Bottom));
             controlPoints.Add(new Point(currentRect.Right, currentRect.Bottom));
-            controlPoints.Add(new Point(currentRect.Right, centerY));
+            controlPoints.Add(new Point(currentRect.Right, centerPoint.Y));
             controlPoints.Add(new Point(currentRect.Right, currentRect.Top));
-            controlPoints.Add(new Point(centerX, currentRect.Top));
+            controlPoints.Add(new Point(centerPoint.X, currentRect.Top));
+
+            if (canRotate)
+            {
+                rotationPoint = new Point(centerPoint.X, currentRect.Top - 30);
+                switch (pageRotation)
+                {
+                    case 0:
+                        rotationPoint = new Point(centerPoint.X, currentRect.Top - 30);
+                        break;
+
+                    case 1:
+                        rotationPoint = new Point(currentRect.Right + 30, centerPoint.Y);
+                        break;
+
+                    case 2:
+                        rotationPoint = new Point(centerPoint.X, currentRect.Bottom + 30);
+                        break;
+
+                    case 3:
+                        rotationPoint = new Point(currentRect.Left - 30, centerPoint.Y);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
 
         protected List<Point> GetControlPoint(Rect currentRect)
@@ -234,9 +291,23 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 return false;
             }
+
+            if (hitControlType == PointControlType.Rotate)
+            {
+                SetRotateByMousePoint(mousePoint);
+                return false;
+            }
+
             if (!isOutSideScaling)
             {
-                return NormalScaling(mousePoint);
+                if (selectedRectData.rotationAngle != 0)
+                {
+                    return RotateScaling(mousePoint);
+                }
+                else
+                {
+                    return NormalScaling(mousePoint);
+                }
             }
             else
             {
@@ -249,11 +320,10 @@ namespace ComPDFKit.Tool.DrawTool
             isOutSideScaling = IsOutSideScaling;
         }
 
-
         private Size GetProportionalScalingSize(double width, double height)
         {
             double minHeight = RectMinHeight + 2 * rectPadding * currentZoom;
-            double minWidth = rectMinWidth + 2 * rectPadding * currentZoom;
+            double minWidth = RectMinWidth + 2 * rectPadding * currentZoom;
             if (minWidth > width || minHeight > height)
             {
                 if (cacheRect.Width >= cacheRect.Height)
@@ -271,6 +341,13 @@ namespace ComPDFKit.Tool.DrawTool
             return new Size(width, height);
         }
 
+        private void SetRotateByMousePoint(Point mousePoint)
+        {
+            dragRotationPoint = mousePoint;
+            Vector moveVector = (mousePoint - centerPoint);
+            rotateAngle = (int)(Math.Atan2(moveVector.X, -moveVector.Y) * 180  / Math.PI) - pageRotation * 90;
+        }
+
         /// <summary>
         /// Draw the algorithm in the form of normal scaling (drag a point, only scale in one direction).
         /// </summary>
@@ -282,7 +359,7 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 double left = 0, right = 0, top = 0, bottom = 0;
                 double minHeight = RectMinHeight + 2 * rectPadding * currentZoom;
-                double minWidth = rectMinWidth + 2 * rectPadding * currentZoom;
+                double minWidth = RectMinWidth + 2 * rectPadding * currentZoom;
 
                 Point centerPoint = new Point((cacheRect.Right + cacheRect.Left) / 2, (cacheRect.Bottom + cacheRect.Top) / 2);
                 Point moveVector = (Point)(mousePoint - centerPoint);
@@ -391,7 +468,7 @@ namespace ComPDFKit.Tool.DrawTool
                         }
                         break;
 
-                    case PointControlType.MiddlBottom:
+                    case PointControlType.MiddleBottom:
                         {
                             left = cacheRect.Left;
                             right = cacheRect.Right;
@@ -434,7 +511,7 @@ namespace ComPDFKit.Tool.DrawTool
                                 }
                             }
                             else
-                            {
+                            { 
                                 if (left + minWidth > right)
                                 {
                                     right = left + minWidth;
@@ -521,11 +598,11 @@ namespace ComPDFKit.Tool.DrawTool
                     case PointControlType.Body:
                     case PointControlType.Line:
                         {
-                            Point OffsetPos = CalcMoveBound(cacheRect, ((Point)(mousePoint - mouseDownPoint)), maxRect);
-                            left = cacheRect.Left + OffsetPos.X;
-                            right = cacheRect.Right + OffsetPos.X;
-                            top = cacheRect.Top + OffsetPos.Y;
-                            bottom = cacheRect.Bottom + OffsetPos.Y;
+                            Point offsetPos = CalcMoveBound(cacheRect, ((Point)(mousePoint - mouseDownPoint)), maxRect);
+                            left = cacheRect.Left + offsetPos.X;
+                            right = cacheRect.Right + offsetPos.X;
+                            top = cacheRect.Top + offsetPos.Y;
+                            bottom = cacheRect.Bottom + offsetPos.Y;
                         }
                         break;
 
@@ -563,6 +640,182 @@ namespace ComPDFKit.Tool.DrawTool
             return false;
         }
 
+        protected bool RotateScaling(Point mouseMovePoint)
+        {
+            Point rotatePoint = new Point();
+            Point hitControlUIPos = new Point();
+            if (hitControlType < PointControlType.Body)
+            {
+                hitControlUIPos = rotateControlPoints[(int)hitControlType];
+            }
+
+            hitControlUIPos = GetRotateUIPoint(hitControlUIPos);
+            Point centerPoint = new Point((rotateRect.Left + rotateRect.Right) / 2, (rotateRect.Top + rotateRect.Bottom) / 2);
+            Vector moveVector = mouseMovePoint - mouseDownPoint;
+            Vector hitVector = hitControlUIPos - centerPoint;
+
+            Rect tmpRect = cacheRect;
+            if (hitControlType == PointControlType.LeftTop
+                || hitControlType == PointControlType.LeftBottom
+                || hitControlType == PointControlType.RightTop
+                || hitControlType == PointControlType.RightBottom)
+            {
+                if (isProportionalScaling)
+                {
+                    double vectorAngle = Vector.AngleBetween(moveVector, hitVector);
+                    double newLenght = Math.Cos(Math.PI / 180.0 * vectorAngle) * moveVector.Length;
+
+                    hitVector.Normalize();
+                    hitVector.X *= newLenght;
+                    hitVector.Y *= newLenght;
+                    rotatePoint = new Point(hitControlUIPos.X + hitVector.X, hitControlUIPos.Y + hitVector.Y);
+                }
+            }
+
+            switch (hitControlType)
+            {
+                case PointControlType.LeftTop:
+                    {
+                        Point rightBottomPoint = rotateControlPoints[(int)PointControlType.RightBottom];
+                        Point rightBottomUIPos = GetRotateUIPoint(rightBottomPoint);
+                        centerPoint = new Point((rotatePoint.X + rightBottomUIPos.X) / 2, (rotatePoint.Y + rightBottomUIPos.Y) / 2);
+
+                        Matrix rotateMatrix = new Matrix();
+                        rotateMatrix.RotateAt(-rotateAngle, centerPoint.X, centerPoint.Y);
+
+                        Point leftTopPoint = rotateMatrix.Transform(rotatePoint);
+                        rightBottomPoint = rotateMatrix.Transform(rightBottomUIPos);
+                        tmpRect = new Rect(leftTopPoint, rightBottomPoint);
+                    }
+                    break;
+
+                case PointControlType.LeftBottom:
+                    {
+                        Point rightTopPoint = rotateControlPoints[(int)PointControlType.RightTop];
+                        Point rightTopUIPos = GetRotateUIPoint(rightTopPoint);
+                        centerPoint = new Point((rotatePoint.X + rightTopUIPos.X) / 2, (rotatePoint.Y + rightTopUIPos.Y) / 2);
+
+                        Matrix rotateMatrix = new Matrix();
+                        rotateMatrix.RotateAt(-rotateAngle, centerPoint.X, centerPoint.Y);
+
+                        Point leftBottomPoint = rotateMatrix.Transform(rotatePoint);
+                        rightTopPoint = rotateMatrix.Transform(rightTopUIPos);
+                        tmpRect = new Rect(leftBottomPoint, rightTopPoint);
+                    }
+                    break;
+
+                case PointControlType.RightTop:
+                    {
+                        Point leftBottomPoint = rotateControlPoints[(int)PointControlType.LeftBottom];
+                        Point leftBottomUIPos = GetRotateUIPoint(leftBottomPoint);
+                        centerPoint = new Point((rotatePoint.X + leftBottomUIPos.X) / 2, (rotatePoint.Y + leftBottomUIPos.Y) / 2);
+
+                        Matrix rotateMatrix = new Matrix();
+                        rotateMatrix.RotateAt(-rotateAngle, centerPoint.X, centerPoint.Y);
+
+                        Point rightTopPoint = rotateMatrix.Transform(rotatePoint);
+                        leftBottomPoint = rotateMatrix.Transform(leftBottomUIPos);
+                        tmpRect = new Rect(leftBottomPoint, rightTopPoint);
+                    }
+                    break;
+
+                case PointControlType.RightBottom:
+                    {
+                        Point leftTopPoint = rotateControlPoints[(int)PointControlType.LeftTop];
+                        Point leftTopUIPos = GetRotateUIPoint(leftTopPoint);
+                        centerPoint = new Point((rotatePoint.X + leftTopUIPos.X) / 2, (rotatePoint.Y + leftTopUIPos.Y) / 2);
+
+                        Matrix rotateMatrix = new Matrix();
+                        rotateMatrix.RotateAt(-rotateAngle, centerPoint.X, centerPoint.Y);
+
+                        Point rightBottomPoint = rotateMatrix.Transform(rotatePoint);
+                        leftTopPoint = rotateMatrix.Transform(leftTopUIPos);
+                        tmpRect = new Rect(leftTopPoint, rightBottomPoint);
+                    }
+                    break;
+
+                case PointControlType.Body:
+                case PointControlType.Line:
+                    {
+                        Point offsetPos = (Point)(mouseMovePoint - mouseDownPoint);
+                        double left = cacheRect.Left + offsetPos.X;
+                        double right = cacheRect.Right + offsetPos.X;
+                        double top = cacheRect.Top + offsetPos.Y;
+                        double bottom = cacheRect.Bottom + offsetPos.Y;
+                        tmpRect = new Rect(new Point(left,top), new Point(right,bottom));
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            List<Point> tempPoints = new List<Point>
+            {
+                new Point(tmpRect.Left, tmpRect.Top),
+                new Point(tmpRect.Right, tmpRect.Top),
+                new Point(tmpRect.Right, tmpRect.Bottom),
+                new Point(tmpRect.Left, tmpRect.Bottom)
+            };
+
+            List<Point> boundPoint = new List<Point>();
+            Point center = new Point((tmpRect.Left + tmpRect.Right) / 2, (tmpRect.Top + tmpRect.Bottom) / 2);
+            foreach (Point point in tempPoints)
+            {
+                float x = (float)(center.X + (point.X - center.X) * Math.Cos(rotateAngle * Math.PI / 180) - (point.Y - center.Y) * Math.Sin(rotateAngle * Math.PI / 180));
+                float y = (float)(center.Y + (point.X - center.X) * Math.Sin(rotateAngle * Math.PI / 180) + (point.Y - center.Y) * Math.Cos(rotateAngle * Math.PI / 180));
+                boundPoint.Add(new Point(x, y));
+            }
+
+            Rect boundRect = new Rect(new Point(boundPoint.Min(p => p.X), boundPoint.Min(p => p.Y)), new Point(boundPoint.Max(p => p.X), boundPoint.Max(p => p.Y)));
+            if (maxRect.Contains(boundRect))
+            {
+                drawRect = tmpRect;
+            }
+            else
+            {
+                if(hitControlType == PointControlType.Body || hitControlType == PointControlType.Line)
+                {
+                    Point boundRectCenterPos = new Point((boundRect.Left + boundRect.Right) / 2, (boundRect.Top + boundRect.Bottom) / 2);
+                    Point maxRectCenterPos = new Point((maxRect.Left + maxRect.Right) / 2, (maxRect.Top + maxRect.Bottom) / 2);
+                    Vector moveCenterVector = boundRectCenterPos - maxRectCenterPos;
+                    Point moveOffsetPos = new Point(0, 0);
+                    if (Math.Abs(moveCenterVector.X) > (maxRect.Width - boundRect.Width) / 2)
+                    {
+                        double moveLength = maxRectCenterPos.X - boundRectCenterPos.X;
+                        moveOffsetPos.X = Math.Abs(moveLength) - (maxRect.Width - boundRect.Width) / 2;
+                        if (moveLength < 0)
+                        {
+                            moveOffsetPos.X *= -1;
+                        }
+                    }
+
+                    if (Math.Abs(moveCenterVector.Y) > (maxRect.Height - boundRect.Height) / 2)
+                    {
+                        double moveLength = maxRectCenterPos.Y - boundRectCenterPos.Y;
+                        moveOffsetPos.Y = Math.Abs(moveLength) - (maxRect.Height - boundRect.Height) / 2;
+                        if (moveLength < 0)
+                        {
+                            moveOffsetPos.Y *= -1;
+                        }
+                    }
+
+                    drawRect = new Rect(tmpRect.Left + moveOffsetPos.X, tmpRect.Top + moveOffsetPos.Y, tmpRect.Width, tmpRect.Height);
+                }
+            }
+
+            moveOffset = new Point(drawRect.X - cacheRect.X, drawRect.Y - cacheRect.Y);
+            return true;
+        }
+
+        private Point GetRotateUIPoint(Point point)
+        {
+            Point centerPoint = new Point((rotateRect.Left + rotateRect.Right) / 2, (rotateRect.Top + rotateRect.Bottom) / 2);
+            Matrix rotateMatrix = new Matrix();
+            rotateMatrix.RotateAt(rotateAngle, centerPoint.X, centerPoint.Y);
+            return rotateMatrix.Transform(point);
+        }
+
         /// <summary>
         /// Provisional logic, to be further improved, not yet used: Draw the algorithm in the form of normal scaling (drag a point, only scale in one direction).
         /// </summary>
@@ -574,7 +827,7 @@ namespace ComPDFKit.Tool.DrawTool
             {
                 double left = 0, right = 0, top = 0, bottom = 0;
                 double minHeight = RectMinHeight + 2 * rectPadding * currentZoom;
-                double minWidth = rectMinWidth + 2 * rectPadding * currentZoom;
+                double minWidth = RectMinWidth + 2 * rectPadding * currentZoom;
 
                 Point centerPoint = new Point((cacheRect.Right + cacheRect.Left) / 2, (cacheRect.Bottom + cacheRect.Top) / 2);
                 Point moveVector = (Point)(mousePoint - centerPoint);
@@ -683,7 +936,7 @@ namespace ComPDFKit.Tool.DrawTool
                         }
                         break;
 
-                    case PointControlType.MiddlBottom:
+                    case PointControlType.MiddleBottom:
                         {
                             left = cacheRect.Left;
                             right = cacheRect.Right;
@@ -905,7 +1158,7 @@ namespace ComPDFKit.Tool.DrawTool
                     case PointControlType.RightMiddle:
                         offsetPos = new Point(movePoint.X, Math.Abs(movePoint.X) * ratioX * (movePoint.X < 0 ? -1 : 1));
                         break;
-                    case PointControlType.MiddlBottom:
+                    case PointControlType.MiddleBottom:
                         offsetPos = new Point(Math.Abs(movePoint.Y) * ratioY * (movePoint.Y < 0 ? 1 : -1), movePoint.Y);
                         break;
                     case PointControlType.MiddleTop:
@@ -988,36 +1241,122 @@ namespace ComPDFKit.Tool.DrawTool
         /// </param>
         protected void DrawSquarePoint(DrawingContext drawingContext, List<PointControlType> ignoreList, int PointSize, Pen PointPen, SolidColorBrush BorderBrush)
         {
-            GeometryGroup controlGroup = new GeometryGroup();
-            controlGroup.FillRule = FillRule.Nonzero;
-            List<Point> ignorePointsList = new List<Point>();
-            // Get specific points
-            foreach (PointControlType type in ignoreList)
+            RotateTransform rotateTransform = new RotateTransform(rotateAngle, centerPoint.X, centerPoint.Y);
+            if (canRotate && !isInScaling)
             {
-                if ((int)type < controlPoints.Count)
+                Point currentRotationPoint = isInRotate ? dragRotationPoint : rotationPoint;
+                double angleInRadians = rotateAngle * (Math.PI / 180);
+                double sinValue = Math.Sin(angleInRadians);
+                double cosValue = Math.Cos(angleInRadians);
+                double rotatedX = 0;
+                double rotatedY = 0;
+                switch (pageRotation)
                 {
-                    ignorePointsList.Add(controlPoints[(int)type]);
+                    case 0:
+                         rotatedX = currentRotationPoint.X - pointSize * sinValue;
+                         rotatedY = currentRotationPoint.Y + pointSize * cosValue;
+                        break;
+
+                    case 1:
+                        rotatedX = currentRotationPoint.X - pointSize * cosValue;
+                        rotatedY = currentRotationPoint.Y + pointSize * sinValue;
+                        break;
+
+                    case 2:
+                        rotatedX = currentRotationPoint.X + pointSize * sinValue;
+                        rotatedY = currentRotationPoint.Y - pointSize * cosValue;
+                        break;
+
+                    case 3:
+                        rotatedX = currentRotationPoint.X + pointSize * sinValue;
+                        rotatedY = currentRotationPoint.Y - pointSize * cosValue;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                GeometryGroup rotateGroup = new GeometryGroup();
+                LineGeometry moveLineGeometry = new LineGeometry(centerPoint, new Point(rotatedX, rotatedY));
+                EllipseGeometry ellipseGeometry = new EllipseGeometry(currentRotationPoint, PointSize, pointSize);
+                rotateGroup.Children.Add(moveLineGeometry);
+                rotateGroup.Children.Add(ellipseGeometry);
+                if (!isInRotate)
+                {
+                    rotateGroup.Children.Remove(moveLineGeometry);
+                    LineGeometry stopLineGeometry = new LineGeometry(centerPoint, new Point(currentRotationPoint.X, currentRotationPoint.Y + pointSize));
+                    switch (pageRotation)
+                    {
+                        case 0:
+                            stopLineGeometry = new LineGeometry(centerPoint, new Point(currentRotationPoint.X, currentRotationPoint.Y + pointSize));
+
+                            break;
+
+                        case 1:
+                            stopLineGeometry = new LineGeometry(centerPoint, new Point(currentRotationPoint.X - pointSize, currentRotationPoint.Y ));
+
+                            break;
+
+                        case 2:
+                            stopLineGeometry = new LineGeometry(centerPoint, new Point(currentRotationPoint.X, currentRotationPoint.Y - pointSize));
+
+                            break;
+
+                        case 3:
+                            stopLineGeometry = new LineGeometry(centerPoint, new Point(currentRotationPoint.X + pointSize, currentRotationPoint.Y));
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    rotateGroup.Children.Add(stopLineGeometry);
+                    drawingContext.PushTransform(rotateTransform);
+                }
+
+                drawingContext?.DrawGeometry(BorderBrush, PointPen, rotateGroup);
+                if (!isInRotate)
+                {
+
+                    drawingContext.Pop();
                 }
             }
-            for (int i = 0; i < controlPoints.Count; i++)
+            if (!isInRotate)
             {
-                Point controlPoint = controlPoints[i];
-                if (ignorePointsList.Contains(controlPoint))
+                GeometryGroup controlGroup = new GeometryGroup();
+                controlGroup.FillRule = FillRule.Nonzero;
+                List<Point> ignorePointsList = new List<Point>();
+                // Get specific points
+                foreach (PointControlType type in ignoreList)
                 {
-                    continue;
+                    if ((int)type < controlPoints.Count)
+                    {
+                        ignorePointsList.Add(controlPoints[(int)type]);
+                    }
                 }
-                RectangleGeometry rectPoint = new RectangleGeometry(new Rect(controlPoint.X - PointSize, controlPoint.Y - PointSize,
-                    PointSize * 2, PointSize * 2), 1, 1);
-                controlGroup.Children.Add(rectPoint);
+                for (int i = 0; i < controlPoints.Count; i++)
+                {
+                    Point controlPoint = controlPoints[i];
+                    if (ignorePointsList.Contains(controlPoint))
+                    {
+                        continue;
+                    }
+                    RectangleGeometry rectPoint = new RectangleGeometry(new Rect(controlPoint.X - PointSize, controlPoint.Y - PointSize,
+                        PointSize * 2, PointSize * 2), 1, 1);
+                    controlGroup.Children.Add(rectPoint);
+                }
+
+                drawingContext.PushTransform(rotateTransform);
+                drawingContext?.DrawGeometry(BorderBrush, PointPen, controlGroup);
+                drawingContext.Pop();
             }
-            drawingContext?.DrawGeometry(BorderBrush, PointPen, controlGroup);
         }
 
         protected void DrawCropPoint(DrawingContext drawingContext, List<PointControlType> ignoreList, int PointSize, Pen PointPen, SolidColorBrush BorderBrush)
         {
             //GeometryGroup controlGroup = new GeometryGroup();
             //controlGroup.FillRule = FillRule.Nonzero;
-            clipThickness.Left = (SetDrawRect.Left - drawRect.Left)/currentZoom;
+            clipThickness.Left = (SetDrawRect.Left - drawRect.Left) / currentZoom;
             clipThickness.Top = (SetDrawRect.Top - drawRect.Top) / currentZoom;
             clipThickness.Right = (SetDrawRect.Right - drawRect.Right) / currentZoom;
             clipThickness.Bottom = (SetDrawRect.Bottom - drawRect.Bottom) / currentZoom;
@@ -1055,7 +1394,7 @@ namespace ComPDFKit.Tool.DrawTool
             }
 
             //Bottom Center
-            if (!ignoreList.Contains(PointControlType.MiddlBottom))
+            if (!ignoreList.Contains(PointControlType.MiddleBottom))
             {
                 drawingContext?.DrawRectangle(BorderBrush, null, new Rect((controlCurrentPoints[3].X + controlCurrentPoints[3].X - PointSize * 5) / 2, controlCurrentPoints[3].Y, PointSize * 5, PointSize));
             }
@@ -1122,7 +1461,7 @@ namespace ComPDFKit.Tool.DrawTool
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
                     drawDc?.DrawLine(activePen, new Point(moveRect.Left, 0), new Point(moveRect.Left, PDFViewerActualHeight));
                     break;
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
                     break;
                 case PointControlType.RightBottom:
@@ -1140,6 +1479,15 @@ namespace ComPDFKit.Tool.DrawTool
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Top), new Point(PDFViewerActualWidth, moveRect.Top));
                     break;
                 case PointControlType.Rotate:
+                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Top), new Point(moveRect.Left, moveRect.Top));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Top), new Point(PDFViewerActualWidth, moveRect.Top));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, moveRect.Top), new Point(moveRect.Left, 0));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Top), new Point(moveRect.Right, 0));
+
+                    drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(moveRect.Left, moveRect.Bottom));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Left, moveRect.Bottom), new Point(moveRect.Left, PDFViewerActualHeight));
+                    drawDc?.DrawLine(activePen, new Point(moveRect.Right, moveRect.Bottom), new Point(moveRect.Right, PDFViewerActualHeight));
                     break;
                 case PointControlType.Body:
                 case PointControlType.Line:
@@ -1168,6 +1516,7 @@ namespace ComPDFKit.Tool.DrawTool
         protected void InvokeDataChangEvent(bool isFinish)
         {
             selectedRectData.Square = GetRect();
+            selectedRectData.rotationAngle = rotateAngle;
             if (isFinish)
             {
                 DataChanged?.Invoke(this, selectedRectData);
@@ -1195,7 +1544,6 @@ namespace ComPDFKit.Tool.DrawTool
             SetDrawRect = drawRect = new Rect(TmpLeft, TmpUp, TmpRight - TmpLeft, TmpDown - TmpUp);
             Draw();
         }
-
 
         /// <summary>
         /// Get the current set of ignore points

@@ -10,8 +10,6 @@ using ComPDFKitViewer.Layer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using ComPDFKit.Import;
@@ -20,12 +18,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using static ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 using ComPDFKitViewer.Helper;
-using Microsoft.SqlServer.Server;
 using ComPDFKit.Tool.Help;
-using System.Xml.Linq;
 using ComPDFKit.Tool.SettingParam;
 using ComPDFKit.Tool.UndoManger;
-using System.Windows.Controls.Primitives;
 using ComPDFKit.Measure;
 using System.Dynamic;
 
@@ -53,13 +48,14 @@ namespace ComPDFKit.Tool
         BaseAnnot caheMoveAnnot;
         BaseAnnot cacheHitTestAnnot;
         bool isCacheRedaction = false;
-        int createAnnotTag = -1;
         int selectedPageIndex = -1;
         int selectedAnnotIndex = -1;
         bool canSave = true;
         bool isHitTestLink = false;
         bool isHitTestRedact = false;
+
         public event EventHandler<MeasureEventArgs> MeasureChanged;
+        internal int CreateAnnotTag { get; private set; } = -1;
 
         public void InvokeMeasureChangeEvent(object sender, MeasureEventArgs e)
         {
@@ -135,11 +131,15 @@ namespace ComPDFKit.Tool
                     cacheHitTestAnnot = null;
                     return false;
                 }
+
                 cacheHitTestAnnot = baseAnnot;
                 return true;
             }
-            cacheHitTestAnnot = baseAnnot;
-            return false;
+            else
+            {
+                cacheHitTestAnnot = null;
+                return false;
+            }
         }
 
         public void SelectedAnnotForIndex(int pageIndex, int annotIndex)
@@ -166,7 +166,7 @@ namespace ComPDFKit.Tool
             CreateAnnotTool createAnnotTool = new CreateAnnotTool(GetMeasureSetting(), GetDefaultDrawParam(), GetDefaultSettingParam());
             int annotViewindex = PDFViewer.GetMaxViewIndex();
             PDFViewer.InsertView(annotViewindex, createAnnotTool);
-            createAnnotTag = createAnnotTool.GetResTag();
+            CreateAnnotTag = createAnnotTool.GetResTag();
             createAnnotTool.UpdateAnnotHandler += CreateAnnotTool_UpdateAnnotHandler;
             createAnnotTool.CreateFreetextCanceled += CreateAnnotTool_CreateFreetextCanceled;
             createAnnotTool.MeasureChanged += CreateAnnotTool_MeasureChanged;
@@ -206,7 +206,7 @@ namespace ComPDFKit.Tool
             {
                 return;
             }
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             (baseLayer as CreateAnnotTool).SetIsProportionalScaling(isProportionalScaling);
         }
 
@@ -216,7 +216,7 @@ namespace ComPDFKit.Tool
             {
                 return 0;
             }
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).GetMoveLength();
         }
 
@@ -228,7 +228,7 @@ namespace ComPDFKit.Tool
             }
 
             Point point = Mouse.GetPosition(this);
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             PDFViewer.GetPointPageInfo(point, out int index, out Rect paintRect, out Rect pageBound);
             if (index < 0)
             {
@@ -240,7 +240,7 @@ namespace ComPDFKit.Tool
             {
                 DefaultSettingParam defaultSettingParam = GetDefaultSettingParam();
                 StampParam stampParam = defaultSettingParam.StampParamDef;
-                stampParam.Rotation = cPDFPage.Rotation;
+                stampParam.PageRotation = cPDFPage.Rotation;
                 defaultSettingParam.SetAnnotParam(stampParam);
             }
             Point cropPoint = new Point();
@@ -271,7 +271,7 @@ namespace ComPDFKit.Tool
                 return;
             }
             Point point = Mouse.GetPosition(this);
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             PDFViewer.GetPointPageInfo(point, out int index, out Rect paintRect, out Rect pageBound);
             if (index < 0)
             {
@@ -309,7 +309,7 @@ namespace ComPDFKit.Tool
                 return;
             }
             Point point = Mouse.GetPosition(this);
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             (baseLayer as CreateAnnotTool).MoveDraw(point, PDFViewer.GetZoom());
         }
 
@@ -320,8 +320,8 @@ namespace ComPDFKit.Tool
                 return;
             }
             Point point = Mouse.GetPosition(this);
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
-           (baseLayer as CreateAnnotTool).CreateTextBox();
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
+            (baseLayer as CreateAnnotTool).CreateTextBox();
         }
 
         public Rect EndDrawAnnot()
@@ -330,7 +330,7 @@ namespace ComPDFKit.Tool
             {
                 return new Rect();
             }
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).EndDraw();
         }
 
@@ -415,7 +415,7 @@ namespace ComPDFKit.Tool
                     List<CRect> coreRectList = new List<CRect>();
                     foreach (Rect copyRect in pageSelectRectList)
                     {
-                        coreRectList.Add(new CRect((float)copyRect.Left, (float)copyRect.Top, (float)copyRect.Right, (float)copyRect.Bottom));
+                        coreRectList.Add(new CRect((float)copyRect.Left, (float)copyRect.Bottom, (float)copyRect.Right, (float)copyRect.Top));
                     }
                     CreateDefaultAnnot(annotCore, annotType, null);
                     string markupContent = textSelectInfo.PageSelectText[pageIndex];
@@ -510,6 +510,17 @@ namespace ComPDFKit.Tool
                                 historyGroup.Histories.Add(redactHistory);
                             }
                             break;
+                        case C_ANNOTATION_TYPE.C_ANNOTATION_LINK:
+                            {
+                                LinkAnnotHistory linkHistory = new LinkAnnotHistory();
+                                AnnotParam annotParam = ParamConverter.AnnotConverter(cPDFDocument, annotCore);
+                                linkHistory.Action = HistoryAction.Add;
+                                linkHistory.CurrentParam = (LinkParam)annotParam;
+                                linkHistory.PDFDoc = cPDFDocument;
+                                linkHistory.Action = HistoryAction.Add;
+                                historyGroup.Histories.Add(linkHistory);
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -528,25 +539,25 @@ namespace ComPDFKit.Tool
 
         public Point GetStartPoint()
         {
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).GetStartPoint();
         }
 
         public Point GetEndPoint()
         {
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).GetEndPoint();
         }
 
         public List<Point> GetInkDrawPoints()
         {
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).GetInkDrawPoints();
         }
 
         public List<Point> GetMeasureDrawPoints()
         {
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).GetMeasureDrawPoints();
         }
 
@@ -557,7 +568,7 @@ namespace ComPDFKit.Tool
                 return new Rect();
             }
             Point point = Mouse.GetPosition(this);
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             return (baseLayer as CreateAnnotTool).GetMaxRect();
         }
 
@@ -568,7 +579,7 @@ namespace ComPDFKit.Tool
                 return;
             }
             Point point = Mouse.GetPosition(this);
-            BaseLayer baseLayer = PDFViewer.GetViewForTag(createAnnotTag);
+            BaseLayer baseLayer = PDFViewer.GetViewForTag(CreateAnnotTag);
             (baseLayer as CreateAnnotTool).ClearDraw();
         }
 
@@ -589,7 +600,7 @@ namespace ComPDFKit.Tool
                 {
                     return;
                 }
-                AnnotData annotData = currentAnnot.GetAnnotData(); 
+                AnnotData annotData = currentAnnot.GetAnnotData();
 
                 if (annotData.PaintRect == Rect.Empty)
                 {
@@ -629,7 +640,7 @@ namespace ComPDFKit.Tool
                     double Height = DpiHelper.PDFNumToStandardNum(drawRect.height());
                     textui = new TextBox();
                     textui.Name = "PdfViewerTextBox";
-                    textBorder = new Border();
+                    textBorder = new DashedBorder();
                     textBorder.Child = textui;
                     textBorder.MinWidth = Width * PDFViewer.GetZoom();
                     textBorder.MinHeight = Height * PDFViewer.GetZoom();
@@ -667,9 +678,22 @@ namespace ComPDFKit.Tool
 
                     textBorder.Padding = new Thickness(0);
                     textBorder.BorderBrush = new SolidColorBrush(borderColor);
-                    textBorder.BorderThickness = new Thickness(DpiHelper.PDFNumToStandardNum(textWidget.GetBorderWidth() * annotData.CurrentZoom));
+                    double rawWidth = textWidget.GetBorderWidth();
+                    double drawWidth = DpiHelper.PDFNumToStandardNum(rawWidth * annotData.CurrentZoom);
+                    textBorder.BorderThickness = new Thickness(drawWidth);
                     textui.BorderThickness = new Thickness(0);
                     textui.Text = textWidget.Content;
+                    if (textWidget.BorderStyle != C_BORDER_STYLE.BS_SOLID && textWidget.Dash != null && textWidget.Dash.Length > 0)
+                    {
+                        //补充保存虚线样式
+                        DashedBorder dashBorder = textBorder as DashedBorder;
+                        DoubleCollection dashCollection = new DoubleCollection();
+                        foreach (float num in textWidget.Dash)
+                        {
+                            dashCollection.Add(num);
+                        }
+                        dashBorder?.DrawDashBorder(true, drawWidth, rawWidth, dashCollection);
+                    }
 
                     string fontName = string.Empty;
                     string fontFamily = string.Empty;
@@ -783,10 +807,10 @@ namespace ComPDFKit.Tool
                                 viewer.UpdateAnnotFrame();
                             }
                             RemovePopTextUI();
-                        } 
+                        }
                     };
 
-                    BaseLayer createAnnotTool = PDFViewer?.GetView(createAnnotTag) as CreateAnnotTool;
+                    BaseLayer createAnnotTool = PDFViewer?.GetView(CreateAnnotTag) as CreateAnnotTool;
                     if (createAnnotTool != null)
                     {
                         createAnnotTool.Children.Add(textBorder);
@@ -907,7 +931,7 @@ namespace ComPDFKit.Tool
             {
                 return;
             }
-            BaseLayer removeLayer = PDFViewer?.GetView(createAnnotTag) as CreateAnnotTool;
+            BaseLayer removeLayer = PDFViewer?.GetView(CreateAnnotTag) as CreateAnnotTool;
             removeLayer.Children.Remove(textBorder);
         }
 

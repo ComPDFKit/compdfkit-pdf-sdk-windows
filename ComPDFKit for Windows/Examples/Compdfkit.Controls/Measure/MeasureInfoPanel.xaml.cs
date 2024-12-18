@@ -2,20 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ComPDFKit.Controls.Helper;
 using ComPDFKit.PDFAnnotation;
 using ComPDFKit.Tool;
@@ -92,7 +84,6 @@ namespace ComPDFKit.Controls.Measure
                 TypeConverter typeCovert = TypeDescriptor.GetConverter(typeof(Geometry));
                 MeasureIcon.Data = PathGeometry.CreateFromGeometry((Geometry)typeCovert.ConvertFrom(IconsDict.ElementAt(iconIndex).Value));
                 MeasureTitelText.Text = IconsDict.ElementAt(iconIndex).Key;
-
                 switch(newType)
                 {
                     case CPDFMeasureType.CPDF_DISTANCE_MEASURE:
@@ -136,6 +127,9 @@ namespace ComPDFKit.Controls.Measure
 
         public void SetMeasureInfo(CPDFAnnotation annot)
         {
+            if (annot == null || !annot.IsValid())
+                return;
+
             if (annot is CPDFLineAnnotation lineAnnot)
             {
                 SetLineMeasureInfo(lineAnnot);

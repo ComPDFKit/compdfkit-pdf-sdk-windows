@@ -150,7 +150,7 @@ namespace ComPDFKit.Tool
             SelectedRect selectedRect = CommonHelper.FindVisualChild<SelectedRect>(baseLayer as CustomizeLayer);
             if (selectedRect != null)
             {
-                selectedRect.SetAnnotData(cacheHitTestAnnot.GetAnnotData());
+                selectedRect.SetAnnotData(cacheHitTestAnnot.GetAnnotData(), PDFViewer);
             }
         }
 
@@ -166,7 +166,7 @@ namespace ComPDFKit.Tool
                 }
                 else
                 {
-                    selectedRect.SetAnnotData(annotData);
+                    selectedRect.SetAnnotData(annotData, PDFViewer);
                 }
             }
         }

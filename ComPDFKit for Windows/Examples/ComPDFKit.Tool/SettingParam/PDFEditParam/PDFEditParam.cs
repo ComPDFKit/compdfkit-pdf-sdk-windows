@@ -13,15 +13,13 @@ namespace ComPDFKit.Tool
         public virtual bool CopyTo(PDFEditParam transfer)
         {
             if (transfer == null)
-            {
                 return false;
-            }
+
             transfer.PageIndex = PageIndex;
             transfer.EditIndex = EditIndex;
             transfer.EditType = EditType;
             transfer.Transparency = Transparency;
             transfer.ClientRect = ClientRect;
-
             return true;
         }
     }

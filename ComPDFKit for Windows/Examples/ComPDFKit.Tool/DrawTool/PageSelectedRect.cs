@@ -670,7 +670,7 @@ namespace ComPDFKit.Tool.DrawTool
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
                     drawDc?.DrawLine(activePen, new Point(moveRect.Left, 0), new Point(moveRect.Left, PDFViewerActualHeight));
                     break;
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
                     break;
                 case PointControlType.RightBottom:
@@ -801,7 +801,7 @@ namespace ComPDFKit.Tool.DrawTool
                         TmpDown = TmpUp + rectMinHeight;
                     }
                     break;
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                     TmpLeft = cacheRect.Left;
                     TmpRight = cacheRect.Right;
                     TmpUp = cacheRect.Top;
@@ -928,7 +928,7 @@ namespace ComPDFKit.Tool.DrawTool
                     case PointControlType.RightMiddle:
                         offsetPos = new Point(movePoint.X, Math.Abs(movePoint.X) * ratioX * (movePoint.X < 0 ? -1 : 1));
                         break;
-                    case PointControlType.MiddlBottom:
+                    case PointControlType.MiddleBottom:
                         offsetPos = new Point(Math.Abs(movePoint.Y) * ratioY * (movePoint.Y < 0 ? 1 : -1), movePoint.Y);
                         break;
                     case PointControlType.MiddleTop:

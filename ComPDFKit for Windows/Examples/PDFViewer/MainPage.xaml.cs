@@ -20,13 +20,14 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using ComPDFKit.Controls.PDFControlUI;
+using ComPDFKit.Controls.Snapshot;
+using System.Windows.Media;
 
 namespace PDFViewer
 {
     public partial class MainPage : UserControl, INotifyPropertyChanged
     {
         #region Properties
-
         private string currentMode = "Viewer";
         private double[] zoomLevelList = { 1f, 8f, 12f, 25, 33f, 50, 66f, 75, 100, 125, 150, 200, 300, 400, 600, 800, 1000 };
 
@@ -181,15 +182,9 @@ namespace PDFViewer
                 CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfviewer.GetZoom() * 100)));
 
                 botaBarControl.AddBOTAContent(new[] { BOTATools.Thumbnail, BOTATools.Outline, BOTATools.Bookmark, BOTATools.Annotation, BOTATools.Search });
-                botaBarControl.ViewCertificateEvent -= digitalSignatureControl.ViewCertificateEvent;
-                botaBarControl.ViewCertificateEvent += digitalSignatureControl.ViewCertificateEvent;
-                botaBarControl.ViewSignatureEvent -= digitalSignatureControl.ViewSignatureEvent;
-                botaBarControl.ViewSignatureEvent += digitalSignatureControl.ViewSignatureEvent;
-                botaBarControl.DeleteSignatureEvent -= BotaBarControl_DeleteSignatureEvent;
-                botaBarControl.DeleteSignatureEvent += BotaBarControl_DeleteSignatureEvent;
                 botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
                 ViewSettingBtn.IsChecked = false;
-                botaBarControl.InitWithPDFViewer(viewControl); 
+                botaBarControl.InitWithPDFViewer(viewControl);
                 botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
                 displaySettingsControl.InitWithPDFViewer(viewControl);
                 LoadCustomControl();
@@ -206,12 +201,6 @@ namespace PDFViewer
                 pdfviewer.GetDocument().FontSubset = Properties.Settings.Default.FontSubsetting;    
                 pdfviewer.ScrollStride = Properties.Settings.Default.Divisor;
             }
-        }
-
-        private void BotaBarControl_DeleteSignatureEvent(object sender, EventArgs e)
-        {
-            viewControl.PDFViewTool.IsDocumentModified = true;
-            DigitalSignatureControl_OnSignatureStatusChanged(sender, e);
         }
 
         private void PDFToolManager_MouseLeftButtonDownHandler(object sender, MouseEventObject e)
@@ -501,6 +490,15 @@ namespace PDFViewer
                 return;
             }
 
+            if((string)item.Tag == "Viewer" || (string)item.Tag == "Annotation")
+            {
+                SnapshotButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SnapshotButton.Visibility = Visibility.Collapsed;
+            }
+
             ClearPanelState();
             if (ViewSettingBtn != null)
                 ViewSettingBtn.IsChecked = false;
@@ -576,13 +574,12 @@ namespace PDFViewer
             else if (item.Tag as string == "Annotation")
             {
                 annotationControl.SetToolBarContainerVisibility(Visibility.Visible);
-                PDFGrid.Child = annotationControl;
-
-                viewControl.SetToolType(ToolType.Pan);
                 annotationControl.PDFViewControl = viewControl;
                 annotationControl.InitWithPDFViewer(viewControl);
                 if (annotationControl.PDFViewControl != null)
                 {
+                    PDFGrid.Child = annotationControl;
+                    viewControl.SetToolType(ToolType.Pan);
                     annotationControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
                     annotationControl.OnCanSaveChanged += ControlOnCanSaveChanged;
 
@@ -678,8 +675,11 @@ namespace PDFViewer
                     measureControl.OnAnnotEditHandler += PdfFormControlRefreshAnnotList;
                 }
             }
+
             currentMode = item.Tag as string;
             RightToolPanelButtonIsChecked = false;
+            SnapshotButton.IsChecked = false;
+            viewControl.FocusPDFViewTool.RemovePageSelectdUserControl();
         }
 
         /// <summary>
@@ -824,10 +824,70 @@ namespace PDFViewer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private void SnapShotButton_Click(object sender, RoutedEventArgs e)
+        {
+            if((sender as ToggleButton).IsChecked == true)
+            {
+                SnapshotEditToolArgs snapshotArgs = new SnapshotEditToolArgs();
+                SnapshotMenu snapMenu = new SnapshotMenu();
+                snapshotArgs.ControlPointColor = Colors.White;
+                snapshotArgs.BgColor = Color.FromArgb(0x99, 0x00, 0x00, 0x00);
+                snapshotArgs.LineColor = Color.FromArgb(0xFF, 0x47, 0x7E, 0xDE);
+                snapshotArgs.ToolPanel = snapMenu;
+                snapshotArgs.Viewer = viewControl;
+                snapMenu.SnapToolArgs = snapshotArgs;
+                snapMenu.PdfViewer = viewControl;
+                snapMenu.SnapToolEvent += SnapMenu_SnapToolEvent;
+
+                viewControl.PDFToolManager.SetToolType(ToolType.SelectedPage);
+                viewControl.FocusPDFViewTool.SetPageSelectdUserControl(snapshotArgs.ToolPanel);
+            }
+            else
+            {
+                if ((ModeComboBox.SelectedItem as ComboBoxItem).Tag.ToString() == "Viewer")
+                {
+                    viewControl.PDFToolManager.SetToolType(ToolType.Viewer);
+                }
+                else if ((ModeComboBox.SelectedItem as ComboBoxItem).Tag.ToString() == "Annotation")
+                {
+                    viewControl.PDFToolManager.SetToolType(ToolType.Pan);
+                }
+
+                viewControl.FocusPDFViewTool.RemovePageSelectdUserControl();
+            }
+        }
+
+        private void SnapMenu_SnapToolEvent(object sender, KeyValuePair<string, object> e)
+        {
+            switch (e.Key)
+            {
+                case "CloseSnap":
+                    {
+                        if ((ModeComboBox.SelectedItem as ComboBoxItem).Tag.ToString() == "Viewer")
+                        {
+                            viewControl.PDFToolManager.SetToolType(ToolType.Viewer);
+                        }
+                        else if ((ModeComboBox.SelectedItem as ComboBoxItem).Tag.ToString() == "Annotation")
+                        {
+                            viewControl.PDFToolManager.SetToolType(ToolType.Pan);
+                        }
+
+                        SnapshotButton.IsChecked = false;
+                        viewControl.FocusPDFViewTool.RemovePageSelectdUserControl();
+                    }
+                    break;
+
+                case "Save":
+                    CanSave = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
         #endregion
 
         #region Open and Save file
-
         private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
@@ -848,8 +908,8 @@ namespace PDFViewer
                 {
                     filePath = ComPDFKit.Controls.Helper.CommonHelper.GetExistedPathOrEmpty();
                 }
-                string oldFilePath = pdfDoc.FilePath;
 
+                string oldFilePath = pdfDoc.FilePath;
                 if (!string.IsNullOrEmpty(filePath) && regularViewerControl.PdfViewControl != null)
                 {
                     if (oldFilePath.ToLower() == filePath.ToLower())
@@ -860,6 +920,21 @@ namespace PDFViewer
                     if ((bool)CheckExistBeforeOpenFileEvent?.Invoke(new string[] { filePath, oldFilePath }))
                     {
                         return;
+                    }
+
+                    if (CanSave)
+                    {
+                        string fileName = pdfDoc.FileName;
+                        var message = fileName + " " + LanguageHelper.CommonManager.GetString("Warn_NotSave");
+                        var result = MessageBox.Show(message, LanguageHelper.CommonManager.GetString("Caption_Warning"), MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            SaveFile();
+                        }
+                        else if (result == MessageBoxResult.Cancel)
+                        {
+                            return;
+                        }
                     }
 
                     passwordViewer = new PDFViewControl();

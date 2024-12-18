@@ -1,15 +1,9 @@
 ﻿using ComPDFKit.Tool.SettingParam;
-using ComPDFKitViewer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static ComPDFKit.Tool.Help.ImportWin32;
 
 namespace ComPDFKit.Tool.DrawTool
 {
@@ -19,7 +13,6 @@ namespace ComPDFKit.Tool.DrawTool
         Default,
         Alone
     }
-
 
     public class MultiSelectedRect : DrawingVisual
     {
@@ -178,7 +171,7 @@ namespace ComPDFKit.Tool.DrawTool
         /// <summary>
         /// Array passed from outside for multiple selection
         /// </summary>
-        protected List<SelectedRect> selectedRects = new List<SelectedRect>();
+        internal List<SelectedRect> selectedRects = new List<SelectedRect>();
         protected Dictionary<SelectedRect,KeyValuePair<int,int>> RelationDict=new Dictionary<SelectedRect, KeyValuePair<int, int>>();
 
         protected bool isHover = false;
@@ -357,7 +350,6 @@ namespace ComPDFKit.Tool.DrawTool
             return (float)(drawRect.Height - drawDefaultRect.Height);
         }
 
-
         public void Draw()
         {
             switch (currentDrawType)
@@ -373,9 +365,9 @@ namespace ComPDFKit.Tool.DrawTool
                             SolidColorBrush solidColorBrush = drawParam.SPDFEditMultiRectFillBrush;
                             Pen pen = drawParam.SPDFEditMultiRectLinePen;
                             GetBrushAndPen(ref solidColorBrush, ref pen);
-                            if (selectedRects.Count >= 1)
+                            foreach (SelectedRect item in selectedRects)
                             {
-                                foreach (SelectedRect item in selectedRects)
+                                if (!item.IsPath)
                                 {
                                     Rect rect = item.GetRect();
                                     rect.X -= rectPadding;
@@ -421,7 +413,7 @@ namespace ComPDFKit.Tool.DrawTool
                                     if (selectedType == SelectedType.PDFEdit)
                                     {
                                         //Edit Settings Frame
-                                        DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, new SolidColorBrush(Color.FromRgb(71, 126, 222)));
+                                        DrawCirclePoint(drawDC, GetIgnorePoints(), pointSize, PointPen, PointBrush);
                                     }
                                     else
                                     {
@@ -435,7 +427,6 @@ namespace ComPDFKit.Tool.DrawTool
                             drawDC?.Close();
                             drawDC = null;
                         }
-
                     });
                     break;
                 case MulitiDrawMoveType.Alone:
@@ -671,7 +662,7 @@ namespace ComPDFKit.Tool.DrawTool
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
                     drawDc?.DrawLine(activePen, new Point(moveRect.Left, 0), new Point(moveRect.Left, PDFViewerActualHeight));
                     break;
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                     drawDc?.DrawLine(activePen, new Point(0, moveRect.Bottom), new Point(PDFViewerActualWidth, moveRect.Bottom));
                     break;
                 case PointControlType.RightBottom:
@@ -824,7 +815,7 @@ namespace ComPDFKit.Tool.DrawTool
             ignorePoints.Add(PointControlType.LeftTop);
             ignorePoints.Add(PointControlType.LeftMiddle);
             ignorePoints.Add(PointControlType.LeftBottom);
-            ignorePoints.Add(PointControlType.MiddlBottom);
+            ignorePoints.Add(PointControlType.MiddleBottom);
             ignorePoints.Add(PointControlType.RightBottom);
             ignorePoints.Add(PointControlType.RightMiddle);
             ignorePoints.Add(PointControlType.RightTop);
@@ -840,7 +831,7 @@ namespace ComPDFKit.Tool.DrawTool
             ignorePoints.Add(PointControlType.LeftTop);
             ignorePoints.Add(PointControlType.LeftMiddle);
             ignorePoints.Add(PointControlType.LeftBottom);
-            ignorePoints.Add(PointControlType.MiddlBottom);
+            ignorePoints.Add(PointControlType.MiddleBottom);
             ignorePoints.Add(PointControlType.RightBottom);
             ignorePoints.Add(PointControlType.RightMiddle);
             ignorePoints.Add(PointControlType.RightTop);
@@ -923,7 +914,7 @@ namespace ComPDFKit.Tool.DrawTool
                         TmpDown = TmpUp + rectMinHeight;
                     }
                     break;
-                case PointControlType.MiddlBottom:
+                case PointControlType.MiddleBottom:
                     TmpLeft = cacheRect.Left;
                     TmpRight = cacheRect.Right;
                     TmpUp = cacheRect.Top;
@@ -1049,7 +1040,7 @@ namespace ComPDFKit.Tool.DrawTool
                     case PointControlType.RightMiddle:
                         offsetPos = new Point(movePoint.X, Math.Abs(movePoint.X) * ratioX * (movePoint.X < 0 ? -1 : 1));
                         break;
-                    case PointControlType.MiddlBottom:
+                    case PointControlType.MiddleBottom:
                         offsetPos = new Point(Math.Abs(movePoint.Y) * ratioY * (movePoint.Y < 0 ? 1 : -1), movePoint.Y);
                         break;
                     case PointControlType.MiddleTop:
@@ -1306,7 +1297,7 @@ namespace ComPDFKit.Tool.DrawTool
                                 }
                             }
 
-                            if ((PointControlType)i == PointControlType.MiddlBottom)
+                            if ((PointControlType)i == PointControlType.MiddleBottom)
                             {
                                 if (Math.Abs(point.Y - checkPoint.Y) < hlen && checkVector.Length < drawRect.Width / 3)
                                 {

@@ -20,6 +20,8 @@ using ComPDFKitViewer.Widget;
 using ComPDFKit.Tool.Help;
 using ComPDFKit.Tool.DrawTool;
 using System.Collections.Generic;
+using ComPDFKitViewer.BaseObject;
+using ComPDFKitViewer;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -96,7 +98,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                     CPDFAnnotationType.Highlight, CPDFAnnotationType.Underline, CPDFAnnotationType.Strikeout,
                     CPDFAnnotationType.Squiggly, CPDFAnnotationType.Freehand, CPDFAnnotationType.FreeText,
-                    CPDFAnnotationType.Note, CPDFAnnotationType.Circle, CPDFAnnotationType.Square,
+                    CPDFAnnotationType.Note, CPDFAnnotationType.Circle, CPDFAnnotationType.Square, CPDFAnnotationType.Polygon,
                     CPDFAnnotationType.Arrow, CPDFAnnotationType.Line, CPDFAnnotationType.Image,
                     CPDFAnnotationType.Stamp, CPDFAnnotationType.Signature, CPDFAnnotationType.Link,
                     CPDFAnnotationType.Audio
@@ -182,7 +184,15 @@ baseWidget.GetAnnotData().Annot);
                         CPDFSignatureUI signatureProperty = new CPDFSignatureUI();
                         signatureProperty.SetFormProperty(annotParam, PDFViewControl, baseWidget.GetAnnotData().Annot);
                         PropertyContainer.Child = signatureProperty;
-                    } 
+                    }
+                }
+            }
+            else
+            {
+                 BaseAnnot baseAnnot = PDFViewControl.GetCacheHitTestWidget();
+                if (baseAnnot != null)
+                {
+                    AnnotData annotData = baseAnnot.GetAnnotData();
                 }
             }
         }
@@ -191,8 +201,7 @@ baseWidget.GetAnnotData().Annot);
         {
             PDFViewControl.MouseRightButtonDownHandler -= PDFViewControl_MouseRightButtonDownHandler;
         }
-
-
+         
         private void AnnotationBarControl_Loaded(object sender, RoutedEventArgs e)
         {
             AnnotationBarControl.AnnotationPropertyChanged -= AnnotationBarControl_AnnotationPropertyChanged;
@@ -206,9 +215,7 @@ baseWidget.GetAnnotData().Annot);
         {
             AnnotationBarControl.AnnotationPropertyChanged -= AnnotationBarControl_AnnotationPropertyChanged;
             AnnotationBarControl.AnnotationCancel -= AnnotationBarControl_AnnotationCancel;
-
-        }
-
+        } 
         #endregion
 
         #region Annotation
@@ -224,16 +231,24 @@ baseWidget.GetAnnotData().Annot);
             panelState.PropertyChanged -= PanelState_PropertyChanged;
             panelState.PropertyChanged += PanelState_PropertyChanged;
             PDFViewControl.PDFViewTool.GetCPDFViewer().UndoManager.PropertyChanged -= UndoManager_PropertyChanged;
-            PDFViewControl.PDFViewTool.GetCPDFViewer().UndoManager.PropertyChanged += UndoManager_PropertyChanged;
-            PDFAnnotationControl.ClearAnnotationBar -= PdfAnnotationControl_ClearAnnotationBar;
+            PDFViewControl.PDFViewTool.GetCPDFViewer().UndoManager.PropertyChanged += UndoManager_PropertyChanged; 
+            PDFViewControl.MouseLeftButtonUpHandler -= PDFToolManager_MouseLeftButtonUpHandler;
             PDFViewControl.MouseLeftButtonUpHandler += PDFToolManager_MouseLeftButtonUpHandler;
             PDFViewControl.PDFViewTool.AnnotChanged -= PDFViewTool_AnnotChanged;
             PDFViewControl.PDFViewTool.AnnotChanged += PDFViewTool_AnnotChanged;
+
+            OnPropertyChanged("CanRedo");
+            OnPropertyChanged("CanUndo");
+        }
+
+        private void PDFToolManager_CreatePolygonFinished(object sender, EventArgs e)
+        {
+            PDFAnnotationControl.ClearPanel();
         }
 
         private void PDFViewTool_AnnotChanged(object sender, object e)
-        { 
-                OnAnnotEditHandler?.Invoke(this, EventArgs.Empty); 
+        {
+            OnAnnotEditHandler?.Invoke(this, EventArgs.Empty);
         }
 
         private void PDFToolManager_MouseLeftButtonUpHandler(object sender, MouseEventObject e)
@@ -241,6 +256,10 @@ baseWidget.GetAnnotData().Annot);
             if (e.IsCreate)
             {
                 OnAnnotEditHandler?.Invoke(this, EventArgs.Empty);
+            }
+            if(PDFViewControl.GetCacheHitTestAnnot() != null)
+            {
+                PDFAnnotationControl.ShowTempAnnotPanel();
             }
         }
 
@@ -514,11 +533,11 @@ baseWidget.GetAnnotData().Annot);
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
-
+         
         private void UndoManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(e.PropertyName);
+            OnCanSaveChanged?.Invoke(this, CanSave);
         }
 
         private void PanelState_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -574,6 +593,9 @@ baseWidget.GetAnnotData().Annot);
             if (PDFViewControl != null && PDFViewControl.PDFViewTool.GetCPDFViewer() != null && CanUndo)
             {
                 PDFViewControl.PDFViewTool.GetCPDFViewer().UndoManager?.Undo();
+                PDFViewControl.PDFToolManager.ClearSelect();
+                PDFViewControl.PDFViewTool.GetCPDFViewer().UpdateAnnotFrame();
+                (BotaContainer.Child as CPDFBOTABarControl).LoadAnnotationList();
             }
         }
 
@@ -582,6 +604,9 @@ baseWidget.GetAnnotData().Annot);
             if (PDFViewControl != null && PDFViewControl.PDFViewTool.GetCPDFViewer() != null && CanRedo)
             {
                 PDFViewControl.PDFViewTool.GetCPDFViewer().UndoManager?.Redo();
+                PDFViewControl.PDFToolManager.ClearSelect();
+                PDFViewControl.PDFViewTool.GetCPDFViewer().UpdateAnnotFrame();
+                (BotaContainer.Child as CPDFBOTABarControl).LoadAnnotationList();
             }
         }
 

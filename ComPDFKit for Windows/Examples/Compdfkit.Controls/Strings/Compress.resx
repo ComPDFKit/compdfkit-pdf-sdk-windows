@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CompressInterruptWarning" xml:space="preserve">
+    <value>Are you sure to stop the compressing?</value>
+  </data>
+  <data name="CompressStr" xml:space="preserve">
+    <value>Compress</value>
+  </data>
+  <data name="Compress_Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Compress_High" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="Compress_Low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="Compress_Medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="Compress_NumberErrorWarning" xml:space="preserve">
+    <value>The file size entered is incorrect, try again please</value>
+  </data>
+  <data name="Compress_OKWarning" xml:space="preserve">
+    <value>Compress files succeeded!</value>
+  </data>
+  <data name="Compress_OptimizationQuality" xml:space="preserve">
+    <value>Compress Quality</value>
+  </data>
+  <data name="ContentSelection_CancelDo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="ContentSelection_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="ContentSelection_Output" xml:space="preserve">
+    <value>Output</value>
+  </data>
+  <data name="Convert_Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="Corp_Customize" xml:space="preserve">
+    <value>Select Area</value>
+  </data>
+  <data name="Corp_Customize_PRM" xml:space="preserve">
+    <value>The page cannot be restored to original state after you have cropped it. Are you sure you want to crop the page?</value>
+  </data>
+  <data name="FileInfo_Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="FileInfo_Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Main_AddFile" xml:space="preserve">
+    <value>Add Files</value>
+  </data>
+  <data name="Main_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Main_CompletedState" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Main_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Main_Crop" xml:space="preserve">
+    <value>Crop</value>
+  </data>
+  <data name="Main_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Main_FailedState" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Main_FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Main_HintWarningTitle" xml:space="preserve">
+    <value>Hint</value>
+  </data>
+  <data name="Main_Interrupt" xml:space="preserve">
+    <value>Interrupt</value>
+  </data>
+  <data name="Main_MenuHelp_About" xml:space="preserve">
+    <value>About Us</value>
+  </data>
+  <data name="Main_No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Main_NoSelectedFilesWarning" xml:space="preserve">
+    <value>No file selected</value>
+  </data>
+  <data name="Main_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Main_OpenFileFailedWarning" xml:space="preserve">
+    <value>The file cannot be opened because the file format or file extension is invalid. Please make sure the file is not damaged and the file extension matches the file format.</value>
+  </data>
+  <data name="Main_OpenFolderNoteWarning" xml:space="preserve">
+    <value>Please select a folder</value>
+  </data>
+  <data name="Main_Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="Main_RemoveAll" xml:space="preserve">
+    <value>Remove All Files</value>
+  </data>
+  <data name="Main_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Merge_MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="Merge_MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="Merge_TotalPage" xml:space="preserve">
+    <value>{0} file(s) in total</value>
+  </data>
+</root>

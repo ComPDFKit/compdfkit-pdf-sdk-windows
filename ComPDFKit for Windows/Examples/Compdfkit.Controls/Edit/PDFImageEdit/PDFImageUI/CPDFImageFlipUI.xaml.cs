@@ -12,20 +12,6 @@ namespace ComPDFKit.Controls.Edit
             InitializeComponent();
         }
 
-        #region Property
-        public Orientation Orientation
-        {
-            get
-            {
-                return ImageFlipUI.Orientation;
-            }
-            set
-            {
-                ImageFlipUI.Orientation = value;
-            }
-        }
-        #endregion
-
         #region UI Event
         private void FlipVertical_Click(object sender, RoutedEventArgs e)
         {

@@ -14,27 +14,46 @@ namespace ComPDFKit.Tool
 {
     public class PolygonMeasureParam : AnnotParam
     {
-        public PolygonMeasureParam() 
+        public PolygonMeasureParam()
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON;
-        }    
-        public byte[] FillColor { get; set; }
+        }
+
+        public byte[] FillColor { get; set; } = new byte[] { 255, 0, 0, };
         public bool HasFillColor { get; set; }
-        public byte[] LineColor { get; set; }
+        public byte[] LineColor
+        {
+            get;
+            set;
+        }
         public float LineWidth { get; set; }
         public float[] LineDash { get; set; }
-        public List<CPoint> SavePoints { get; set; } 
+        public List<CPoint> SavePoints { get; set; }
         public byte[] EndLineColor { get; set; }
         public double EndLineWidth { get; set; }
         public double EndTransparency { get; set; }
         public DashStyle EndLineDash { get; set; }
+        public CPDFBorderEffector BorderEffector
+        {
+            get;
+            set;
+        }
         public string FontName { get; set; }
         public double FontSize { get; set; }
         public byte[] FontColor { get; set; }
         public bool IsBold { get; set; }
         public bool IsItalic { get; set; }
+        public bool IsMeasure
+        {
+            get;
+            set;
+        } = true;
         public C_BORDER_STYLE BorderStyle { get; set; }
-        public CPDFMeasureInfo measureInfo { get; set; }
+        public CPDFMeasureInfo measureInfo
+        {
+            get;
+            set;
+        }
 
         public override bool CopyTo(AnnotParam transfer)
         {
@@ -56,7 +75,9 @@ namespace ComPDFKit.Tool
 
             if (SavePoints != null)
             {
-                polygonTransfer.SavePoints.CopyTo(SavePoints.ToArray());
+                CPoint[] pointArray = new CPoint[SavePoints.Count];
+                SavePoints.CopyTo(pointArray);
+                polygonTransfer.SavePoints = pointArray.ToList();
             }
 
             if (LineColor != null)
@@ -66,7 +87,7 @@ namespace ComPDFKit.Tool
 
             if (LineDash != null)
             {
-                polygonTransfer.LineDash = (float[])LineDash.Clone(); 
+                polygonTransfer.LineDash = (float[])LineDash.Clone();
             }
 
             if (EndLineColor != null)
@@ -84,24 +105,26 @@ namespace ComPDFKit.Tool
                 polygonTransfer.FontColor = (byte[])FontColor.Clone();
             }
 
-            if (measureInfo != null)
+            polygonTransfer.BorderEffector = BorderEffector;
+
+            if (measureInfo != null && IsMeasure)
             {
-                CPDFMeasureInfo cPDFMeasureInfo =new CPDFMeasureInfo() 
+                CPDFMeasureInfo cPDFMeasureInfo = new CPDFMeasureInfo()
                 {
-                    Factor=measureInfo.Factor,
-                    Unit=measureInfo.Unit,
-                    DecimalSymbol=measureInfo.DecimalSymbol,
-                    ThousandSymbol=measureInfo.ThousandSymbol,
-                    Display=measureInfo.Display,
-                    Precision=measureInfo.Precision,
-                    UnitPrefix=measureInfo.UnitPrefix,
-                    UnitSuffix=measureInfo.UnitSuffix,
-                    UnitPosition=measureInfo.UnitPosition,
-                    RulerBase=measureInfo.RulerBase,
-                    RulerBaseUnit=measureInfo.RulerBaseUnit,
-                    RulerTranslateUnit=measureInfo.RulerTranslateUnit,
-                    CaptionType=measureInfo.CaptionType,
-                    RulerTranslate=measureInfo.RulerTranslate,
+                    Factor = measureInfo.Factor,
+                    Unit = measureInfo.Unit,
+                    DecimalSymbol = measureInfo.DecimalSymbol,
+                    ThousandSymbol = measureInfo.ThousandSymbol,
+                    Display = measureInfo.Display,
+                    Precision = measureInfo.Precision,
+                    UnitPrefix = measureInfo.UnitPrefix,
+                    UnitSuffix = measureInfo.UnitSuffix,
+                    UnitPosition = measureInfo.UnitPosition,
+                    RulerBase = measureInfo.RulerBase,
+                    RulerBaseUnit = measureInfo.RulerBaseUnit,
+                    RulerTranslateUnit = measureInfo.RulerTranslateUnit,
+                    CaptionType = measureInfo.CaptionType,
+                    RulerTranslate = measureInfo.RulerTranslate,
                 };
                 polygonTransfer.measureInfo = cPDFMeasureInfo;
             }

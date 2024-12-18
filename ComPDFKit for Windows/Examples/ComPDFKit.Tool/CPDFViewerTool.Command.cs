@@ -38,7 +38,6 @@ namespace ComPDFKit.Tool
             public AnnotParam CurrentParam { get; set; } = null;
         }
 
-
         /// <summary>
         ///  System provided related command time notification
         /// </summary>
@@ -63,6 +62,8 @@ namespace ComPDFKit.Tool
         internal Point rightPressPoint = new Point(-1, -1);
         internal static List<PDFEditCommandData> lastPDFEditArgsList { get; private set; } = new List<PDFEditCommandData>();
         internal static List<AnnotParam> lastAnnotList { get; private set; } = new List<AnnotParam>();
+        private bool IsCanDoCommand = true;
+
         internal void BindCommand()
         {
             CommandBinding copyBind = new CommandBinding(ApplicationCommands.Copy);
@@ -141,7 +142,6 @@ namespace ComPDFKit.Tool
             }
         }
 
-        private bool IsCanDoCommand = true;
         public void CanDoCommand()
         {
             IsCanDoCommand = true;
@@ -239,7 +239,6 @@ namespace ComPDFKit.Tool
         }
 
         #region ContentEdit
-
         private void CheckPDFEditCommandStatus(RoutedUICommand uiCommand, CanExecuteRoutedEventArgs e)
         {
             switch (uiCommand.Name)
@@ -272,6 +271,12 @@ namespace ComPDFKit.Tool
                         }
 
                         if (checkItem.EditType == CPDFEditType.EditImage && checkItem.EditAreaCopied)
+                        {
+                            e.CanExecute = true;
+                            break;
+                        }
+
+                        if (checkItem.EditType == CPDFEditType.EditPath && checkItem.EditAreaCopied)
                         {
                             e.CanExecute = true;
                             break;
@@ -456,6 +461,7 @@ namespace ComPDFKit.Tool
                         commandData.PDFRect = DataConversionForWPF.CRectConversionForRect(currentEditAreaObject.cPDFEditArea.GetFrame());
                         lastPDFEditArgsList.Add(commandData);
                     }
+
                     if (currentEditAreaObject.cPDFEditArea.Type == CPDFEditType.EditImage)
                     {
                         editType = CPDFEditType.EditImage;
@@ -463,6 +469,22 @@ namespace ComPDFKit.Tool
                         commandData.PDFRect = DataConversionForWPF.CRectConversionForRect(currentEditAreaObject.cPDFEditArea.GetFrame());
                         commandData.EditAreaCopied = editPage.CopyEditArea(currentEditAreaObject.cPDFEditArea);
                         commandData.EditType = CPDFEditType.EditImage;
+                        if (commandData.EditAreaCopied)
+                        {
+                            List<CPDFCopyEditArea> copyList = editPage.GetCopyEditAreaList();
+                            commandData.CopyArea = copyList[copyList.Count - 1];
+                            commandData.EditPage = editPage;
+                            lastPDFEditArgsList.Add(commandData);
+                        }
+                    }
+
+                    if (currentEditAreaObject.cPDFEditArea.Type == CPDFEditType.EditPath)
+                    {
+                        editType = CPDFEditType.EditPath;
+                        CPDFEditPage editPage = currentEditAreaObject.cPDFEditPage;
+                        commandData.PDFRect = DataConversionForWPF.CRectConversionForRect(currentEditAreaObject.cPDFEditArea.GetFrame());
+                        commandData.EditAreaCopied = editPage.CopyEditArea(currentEditAreaObject.cPDFEditArea);
+                        commandData.EditType = CPDFEditType.EditPath;
                         if (commandData.EditAreaCopied)
                         {
                             List<CPDFCopyEditArea> copyList = editPage.GetCopyEditAreaList();
@@ -517,6 +539,7 @@ namespace ComPDFKit.Tool
                                     commandData.PDFRect = DataConversionForWPF.CRectConversionForRect(editAreaObject.cPDFEditArea.GetFrame());
                                     lastPDFEditArgsList.Add(commandData);
                                 }
+
                                 if (editAreaObject.cPDFEditArea.Type == CPDFEditType.EditImage)
                                 {
                                     editType = CPDFEditType.EditImage;
@@ -524,6 +547,22 @@ namespace ComPDFKit.Tool
                                     commandData.PDFRect = DataConversionForWPF.CRectConversionForRect(editAreaObject.cPDFEditArea.GetFrame());
                                     commandData.EditAreaCopied = editPage.CopyEditArea(editAreaObject.cPDFEditArea);
                                     commandData.EditType = CPDFEditType.EditImage;
+                                    if (commandData.EditAreaCopied)
+                                    {
+                                        List<CPDFCopyEditArea> copyList = editPage.GetCopyEditAreaList();
+                                        commandData.CopyArea = copyList[copyList.Count - 1];
+                                        commandData.EditPage = editPage;
+                                        lastPDFEditArgsList.Add(commandData);
+                                    }
+                                }
+
+                                if (editAreaObject.cPDFEditArea.Type == CPDFEditType.EditPath)
+                                {
+                                    editType = CPDFEditType.EditPath;
+                                    CPDFEditPage editPage = editAreaObject.cPDFEditPage;
+                                    commandData.PDFRect = DataConversionForWPF.CRectConversionForRect(editAreaObject.cPDFEditArea.GetFrame());
+                                    commandData.EditAreaCopied = editPage.CopyEditArea(editAreaObject.cPDFEditArea);
+                                    commandData.EditType = CPDFEditType.EditPath;
                                     if (commandData.EditAreaCopied)
                                     {
                                         List<CPDFCopyEditArea> copyList = editPage.GetCopyEditAreaList();
@@ -574,6 +613,12 @@ namespace ComPDFKit.Tool
                     RemoveImageBlock();
                 }
 
+                if (currentEditAreaObject.cPDFEditArea.Type == CPDFEditType.EditPath)
+                {
+                    editType = CPDFEditType.EditPath;
+                    RemovePathBlock();
+                }
+
                 if (PDFViewer != null && PDFViewer.UndoManager != null)
                 {
                     PDFViewer.UndoManager.AddHistory(groupHistory);
@@ -616,6 +661,12 @@ namespace ComPDFKit.Tool
                             {
                                 editType = CPDFEditType.EditImage;
                                 RemoveImageBlock(editareaobject);
+                            }
+
+                            if (editareaobject.cPDFEditArea.Type == CPDFEditType.EditPath)
+                            {
+                                editType = CPDFEditType.EditPath;
+                                RemovePathBlock(editareaobject);
                             }
                         }
 
@@ -829,6 +880,7 @@ namespace ComPDFKit.Tool
                         }
                     }
                 }
+
                 if (commandData.EditType == CPDFEditType.EditImage)
                 {
                     editType = CPDFEditType.EditImage;
@@ -836,7 +888,6 @@ namespace ComPDFKit.Tool
                     if (commandData.EditAreaCopied)
                     {
                         commandData.CopyArea?.PasteEditArea(editPage, new CPoint((float)offsetRect.Left, (float)offsetRect.Top));
-
                         editHistory.EditPage = editPage;
                         editHistory.PageIndex = pageIndex;
                         CPDFViewer pdfViewer = GetCPDFViewer();
@@ -885,6 +936,25 @@ namespace ComPDFKit.Tool
                     }
                 }
 
+                if (commandData.EditType == CPDFEditType.EditPath)
+                {
+                    editType = CPDFEditType.EditPath;
+                    PDFEditHistory editHistory = new PDFEditHistory();
+                    if (commandData.EditAreaCopied)
+                    {
+                        commandData.CopyArea?.PasteEditArea(editPage, new CPoint((float)offsetRect.Left, (float)offsetRect.Top));
+                        editHistory.EditPage = editPage;
+                        editHistory.PageIndex = pageIndex;
+                        CPDFViewer pdfViewer = GetCPDFViewer();
+                        if (pdfViewer != null && pdfViewer.UndoManager != null)
+                        {
+                            pdfViewer.UndoManager.AddHistory(editHistory);
+                        }
+
+                        SelectedEditAreaForIndex(pageIndex, editPage.GetEditAreaList().Count - 1, false);
+                    }
+                }
+
                 editPage.EndEdit();
             }
         }
@@ -895,12 +965,15 @@ namespace ComPDFKit.Tool
             if (currentEditAreaObject != null && currentEditAreaObject.cPDFEditPage != null)
             {
                 CPDFEditTextArea textArea = currentEditAreaObject.cPDFEditArea as CPDFEditTextArea;
-                textArea.SelectAllChars();
+                if (textArea == null)
+                    return;
 
+                textArea.SelectAllChars();
                 editType = CPDFEditType.EditText;
                 PDFViewer.UpdateRenderFrame();
             }
         }
+
         private Rect AddPasteOffset(Rect clientRect, int offsetX, int offsetY, Size pageSize)
         {
             clientRect.X += offsetX;
@@ -928,7 +1001,6 @@ namespace ComPDFKit.Tool
         #endregion
 
         #region Annot
-
         private bool CheckCacheHitTestAnnot(string cmdName = "")
         {
             if (cacheHitTestAnnot == null)
@@ -1076,6 +1148,39 @@ namespace ComPDFKit.Tool
             }
         }
 
+        private void ClearLastAnnotList()
+        {
+            foreach(var item in lastAnnotList)
+            {
+                if (item is StampParam stampParam)
+                {
+                    if (stampParam.StampType == C_STAMP_TYPE.IMAGE_STAMP)
+                    {
+                        if(stampParam.CopyImageAnnot != null)
+                        {
+                            CPDFAnnotation.ReleaseCopyAnnot(stampParam.CopyImageAnnot);
+                            stampParam.CopyImageAnnot = null;
+                        }
+                    }
+                }
+            }
+
+            lastAnnotList.Clear();
+        }
+
+        private void AddLastAnnotList(AnnotParam annotParam)
+        {
+            if (annotParam is StampParam stampParam)
+            {
+                if (stampParam.StampType == C_STAMP_TYPE.IMAGE_STAMP)
+                {
+                    stampParam.CopyImageAnnot = CPDFAnnotation.CopyAnnot(cacheHitTestAnnot.GetAnnotData().Annot);
+                }
+            }
+
+            lastAnnotList.Add(annotParam);
+        }
+
         private void ExecuteAnnotCommand(RoutedUICommand uiCommand)
         {
             switch (uiCommand.Name)
@@ -1083,15 +1188,16 @@ namespace ComPDFKit.Tool
                 case "Copy":
                     if (cacheHitTestAnnot != null)
                     {
-                        lastAnnotList.Clear();
+                        ClearLastAnnotList();
                         AnnotParam annotParam = ParamConverter.AnnotConverter(GetCPDFViewer().GetDocument(), cacheHitTestAnnot.GetAnnotData().Annot);
-                        lastAnnotList.Add(annotParam);
+                        AddLastAnnotList(annotParam);
                     }
+
                     if (cacheMoveWidget != null)
                     {
-                        lastAnnotList.Clear();
+                        ClearLastAnnotList();
                         AnnotParam annotParam = ParamConverter.WidgetConverter(GetCPDFViewer().GetDocument(), cacheMoveWidget.GetAnnotData().Annot);
-                        lastAnnotList.Add(annotParam);
+                        AddLastAnnotList(annotParam);
                     }
                     else
                     {
@@ -1125,7 +1231,7 @@ namespace ComPDFKit.Tool
                 case "Cut":
                     if (cacheHitTestAnnot != null)
                     {
-                        lastAnnotList.Clear();
+                        ClearLastAnnotList();
                         AnnotParam annotParam;
                         if (cacheHitTestAnnot.CurrentType == C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET)
                         {
@@ -1135,13 +1241,14 @@ namespace ComPDFKit.Tool
                         {
                             annotParam = ParamConverter.AnnotConverter(GetCPDFViewer().GetDocument(), cacheHitTestAnnot.GetAnnotData().Annot);
                         }
-                        lastAnnotList.Add(annotParam);
+
+                        AddLastAnnotList(annotParam);
                     }
                     if (cacheMoveWidget != null)
                     {
-                        lastAnnotList.Clear();
+                        ClearLastAnnotList();
                         AnnotParam annotParam = ParamConverter.WidgetConverter(GetCPDFViewer().GetDocument(), cacheMoveWidget.GetAnnotData().Annot);
-                        lastAnnotList.Add(annotParam);
+                        AddLastAnnotList(annotParam);
                     }
                     DeleteAnnotData();
                     PDFViewer.UpdateAnnotFrame();
@@ -1158,6 +1265,7 @@ namespace ComPDFKit.Tool
                     break;
             }
         }
+
         private void PasteAnnotData(bool pasteMatchStyle = false)
         {
             AnnotHistory annotHistory = null;
@@ -1211,7 +1319,7 @@ namespace ComPDFKit.Tool
                             CPDFAnnotation cPDFAnnotation = cPDFPage.CreateAnnot(item.CurrentType);
                             CreateDefaultAnnot(cPDFAnnotation, item.CurrentType, item);
                             cPDFAnnotation.SetRect(setRect);
-                            cPDFAnnotation.UpdateAp();
+                            CommonHelper.UpdateStickyAP(cPDFAnnotation as CPDFTextAnnotation);
                             AnnotParam annotParam = ParamConverter.AnnotConverter(cPDFDocument, cPDFAnnotation);
                             (annotHistory as StickyNoteAnnotHistory).CurrentParam = (StickyNoteParam)annotParam;
                         }
@@ -1446,15 +1554,12 @@ namespace ComPDFKit.Tool
                             (annotHistory as CircleAnnotHistory).CurrentParam = (CircleParam)annotParam;
                         }
                         break;
+
                     case C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON:
-                        break;
-                    case C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE:
-                        break;
-                    case C_ANNOTATION_TYPE.C_ANNOTATION_STAMP:
                         {
                             CPDFDocument cPDFDocument = PDFViewer.GetDocument();
                             Rect rect;
-                            annotHistory = new StampAnnotHistory();
+                            annotHistory = new PolygonMeasureAnnotHistory();
                             annotHistory.PDFDoc = cPDFDocument;
                             int index = -1;
                             if (point.Equals(new Point(-1, -1)))
@@ -1482,16 +1587,95 @@ namespace ComPDFKit.Tool
                             }
 
                             CRect setRect = DataConversionForWPF.RectConversionForCRect(rect);
+                            PolygonMeasureParam newPolygonParam = new PolygonMeasureParam();
+                            item.CopyTo(newPolygonParam);
+                            if(newPolygonParam.SavePoints != null && newPolygonParam.SavePoints.Count>0)
+                            {
+                                float offsetX = setRect.left - item.ClientRect.left;
+                                float offsetY = setRect.top - item.ClientRect.top;
+                                List<CPoint> arrangeList = new List<CPoint>();
+                                foreach (CPoint addPoint in newPolygonParam.SavePoints)
+                                {
+                                    arrangeList.Add(new CPoint(addPoint.x + offsetX, addPoint.y + offsetY));
+                                }
+
+                                newPolygonParam.SavePoints = arrangeList;
+                                newPolygonParam.ClientRect = setRect;
+                            }
+
                             CPDFPage cPDFPage = cPDFDocument.PageAtIndex(index);
                             if (cPDFPage == null)
                                 return;
 
-                            CPDFAnnotation cPDFAnnotation = cPDFPage.CreateAnnot(item.CurrentType);
-                            CreateDefaultAnnot(cPDFAnnotation, item.CurrentType, item);
-                            cPDFAnnotation.SetRect(setRect);
+                            CPDFAnnotation cPDFAnnotation = cPDFPage.CreateAnnot(newPolygonParam.CurrentType);
+                            CreateDefaultAnnot(cPDFAnnotation, newPolygonParam.CurrentType, newPolygonParam);
                             cPDFAnnotation.UpdateAp();
                             AnnotParam annotParam = ParamConverter.AnnotConverter(cPDFDocument, cPDFAnnotation);
-                            (annotHistory as StampAnnotHistory).CurrentParam = (StampParam)annotParam;
+                            (annotHistory as PolygonMeasureAnnotHistory).CurrentParam = (PolygonMeasureParam)annotParam;
+                        }
+                        break;
+
+                    case C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE:
+                        break;
+                    case C_ANNOTATION_TYPE.C_ANNOTATION_STAMP:
+                        {
+                            CPDFDocument cPDFDocument = PDFViewer.GetDocument();
+                            Rect rect;
+                            annotHistory = new StampAnnotHistory();
+                            annotHistory.PDFDoc = cPDFDocument;
+                            int index = -1;
+                            if (point.Equals(new Point(-1, -1)))
+                            {
+                                index = item.PageIndex;
+                                rect = new Rect(
+                                    (item.ClientRect.left + 25),
+                                    (item.ClientRect.top + 25),
+                                    item.ClientRect.width(),
+                                    item.ClientRect.height()
+                                );
+                            }
+                            else
+                            {
+                                PDFViewer.GetPointPageInfo(point, out index, out Rect paintRect, out var pageBound);
+                                CRect cRect = (item as StampParam).SourceRect;
+                                Point zoomPoint = new Point((point.X - pageBound.X) / currentZoom, (point.Y - pageBound.Y) / currentZoom);
+                                Point pdfPoint = DpiHelper.StandardPointToPDFPoint(zoomPoint);
+                                rect = new Rect(
+                                    (pdfPoint.X - cRect.width() / 2),
+                                    (pdfPoint.Y - cRect.height() / 2),
+                                    cRect.width(),
+                                    cRect.height()
+                                );
+                            }
+
+                            CRect setRect = DataConversionForWPF.RectConversionForCRect(rect);
+                            CPDFPage cPDFPage = cPDFDocument.PageAtIndex(index);
+                            if (cPDFPage == null)
+                                return;
+
+                            StampParam stampParam = item as StampParam;
+                            CPDFStampAnnotation stampAnnot;
+                            if (stampParam.StampType == C_STAMP_TYPE.IMAGE_STAMP)
+                            {
+                                stampAnnot = CPDFAnnotation.AddCopyAnnotToPage(cPDFDocument, cPDFPage, stampParam.CopyImageAnnot) as CPDFStampAnnotation;
+                            }
+                            else
+                            {
+                                stampAnnot = cPDFPage.CreateAnnot(item.CurrentType) as CPDFStampAnnotation;
+                                CreateDefaultAnnot(stampAnnot, item.CurrentType, item);
+                            }
+
+                            stampAnnot.SetSourceRect(setRect);
+                            stampAnnot.AnnotationRotator.SetRotation(stampParam.Rotation);
+                            stampAnnot.UpdateAp();
+
+                            StampParam annotParam = ParamConverter.AnnotConverter(cPDFDocument, stampAnnot) as StampParam;
+                            if (annotParam.StampType == C_STAMP_TYPE.IMAGE_STAMP)
+                            {
+                                annotParam.CopyImageAnnot = CPDFAnnotation.CopyAnnot(stampAnnot);
+                            }
+
+                            (annotHistory as StampAnnotHistory).CurrentParam = annotParam;
                         }
                         break;
                     case C_ANNOTATION_TYPE.C_ANNOTATION_CARET:
@@ -1606,8 +1790,8 @@ namespace ComPDFKit.Tool
                 {
                     return;
                 }
-                AnnotParam annotParam = null;
 
+                AnnotParam annotParam = null;
                 if (cacheHitTestAnnot is BaseWidget)
                 {
                     annotParam = ParamConverter.WidgetConverter(PDFViewer.GetDocument(), cacheHitTestAnnot.GetAnnotData().Annot);
@@ -1616,6 +1800,7 @@ namespace ComPDFKit.Tool
                 {
                     annotParam = ParamConverter.AnnotConverter(PDFViewer.GetDocument(), cacheHitTestAnnot.GetAnnotData().Annot);
                 }
+
                 if (annotParam != null)
                 {
                     notifyData = new ExpandoObject();
@@ -1627,6 +1812,14 @@ namespace ComPDFKit.Tool
                     if (annotParam is WidgetParm)
                     {
                         notifyData.WidgetType = (annotParam as WidgetParm).WidgetType;
+                    }
+
+                    if (annotParam is StampParam stampParam)
+                    {
+                        if (stampParam.StampType == C_STAMP_TYPE.IMAGE_STAMP)
+                        {
+                            stampParam.CopyImageAnnot = CPDFAnnotation.CopyAnnot(cacheHitTestAnnot.GetAnnotData().Annot);
+                        }
                     }
 
                     annotHistory.CurrentParam = annotParam;

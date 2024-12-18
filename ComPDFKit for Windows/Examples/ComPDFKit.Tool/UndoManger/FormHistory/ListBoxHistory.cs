@@ -84,12 +84,9 @@ namespace ComPDFKit.Tool.UndoManger
                 }
                 textAttr.FontColor = fontColor;
 				textAttr.FontSize = (float)currentParam.FontSize;
-				textAttr.FontName = ObtainFontName(
-					GetFontType(currentParam.FontName),
-					currentParam.IsBold,
-					currentParam.IsItalic);
+				textAttr.FontName = currentParam.FontName;
 
-				listboxWidget.SetTextAttribute(textAttr);
+                listboxWidget.SetTextAttribute(textAttr);
 
 				if (currentParam.OptionItems != null && currentParam.OptionItems.Count > 0)
 				{
@@ -198,11 +195,8 @@ namespace ComPDFKit.Tool.UndoManger
 				if (updateParam.FontName != checkParam.FontName)
 				{
 					CTextAttribute textAttr = listboxWidget.GetTextAttribute();
-					bool isBold = IsBold(textAttr.FontName);
-					bool isItalic = IsItalic(textAttr.FontName);
-					FontType fontType = GetFontType(updateParam.FontName);
-					textAttr.FontName = ObtainFontName(fontType, isBold, isItalic);
-					listboxWidget.SetTextAttribute(textAttr);
+					textAttr.FontName = updateParam.FontName;
+                    listboxWidget.SetTextAttribute(textAttr);
 				}
 
 				if (updateParam.FontSize != checkParam.FontSize)
@@ -221,25 +215,6 @@ namespace ComPDFKit.Tool.UndoManger
                         listboxWidget.SetTextAttribute(textAttr);
                     }
                 }
-
-
-                if (updateParam.IsBold != checkParam.IsBold)
-				{
-					CTextAttribute textAttr = listboxWidget.GetTextAttribute();
-					bool isItalic = IsItalic(textAttr.FontName);
-					FontType fontType = GetFontType(textAttr.FontName);
-					textAttr.FontName = ObtainFontName(fontType, updateParam.IsBold, isItalic);
-					listboxWidget.SetTextAttribute(textAttr);
-				}
-
-				if (updateParam.IsItalic != checkParam.IsItalic)
-				{
-					CTextAttribute textAttr = listboxWidget.GetTextAttribute();
-					bool isBold = IsBold(textAttr.FontName);
-					FontType fontType = GetFontType(textAttr.FontName);
-					textAttr.FontName = ObtainFontName(fontType, isBold, updateParam.IsItalic);
-					listboxWidget.SetTextAttribute(textAttr);
-				}
 
 				if (updateParam.OptionItems != null)
 				{

@@ -8,9 +8,9 @@ namespace ComPDFKit.Controls.Edit
     public partial class PDFContentEditControl : UserControl
     {
         #region  
-
         private PDFImageEditControl PDFImageEditControl = new PDFImageEditControl();
         private PDFTextEditControl PDFTextEditControl = new PDFTextEditControl();
+        private PDFPathEditControl PDFPathEditControl = new PDFPathEditControl();
 
         public PDFViewControl ViewControl { get; private set; }
         public PDFEditParam EditEvent { get; set; }
@@ -24,10 +24,11 @@ namespace ComPDFKit.Controls.Edit
         public void InitWithPDFViewer(PDFViewControl newPDFView)
         {
             ViewControl = newPDFView;
-            PDFImageEditControl.InitWithPDFViewer(newPDFView.PDFViewTool);
             PDFTextEditControl.InitWithPDFViewer(newPDFView.PDFViewTool);
+            PDFImageEditControl.InitWithPDFViewer(newPDFView.PDFViewTool);
+            PDFPathEditControl.InitWithPDFViewer(newPDFView.PDFViewTool);
         }
-         
+
         public void SetRotationText(float rotation)
         {
             PDFImageEditControl.SetRotationText(rotation);
@@ -66,6 +67,11 @@ namespace ComPDFKit.Controls.Edit
             ContentEditContainer.Child = PDFImageEditControl;
         }
 
+        public void SetPDFPathEditData(List<PathEditParam> editEvent)
+        {
+            PDFPathEditControl.SetPDFPathEditData(editEvent);
+            ContentEditContainer.Child = PDFPathEditControl;
+        }
 
         //public void SetPDFImageMultiEditData(List<PDFEditEvent> editEventList)
         //{

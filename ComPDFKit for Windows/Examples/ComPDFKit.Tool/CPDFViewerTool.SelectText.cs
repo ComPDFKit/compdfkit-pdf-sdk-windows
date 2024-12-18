@@ -1,17 +1,10 @@
 ﻿using ComPDFKit.Tool.DrawTool;
 using ComPDFKitViewer.Layer;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Windows;
 using ComPDFKitViewer.Helper;
-using ComPDFKitViewer;
 using ComPDFKit.Tool.Help;
-using System.Windows.Media;
-using System.Xml.Linq;
 
 namespace ComPDFKit.Tool
 {

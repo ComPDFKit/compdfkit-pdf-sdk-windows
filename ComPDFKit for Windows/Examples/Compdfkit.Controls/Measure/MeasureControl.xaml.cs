@@ -26,31 +26,33 @@ namespace ComPDFKit.Controls.Measure
     public partial class MeasureControl : UserControl
     {
         public MeasurePropertyControl measurePropertyControl = new MeasurePropertyControl();
+
         private CPDFDisplaySettingsControl displaySettingsControl;
 
         private PDFViewControl PdfViewControl = new PDFViewControl();
 
         private PanelState panelState = PanelState.GetInstance();
-        
+
         private CPDFAnnotation currentAnnot = null;
 
         public event EventHandler ExpandEvent;
         public event EventHandler OnAnnotEditHandler;
 
-
         public MeasureControl()
         {
             InitializeComponent();
         }
-        
+
         #region Init PDFViewer
 
         public void InitWithPDFViewer(PDFViewControl pdfViewControl)
         {
             PdfViewControl = pdfViewControl;
-            //PdfViewControl.PDFView = pdfViewer;
+            //PdfViewControl.PDFView = pdfViewer; 
+            measurePropertyControl.InitWithPDFViewer(pdfViewControl);
             PDFMeasureTool.InitWithPDFViewer(pdfViewControl, measurePropertyControl, this);
             FloatPageTool.InitWithPDFViewer(pdfViewControl);
+
             PDFGrid.Child = PdfViewControl;
 
             panelState.PropertyChanged -= PanelState_PropertyChanged;
@@ -65,9 +67,9 @@ namespace ComPDFKit.Controls.Measure
             PdfViewControl.MouseLeftButtonUpHandler += PDFToolManager_MouseLeftButtonUpHandler;
             PdfViewControl.MouseMoveHandler += PDFToolManager_MouseMoveHandler;
             pdfViewControl.MouseRightButtonDownHandler += PDFToolManager_MouseRightButtonDownHandler;
-            panelState.PropertyChanged += PanelState_PropertyChanged; 
+            panelState.PropertyChanged += PanelState_PropertyChanged;
             SetInfoPanelVisble(false, false);
-            SettingPanel.PdfViewControl= pdfViewControl;
+            SettingPanel.PdfViewControl = pdfViewControl;
         }
 
         private void MeasureSetting_MeasureChanged(object sender, MeasureEventArgs e)
@@ -102,7 +104,7 @@ namespace ComPDFKit.Controls.Measure
             }
             PdfViewControl.SetRightMenu(ContextMenu);
         }
-        
+
         private void CreateAnnotContextMenu(object sender, ref ContextMenu menu, C_ANNOTATION_TYPE annotType)
         {
             switch (annotType)
@@ -130,13 +132,13 @@ namespace ComPDFKit.Controls.Measure
                     break;
             }
         }
-        
+
         private void CreateMeasureContextMenu(object sender, ref ContextMenu menu)
         {
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Delete"), Command = ApplicationCommands.Delete, CommandTarget = (UIElement)sender });
-            
+
             MenuItem menuItem = new MenuItem();
-            menuItem.Header = "Measurement Settings";
+            menuItem.Header = LanguageHelper.PropertyPanelManager.GetString("Title_Settings");
             menuItem.Click += (item, param) =>
             {
                 if (currentAnnot is CPDFLineAnnotation annotation)
@@ -146,21 +148,33 @@ namespace ComPDFKit.Controls.Measure
                 SetInfoPanelVisble(false, true);
             };
             menu.Items.Add(menuItem);
-            
+
             MenuItem propertyItem = new MenuItem();
-            propertyItem.Header = "Properties";
+            propertyItem.Header = LanguageHelper.CommonManager.GetString("Tooltip_Prop");
             propertyItem.Click += (item, param) =>
             {
+                BaseAnnot baseAnnot = PdfViewControl.GetCacheHitTestAnnot();
+                if (baseAnnot != null)
+                {
+                    AnnotData annotData = baseAnnot.GetAnnotData();
+                    AnnotParam annotParam = ParamConverter.CPDFDataConverterToAnnotParam(
+                    PdfViewControl.GetCPDFViewer().GetDocument(), annotData.PageIndex, annotData.Annot);
+                    measurePropertyControl.SetPropertyForMeasureCreate(annotParam, annotData.Annot, PdfViewControl);
+                    SetMeasureInfoPanel(annotData.Annot, annotParam);
+                    currentAnnot = annotData.Annot;
+                }
+
                 panelState.RightPanel = PanelState.RightPanelState.PropertyPanel;
+                SetInfoPanelVisble(true, false);
             };
             menu.Items.Add(propertyItem);
         }
-        
+
         private void CreateSelectTextContextMenu(object sender, ref ContextMenu menu)
         {
             menu.Items.Add(new MenuItem() { Header = LanguageHelper.CommonManager.GetString("Menu_Copy"), Command = ApplicationCommands.Copy, CommandTarget = (UIElement)sender });
         }
-        
+
         private void CreateSelectImageContextMenu(object sender, ref ContextMenu menu)
         {
             if (menu == null)
@@ -253,6 +267,7 @@ namespace ComPDFKit.Controls.Measure
 
         private void PDFToolManager_MouseMoveHandler(object sender, MouseEventObject e)
         {
+
         }
 
         private void PDFToolManager_MouseLeftButtonUpHandler(object sender, MouseEventObject e)
@@ -270,23 +285,23 @@ namespace ComPDFKit.Controls.Measure
             {
                 AnnotData annotData = baseAnnot.GetAnnotData();
                 AnnotParam annotParam = ParamConverter.CPDFDataConverterToAnnotParam(
-                    PdfViewControl.GetCPDFViewer().GetDocument(), annotData.PageIndex, annotData.Annot);
+                PdfViewControl.GetCPDFViewer().GetDocument(), annotData.PageIndex, annotData.Annot);
                 measurePropertyControl.SetPropertyForMeasureCreate(annotParam, annotData.Annot, PdfViewControl);
                 SetMeasureInfoPanel(annotData.Annot, annotParam);
                 currentAnnot = annotData.Annot;
-            }
+            } 
 
             panelState.RightPanel = PanelState.RightPanelState.PropertyPanel;
-            // measurePropertyControl.SetPropertyForMeasureCreate(LineArgs, e);
             SetInfoPanelVisble(true, false);
         }
 
-        private void SetMeasureInfoPanel(CPDFAnnotation annot,AnnotParam param = null)
+        private void SetMeasureInfoPanel(CPDFAnnotation annot, AnnotParam param = null)
         {
-            if (annot == null)
+            if (annot == null || !annot.IsValid())
             {
                 return;
             }
+
             try
             {
                 if (annot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_LINE)
@@ -308,8 +323,8 @@ namespace ComPDFKit.Controls.Measure
                         SetMeasureInfoType(CPDFMeasureType.CPDF_PERIMETER_MEASURE);
                     }
                 }
-                
-                if(annot.Type== C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON)
+
+                if (annot.Type == C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON)
                 {
                     CPDFPolygonAnnotation Annot = annot as CPDFPolygonAnnotation;
                     CPDFAreaMeasure polygonMeasure = Annot.GetAreaMeasure();
@@ -317,7 +332,7 @@ namespace ComPDFKit.Controls.Measure
                     CPDFCaptionType CaptionType = measureInfo.CaptionType;
                     bool IsArea = false;
                     bool IsLength = false;
-                    if ((CaptionType& CPDFCaptionType.CPDF_CAPTION_AREA)== CPDFCaptionType.CPDF_CAPTION_AREA)
+                    if ((CaptionType & CPDFCaptionType.CPDF_CAPTION_AREA) == CPDFCaptionType.CPDF_CAPTION_AREA)
                     {
                         IsArea = true;
                     }
@@ -501,7 +516,7 @@ namespace ComPDFKit.Controls.Measure
             }
             SettingPanel.ReturnToInfoPanel = true;
             SetInfoPanelVisble(false, true);
-            if(currentAnnot != null)
+            if (currentAnnot != null)
             {
                 AnnotParam annotParam = ParamConverter.CPDFDataConverterToAnnotParam(
                     PdfViewControl.GetCPDFViewer().GetDocument(), currentAnnot.Page.PageIndex, currentAnnot);
@@ -511,7 +526,7 @@ namespace ComPDFKit.Controls.Measure
 
         private CPDFMeasureInfo GetMeasureInfoFromParam(AnnotParam param)
         {
-            if(param is LineMeasureParam lineParam)
+            if (param is LineMeasureParam lineParam)
             {
                 return lineParam.measureInfo;
             }
@@ -548,7 +563,7 @@ namespace ComPDFKit.Controls.Measure
         {
             InfoPanel?.SetMeasureType(measureType);
         }
-        
+
         public void SetBOTAContainer(CPDFBOTABarControl botaControl)
         {
             this.BotaContainer.Child = botaControl;
@@ -556,7 +571,7 @@ namespace ComPDFKit.Controls.Measure
 
         public void SetMeasureScale(CPDFMeasureType measureType, string scale)
         {
-            InfoPanel?.SetMeasureScale(measureType,scale);
+            InfoPanel?.SetMeasureScale(measureType, scale);
         }
     }
 }

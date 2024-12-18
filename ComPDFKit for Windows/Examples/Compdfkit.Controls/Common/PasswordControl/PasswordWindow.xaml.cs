@@ -23,6 +23,8 @@ namespace ComPDFKit.Controls.Common
         public delegate void DialogCloseEventHandler(object sender, PasswordEventArgs e);
         public event DialogCloseEventHandler DialogClosed;
 
+        public string Password { get; private set; }
+
         public PasswordWindow()
         {
             InitializeComponent();
@@ -67,6 +69,7 @@ namespace ComPDFKit.Controls.Common
                     if (pdfDoc.IsLocked == false)
                     {
                         PasswordEventArgs passwordEventArgs = new PasswordEventArgs(e);
+                        Password = e;
                         CloseWindow(passwordEventArgs);
                     }
                     else
@@ -81,6 +84,7 @@ namespace ComPDFKit.Controls.Common
                         if(pdfDoc.CheckOwnerPassword(e))
                         {
                             PasswordEventArgs passwordEventArgs = new PasswordEventArgs(e);
+                            Password = e;
                             CloseWindow(passwordEventArgs);
                         }
                         else

@@ -69,6 +69,12 @@ namespace ComPDFKit.Tool.UndoManger
                 {
                     inkAnnot.SetContent(currentParam.Content);
                 }
+
+                if (currentParam.Dash != null && currentParam.Dash.Length > 0)
+                {
+                    inkAnnot.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED,currentParam.Dash);
+                }
+
                 inkAnnot.SetIsLocked(currentParam.Locked);
                 inkAnnot.SetCreationDate(PDFHelp.GetCurrentPdfTime());
                 inkAnnot.UpdateAp();
@@ -122,6 +128,15 @@ namespace ComPDFKit.Tool.UndoManger
                 if (updateParam.InkPath!=null)
                 {
                     inkAnnot.SetInkPath(updateParam.InkPath);
+                }
+
+                if (updateParam.Dash!=null && updateParam.Dash.Length>0)
+                {
+                    inkAnnot.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED,updateParam.Dash);
+                }
+                else
+                {
+                    inkAnnot.SetBorderStyle(C_BORDER_STYLE.BS_SOLID,new float[0]);
                 }
 
                 if (updateParam.Transparency != checkParam.Transparency)

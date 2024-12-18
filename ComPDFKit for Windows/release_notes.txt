@@ -1,11 +1,23 @@
-*** Release Date: Aug 6,  2024***
+*** Release Date: Dec 12, 2024 ***
+Version 2.2.0
+- New Features
+1. Added support for strikethrough and underline text formatting.
+2. Added editing support for path element types.
+3. Added rotation functionality for image, signature, and stamp annotations.
+4. Added cloud border styles for polygonal annotations.
+5. Added document compression functionality.
+6. Added snapshot functionality.
+
+- Issues Addressed
+1. Fixed an issue where the content editing hierarchy was out of order.
+
+*** Release Date: Aug 6,  2024 ***
 Version 2.1.0
 - New Features
 1. Added annotation reply functionality.
 2. Optimized text aggregation logic for content editing.
 3. Optimized UX for content editing.
 4. Added font subsetting.
-
 
 *** Release Date: Mar, 27, 2024 ***
 Version 2.0.0

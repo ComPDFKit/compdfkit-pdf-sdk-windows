@@ -19,6 +19,8 @@ using System.Windows.Shapes;
 using ComPDFKit.Controls.PDFControl;
 using ComPDFKit.Tool;
 using CFontNameHelper = ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
+using System.Runtime.CompilerServices;
+using System.IO.Ports;
 
 namespace ComPDFKit.Controls.Measure.Property
 {
@@ -32,13 +34,14 @@ namespace ComPDFKit.Controls.Measure.Property
         };
 
         bool IsLoadedData = false;
-        
-        private PolyLineMeasureParam polyLineMeasureParam;
-        
-        public CPDFPolylineAnnotation Annotation{ get; set; }
-        
-        public PDFViewControl ViewControl{ get; set; }
 
+        private PolyLineMeasureParam polyLineMeasureParam;
+
+        public CPDFPolylineAnnotation Annotation { get; set; }
+
+        public PDFViewControl ViewControl { get; set; }
+
+        public event EventHandler<PolyLineMeasureParam> PolyLineMeasureParamChanged;
         public MultilineProperty()
         {
             InitializeComponent();
@@ -48,6 +51,11 @@ namespace ComPDFKit.Controls.Measure.Property
         {
             if (IsLoadedData)
             {
+                if (Annotation == null)
+                {
+                    polyLineMeasureParam.Content = NoteTextBox.Text;
+                    PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                }
                 if (Annotation != null && ViewControl != null)
                 {
                     Annotation.SetContent(NoteTextBox.Text);
@@ -85,7 +93,14 @@ namespace ComPDFKit.Controls.Measure.Property
                 default:
                     break;
             }
-            if(Annotation != null)
+            if (Annotation == null)
+            {
+                polyLineMeasureParam.IsBold = isBold;
+                polyLineMeasureParam.IsItalic = isItalic;
+                PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+            }
+
+            if (Annotation != null)
             {
                 CTextAttribute textAttribute = Annotation.GetTextAttribute();
                 var fontType = CFontNameHelper.GetFontType((FontCombox.SelectedItem as ComboBoxItem).Content.ToString());
@@ -101,9 +116,16 @@ namespace ComPDFKit.Controls.Measure.Property
         {
             if (IsLoadedData)
             {
+                ComboBoxItem selectItem = FontCombox.SelectedItem as ComboBoxItem;
+                if (Annotation == null)
+                {
+                    var fontType = CFontNameHelper.GetFontType(selectItem.Content.ToString());
+                    string FontName = CFontNameHelper.ObtainFontName(fontType, polyLineMeasureParam.IsBold, polyLineMeasureParam.IsItalic);
+                    polyLineMeasureParam.FontName = FontName;
+                    PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                } 
                 if (Annotation != null && ViewControl != null)
                 {
-                    ComboBoxItem selectItem = FontCombox.SelectedItem as ComboBoxItem;
                     if (selectItem != null && selectItem.Content != null)
                     {
                         CTextAttribute textAttr = Annotation.GetTextAttribute();
@@ -125,6 +147,11 @@ namespace ComPDFKit.Controls.Measure.Property
             {
                 if (FontSizeComboBox.SelectedItem != null)
                 {
+                    if (Annotation == null)
+                    {
+                        polyLineMeasureParam.FontSize = (float)Convert.ToDouble(FontSizeComboBox.SelectedItem);
+                        PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                    }
                     if (Annotation != null && ViewControl != null)
                     {
                         CTextAttribute textAttribute = Annotation.GetTextAttribute();
@@ -141,12 +168,18 @@ namespace ComPDFKit.Controls.Measure.Property
         {
             if (IsLoadedData)
             {
+                SolidColorBrush checkBrush = BorderColorPickerControl.GetBrush() as SolidColorBrush;
+                byte[] color = { checkBrush.Color.R, checkBrush.Color.G, checkBrush.Color.B };
+
+                if (Annotation == null)
+                {
+                    polyLineMeasureParam.LineColor = color;
+                    PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                }
                 if (Annotation != null && ViewControl != null)
                 {
-                    SolidColorBrush checkBrush = BorderColorPickerControl.GetBrush() as SolidColorBrush;
                     if (checkBrush != null)
                     {
-                        byte[] color = { checkBrush.Color.R, checkBrush.Color.G, checkBrush.Color.B };
                         Annotation.SetLineColor(color);
                         Annotation.UpdateAp();
                         ViewControl.UpdateAnnotFrame();
@@ -159,9 +192,15 @@ namespace ComPDFKit.Controls.Measure.Property
         {
             if (IsLoadedData)
             {
+                double opacity = CPDFOpacityControl.OpacityValue / 100.0;
+
+                if (Annotation == null)
+                {
+                    polyLineMeasureParam.Transparency = (byte)(opacity * 255);
+                    PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                }
                 if (Annotation != null && ViewControl != null)
                 {
-                    double opacity = CPDFOpacityControl.OpacityValue / 100.0;
                     if (opacity > 0 && opacity <= 1)
                     {
                         opacity = opacity * 255;
@@ -180,6 +219,11 @@ namespace ComPDFKit.Controls.Measure.Property
         {
             if (IsLoadedData)
             {
+                if (Annotation == null)
+                {
+                    polyLineMeasureParam.LineWidth = (byte)CPDFThicknessControl.Thickness;
+                    PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                }
                 if (Annotation != null && ViewControl != null)
                 {
                     Annotation.SetLineWidth(CPDFThicknessControl.Thickness);
@@ -192,25 +236,35 @@ namespace ComPDFKit.Controls.Measure.Property
         private void CPDFLineStyleControl_LineStyleChanged(object sender, EventArgs e)
         {
             if (!IsLoadedData) return;
+            float[] dashArray = null;
+            C_BORDER_STYLE borderStyle;
+            if (CPDFLineStyleControl.DashStyle == DashStyles.Solid || CPDFLineStyleControl.DashStyle == null)
+            {
+                dashArray = new float[0];
+                borderStyle = C_BORDER_STYLE.BS_SOLID;
+            }
+            else
+            {
+                List<float> floatArray = new List<float>();
+                foreach (double num in CPDFLineStyleControl.DashStyle.Dashes)
+                {
+                    floatArray.Add((float)num);
+                }
+                dashArray = floatArray.ToArray();
+                borderStyle = C_BORDER_STYLE.BS_DASHDED;
+            }
+
+            if (Annotation == null)
+            {
+                polyLineMeasureParam.BorderStyle = borderStyle;
+                polyLineMeasureParam.LineDash = dashArray;
+
+                PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+            }
+
             if (Annotation != null && ViewControl != null)
             {
-                float[] dashArray = null;
-                C_BORDER_STYLE borderStyle;
-                if (CPDFLineStyleControl.DashStyle == DashStyles.Solid || CPDFLineStyleControl.DashStyle == null)
-                {
-                    dashArray = new float[0];
-                    borderStyle = C_BORDER_STYLE.BS_SOLID;
-                }
-                else
-                {
-                    List<float> floatArray = new List<float>();
-                    foreach (double num in CPDFLineStyleControl.DashStyle.Dashes)
-                    {
-                        floatArray.Add((float)num);
-                    }
-                    dashArray = floatArray.ToArray();
-                    borderStyle = C_BORDER_STYLE.BS_DASHDED;
-                }
+
                 Annotation.SetBorderStyle(borderStyle, dashArray);
                 Annotation.UpdateAp();
                 ViewControl.UpdateAnnotFrame();
@@ -221,20 +275,30 @@ namespace ComPDFKit.Controls.Measure.Property
         {
             if (!IsLoadedData) return;
             SolidColorBrush checkBrush = FontColorPickerControl.GetBrush() as SolidColorBrush;
-            if (checkBrush != null && Annotation != null && ViewControl != null)
+            if (checkBrush != null)
             {
                 byte[] color = { checkBrush.Color.R, checkBrush.Color.G, checkBrush.Color.B };
-                if (Annotation != null)
+
+                if (Annotation == null)
                 {
-                    CTextAttribute textAttribute = Annotation.GetTextAttribute();
-                    textAttribute.FontColor = color;
-                    Annotation.SetTextAttribute(textAttribute);
-                    Annotation.UpdateAp();
-                    ViewControl.UpdateAnnotFrame();
+                    polyLineMeasureParam.FontColor = color;
+                    PolyLineMeasureParamChanged?.Invoke(sender, polyLineMeasureParam);
+                }
+
+                if (Annotation != null && ViewControl != null)
+                {
+                    if (Annotation != null)
+                    {
+                        CTextAttribute textAttribute = Annotation.GetTextAttribute();
+                        textAttribute.FontColor = color;
+                        Annotation.SetTextAttribute(textAttribute);
+                        Annotation.UpdateAp();
+                        ViewControl.UpdateAnnotFrame();
+                    }
                 }
             }
         }
-        
+
         public void SetFontStyle(bool isBold, bool isItalic)
         {
             if (isBold == false && isItalic == false)
@@ -266,7 +330,7 @@ namespace ComPDFKit.Controls.Measure.Property
             int index = SizeList.IndexOf((int)size);
             FontSizeComboBox.SelectedIndex = index;
         }
-        
+
         public void SetFontName(string fontName)
         {
             foreach (ComboBoxItem item in FontCombox.Items)
@@ -302,7 +366,7 @@ namespace ComPDFKit.Controls.Measure.Property
             {
                 return;
             }
-            
+
             Color lineColor = Color.FromRgb(param.LineColor[0], param.LineColor[1], param.LineColor[2]);
             BorderColorPickerControl.SetCheckedForColor(lineColor);
             CPDFThicknessControl.Thickness = (int)param.LineWidth;
@@ -323,7 +387,7 @@ namespace ComPDFKit.Controls.Measure.Property
             CPDFOpacityControl.OpacityValue = (int)Math.Ceiling(opacity);
             NoteTextBox.Text = param.Content;
             SetFontSize(param.FontSize);
-            SetFontStyle(param.IsBold,param.IsItalic);
+            SetFontStyle(param.IsBold, param.IsItalic);
             SetFontName(param.FontName);
         }
     }

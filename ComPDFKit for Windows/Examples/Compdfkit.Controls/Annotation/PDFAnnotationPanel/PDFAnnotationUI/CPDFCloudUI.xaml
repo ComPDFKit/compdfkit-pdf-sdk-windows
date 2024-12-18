@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.PDFControlUI.CPDFCloudUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:cpdfcommon="clr-namespace:ComPDFKit.Controls.Common" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ComPDFKit.Controls.PDFControlUI" 
+             xmlns:cpdftools="clr-namespace:ComPDFKit.Controls.PDFControl" 
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="300" Loaded="UserControl_Loaded" Unloaded="UserControl_Unloaded"> 
+    <UserControl.Resources> 
+        <ResourceDictionary> 
+            <ResourceDictionary.MergedDictionaries> 
+                <ResourceDictionary Source="../../../Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <cpdfcommon:PropertyPanelResourceConverter x:Key="PropertyPanelResourceConverter"></cpdfcommon:PropertyPanelResourceConverter>
+        </ResourceDictionary> 
+    </UserControl.Resources> 
+    <ScrollViewer VerticalScrollBarVisibility="Auto"> 
+        <Grid Background="#FAFCFF"> 
+            <StackPanel Orientation="Vertical"> 
+                <Border BorderThickness="1" BorderBrush="#1A000000"> 
+                    <Grid  Height="40" Background="White" >
+                        <TextBlock x:Name="TitleTextBlock" Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Title_Cloud}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontFamily="Microsoft YaHei"></TextBlock>
+                    </Grid>
+                </Border>
+                <cpdftools:CPDFAnnotationPreviewerControl x:Name="CPDFAnnotationPreviewerControl" Height="100" Margin="16"></cpdftools:CPDFAnnotationPreviewerControl>
+                <StackPanel Name="CloudPanel" Orientation="Vertical">
+                    <StackPanel Height="75" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_LineColor}"></TextBlock>
+                        <cpdfcommon:ColorPickerControl x:Name="ctlBorderColorPicker" TransparentBtnProperty="Collapsed" Brush="Red"></cpdfcommon:ColorPickerControl>
+                    </StackPanel>
+                    <StackPanel Height="75" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_FillColor}"></TextBlock>
+                        <cpdfcommon:ColorPickerControl x:Name="ctlFillColorPicker" Brush="Transparent"></cpdfcommon:ColorPickerControl>
+                    </StackPanel>
+                    <StackPanel Height="80" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_LineShape}"></TextBlock>
+                        <cpdfcommon:CPDFLineStyleControl x:Name="ctlLineStyle"></cpdfcommon:CPDFLineStyleControl>
+                    </StackPanel>
+                    <StackPanel Height="100" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_LineStyle}"></TextBlock>
+                        <cpdfcommon:CPDFCloudStyleControl x:Name="CPDFLineShapeControl"></cpdfcommon:CPDFCloudStyleControl>
+                    </StackPanel>
+                    <StackPanel Height="75" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Opacity}"></TextBlock>
+                        <cpdfcommon:CPDFOpacityControl x:Name="CPDFOpacityControl"></cpdfcommon:CPDFOpacityControl>
+                    </StackPanel>
+                    <StackPanel Height="75" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_LineWidth}"></TextBlock>
+                        <cpdfcommon:CPDFThicknessControl x:Name="CPDFThicknessControl"></cpdfcommon:CPDFThicknessControl>
+                    </StackPanel>
+                    <StackPanel Height="200" Margin="5">
+                        <TextBlock Text="{Binding Converter={StaticResource PropertyPanelResourceConverter},ConverterParameter=Property_Note}"></TextBlock>
+                        <TextBox Height="150" x:Name="NoteTextBox" TextWrapping="Wrap" AcceptsReturn="True" TextChanged="NoteTextBox_TextChanged"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

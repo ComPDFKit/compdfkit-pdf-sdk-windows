@@ -82,7 +82,8 @@ namespace ComPDFKit.Controls.Data
             { "Signature", CPDFAnnotationType.Signature },
             { "Link", CPDFAnnotationType.Link },
             {"Audio", CPDFAnnotationType.Audio },
-            {"Image", CPDFAnnotationType.Image }
+            {"Image", CPDFAnnotationType.Image },
+            {"Polygon", CPDFAnnotationType.Polygon}
         };
 
         public static Dictionary<int, C_LINE_TYPE> GetLineTypeFromIndex = new Dictionary<int, C_LINE_TYPE>()
@@ -126,7 +127,8 @@ namespace ComPDFKit.Controls.Data
         }
 
         private int _dashSpacing = 1;
-        public int DashSpacing {
+        public int DashSpacing
+        {
             get => _dashSpacing;
             set
             {
@@ -155,7 +157,7 @@ namespace ComPDFKit.Controls.Data
 
     public class CPDFMarkupData : CPDFAnnotationData
     {
-        public double Opacity = 1;
+        public double Opacity = 255;
         public Color Color = Color.FromRgb(255, 0, 0);
     }
 
@@ -165,6 +167,22 @@ namespace ComPDFKit.Controls.Data
         public Color FillColor = Color.FromRgb(255, 255, 255);
         public double Opacity = 1;
         public int Thickness = 1;
+        public DashStyle DashStyle = DashStyles.Solid;
+    }
+
+    public class CPDFPolygonData : CPDFAnnotationData
+    {
+        public Color BorderColor = Color.FromRgb(255, 0, 0);
+        public Color FillColor = Color.FromRgb(255, 255, 255);
+        public CPDFBorderEffector BorderEffector
+        {
+            get;
+            set;
+        } = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_ONE);
+        public C_BORDER_STYLE BorderStyle = C_BORDER_STYLE.BS_SOLID; 
+        public double Opacity = 1;
+        public int Thickness = 1;
+        public bool IsMeasured = false;
         public DashStyle DashStyle = DashStyles.Solid;
     }
 
@@ -278,7 +296,7 @@ namespace ComPDFKit.Controls.Data
         {
             get
             {
-                if(Type == C_STAMP_TYPE.TEXT_STAMP)
+                if (Type == C_STAMP_TYPE.TEXT_STAMP)
                 {
                     return "Text Stamp";
                 }

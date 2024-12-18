@@ -19,7 +19,7 @@ namespace ComPDFKit.Controls.PDFControl
         #region Data
 
         private bool isFirstLoad = true;
-        
+
         private static string line = LanguageHelper.ToolBarManager.GetString("Button_Line");
         private static string multiline = LanguageHelper.ToolBarManager.GetString("Button_Multiline");
         private static string polygonal = LanguageHelper.ToolBarManager.GetString("Button_Polygonal");
@@ -35,11 +35,15 @@ namespace ComPDFKit.Controls.PDFControl
 
 
         private PDFViewControl pdfViewer;
-
         private MeasurePropertyControl measurePropertyControl = null;
         private MeasureControl measureControl = null;
 
-        private enum MeasureType
+        private AnnotParam createLineMeasureParam = null;
+        private AnnotParam createPolyLineMeasureParam = null;
+        private AnnotParam createPolygonMeasureParam = null;
+        private AnnotParam createRectangleMeasureParam = null;
+
+        public enum MeasureType
         {
             UnKnown = -1,
             Line,
@@ -151,6 +155,32 @@ namespace ComPDFKit.Controls.PDFControl
             this.pdfViewer = pdfViewer;
             measurePropertyControl = FromProperty;
             measureControl = parentControl;
+
+            measurePropertyControl.LineMeasureParamChanged -= MeasurePropertyControl_LineMeasureParamChanged;
+            measurePropertyControl.LineMeasureParamChanged -= MeasurePropertyControl_LineMeasureParamChanged;
+            measurePropertyControl.PolygonMeasureParamChanged -= MeasurePropertyControl_PolygonMeasureParamChanged;
+
+            measurePropertyControl.PolyLineMeasureParamChanged += MeasurePropertyControl_PolyLineMeasureParamChanged;
+            measurePropertyControl.PolyLineMeasureParamChanged += MeasurePropertyControl_PolyLineMeasureParamChanged;
+            measurePropertyControl.PolygonMeasureParamChanged += MeasurePropertyControl_PolygonMeasureParamChanged; 
+        }
+
+        private void MeasurePropertyControl_PolygonMeasureParamChanged(object sender, PolygonMeasureParam e)
+        {
+            createPolygonMeasureParam = e;
+            pdfViewer.SetAnnotParam(e);
+        }
+
+        private void MeasurePropertyControl_PolyLineMeasureParamChanged(object sender, PolyLineMeasureParam e)
+        {
+            createPolyLineMeasureParam = e;
+            pdfViewer.SetAnnotParam(e);
+        }
+
+        private void MeasurePropertyControl_LineMeasureParamChanged(object sender, LineMeasureParam e)
+        {
+            createLineMeasureParam = e;
+            pdfViewer.SetAnnotParam(e);
         }
 
         public void ClearAllToolState()
@@ -170,7 +200,7 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 if (child is ToggleButton toggle)
                 {
-                    if (toggle.IsChecked==true)
+                    if (toggle.IsChecked == true)
                     {
                         return true;
                     }
@@ -188,6 +218,32 @@ namespace ComPDFKit.Controls.PDFControl
                     toggle.IsChecked = false;
                 }
             }
+            measurePropertyControl.CurrentCreateType = C_ANNOTATION_TYPE.C_ANNOTATION_NONE;
+        }
+
+        public AnnotParam GetAnnotParam(MeasureType measureType)
+        {
+            AnnotParam currentParam = null;
+            switch (measureType)
+            {
+                case MeasureType.UnKnown:
+                    break;
+                case MeasureType.Line:
+                    currentParam = CreateLine();
+                    break;
+                case MeasureType.Multiline:
+                    currentParam = CreateMultiline();
+                    break;
+                case MeasureType.Polygonal:
+                    currentParam = CreatePolygonal();
+                    break;
+                case MeasureType.Rectangles:
+                    currentParam = CreateRectangles();
+                    break;
+                default:
+                    break;
+            }
+            return currentParam;
         }
 
         private void MeasureBtn_Click(object sender, RoutedEventArgs e)
@@ -196,25 +252,7 @@ namespace ComPDFKit.Controls.PDFControl
             ClearToolState(sender as ToggleButton);
             if ((bool)(sender as ToggleButton).IsChecked)
             {
-                switch (StringToType((sender as ToggleButton).Tag.ToString()))
-                {
-                    case MeasureType.UnKnown:
-                        break;
-                    case MeasureType.Line:
-                        annotParam = CreateLine();
-                        break;
-                    case MeasureType.Multiline:
-                        annotParam = CreateMultiline();
-                        break;
-                    case MeasureType.Polygonal:
-                        annotParam = CreatePolygonal();
-                        break;
-                    case MeasureType.Rectangles:
-                        annotParam = CreateRectangles();
-                        break;
-                    default:
-                        break;
-                }
+                annotParam = GetAnnotParam(StringToType((sender as ToggleButton).Tag.ToString()));
             }
             else
             {
@@ -232,35 +270,15 @@ namespace ComPDFKit.Controls.PDFControl
         #endregion
 
         #region Create Form
-
         private AnnotParam CreateLine()
         {
             pdfViewer.SetToolType(ToolType.CreateAnnot);
             pdfViewer.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_LINE);
-            LineMeasureParam lineMeasureParam = new LineMeasureParam();
-            lineMeasureParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_LINE;
-            lineMeasureParam.LineColor = new byte[] { 255, 0, 0, };
-            lineMeasureParam.LineWidth = 2;
-            lineMeasureParam.Transparency = 255;
-            lineMeasureParam.FontColor = new byte[] { 255, 0, 0, };
-            lineMeasureParam.FontName = "Arial";
-            lineMeasureParam.FontSize = 14;
-            lineMeasureParam.HeadLineType = C_LINE_TYPE.LINETYPE_ARROW;
-            lineMeasureParam.TailLineType = C_LINE_TYPE.LINETYPE_ARROW;
-            lineMeasureParam.measureInfo = new CPDFMeasureInfo
+            if (createLineMeasureParam == null)
             {
-                Unit = CPDFMeasure.CPDF_CM,
-                Precision = CPDFMeasure.PRECISION_VALUE_TWO,
-                RulerBase = 1,
-                RulerBaseUnit = CPDFMeasure.CPDF_CM,
-                RulerTranslate = 1,
-                RulerTranslateUnit = CPDFMeasure.CPDF_CM,
-                CaptionType = CPDFCaptionType.CPDF_CAPTION_LENGTH,
-            };
-            pdfViewer.SetAnnotParam(lineMeasureParam);
-            //pdfViewer?.ClearSelectAnnots();
-            //pdfViewer?.SetMouseMode(MouseModes.AnnotCreate);
-            //pdfViewer?.SetToolParam(lineMeasureArgs);
+                createLineMeasureParam = new LineMeasureParam();
+            }
+            pdfViewer.SetAnnotParam(createLineMeasureParam);
             measureControl.SetMeasureInfoType(CPDFMeasureType.CPDF_DISTANCE_MEASURE);
             measureControl.SetInfoPanelVisble(true, false);
             var measureSetting = pdfViewer.PDFViewTool.GetMeasureSetting();
@@ -270,42 +288,21 @@ namespace ComPDFKit.Controls.PDFControl
                    measureSetting.RulerBaseUnit,
                    measureSetting.RulerTranslate,
                    measureSetting.RulerTranslateUnit));
-            return lineMeasureParam;
+            return createLineMeasureParam;
         }
+
 
         private AnnotParam CreateMultiline()
         {
             pdfViewer.SetToolType(ToolType.CreateAnnot);
             pdfViewer.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE);
-            PolyLineMeasureParam polyLineMeasureParam = new PolyLineMeasureParam();
-            polyLineMeasureParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_POLYLINE;
-            polyLineMeasureParam.LineColor = new byte[] { 255, 0, 0, };
-            polyLineMeasureParam.LineWidth = 2;
-            polyLineMeasureParam.Transparency = 255;
-            polyLineMeasureParam.FontColor = new byte[] { 255, 0, 0, };
-            polyLineMeasureParam.FontName = "Arial";
-            polyLineMeasureParam.FontSize = 14;
-            polyLineMeasureParam.measureInfo = new CPDFMeasureInfo
+
+            if (createPolyLineMeasureParam == null)
             {
-                Unit = CPDFMeasure.CPDF_CM,
-                Precision = CPDFMeasure.PRECISION_VALUE_TWO,
-                RulerBase = 1,
-                RulerBaseUnit = CPDFMeasure.CPDF_CM,
-                RulerTranslate = 1,
-                RulerTranslateUnit = CPDFMeasure.CPDF_CM,
-                CaptionType = CPDFCaptionType.CPDF_CAPTION_LENGTH,
-            };
-            pdfViewer.SetAnnotParam(polyLineMeasureParam);
-            //PolyLineMeasureArgs polyLineMeasureArgs = new PolyLineMeasureArgs();
-            //polyLineMeasureArgs.LineColor = Colors.Red;
-            //polyLineMeasureArgs.LineWidth = 2;
-            //polyLineMeasureArgs.Transparency = 1;
-            //polyLineMeasureArgs.FontColor = Colors.Red;
-            //polyLineMeasureArgs.FontName = "Arial";
-            //polyLineMeasureArgs.FontSize = 14;
-            // pdfViewer?.ClearSelectAnnots();
-            // pdfViewer?.SetMouseMode(MouseModes.AnnotCreate);
-            // pdfViewer?.SetToolParam(polyLineMeasureArgs);
+                createPolyLineMeasureParam = new PolyLineMeasureParam();
+            }
+
+            pdfViewer.SetAnnotParam(createPolyLineMeasureParam);
             measureControl.SetMeasureInfoType(CPDFMeasureType.CPDF_PERIMETER_MEASURE);
             measureControl.SetInfoPanelVisble(true, false);
             var measureSetting = pdfViewer.PDFViewTool.GetMeasureSetting();
@@ -315,14 +312,11 @@ namespace ComPDFKit.Controls.PDFControl
                    measureSetting.RulerBaseUnit,
                    measureSetting.RulerTranslate,
                    measureSetting.RulerTranslateUnit));
-            return polyLineMeasureParam;
+            return createPolyLineMeasureParam;
         }
 
-        private AnnotParam CreatePolygonal()
+        private AnnotParam CreatePolygonalParam()
         {
-            pdfViewer.PDFViewTool.GetDefaultSettingParam().IsCreateSquarePolygonMeasure = false;
-            pdfViewer.SetToolType(ToolType.CreateAnnot);
-            pdfViewer.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON);
             PolygonMeasureParam polygonMeasureParam = new PolygonMeasureParam();
             polygonMeasureParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON;
             polygonMeasureParam.LineColor = new byte[] { 255, 0, 0, };
@@ -331,6 +325,7 @@ namespace ComPDFKit.Controls.PDFControl
             polygonMeasureParam.FontColor = new byte[] { 255, 0, 0, };
             polygonMeasureParam.FontName = "Arial";
             polygonMeasureParam.FontSize = 14;
+            polygonMeasureParam.IsMeasure = true;
             polygonMeasureParam.measureInfo = new CPDFMeasureInfo
             {
                 Unit = CPDFMeasure.CPDF_CM,
@@ -341,18 +336,21 @@ namespace ComPDFKit.Controls.PDFControl
                 RulerTranslateUnit = CPDFMeasure.CPDF_CM,
                 CaptionType = CPDFCaptionType.CPDF_CAPTION_LENGTH | CPDFCaptionType.CPDF_CAPTION_AREA,
             };
-            pdfViewer.SetAnnotParam(polygonMeasureParam);
-            //    PolygonMeasureArgs polygonMeasureArgs = new PolygonMeasureArgs();
-            //    polygonMeasureArgs.LineColor = Colors.Red;
-            //    polygonMeasureArgs.LineWidth = 2;
-            //    polygonMeasureArgs.Transparency = 1;
-            //    polygonMeasureArgs.FontColor = Colors.Red;
-            //    polygonMeasureArgs.FillColor = Colors.Transparent;
-            //    polygonMeasureArgs.FontName = "Arial";
-            //    polygonMeasureArgs.FontSize = 14;
-            //    pdfViewer?.ClearSelectAnnots();
-            //    pdfViewer?.SetMouseMode(MouseModes.AnnotCreate);
-            //    pdfViewer?.SetToolParam(polygonMeasureArgs);
+            polygonMeasureParam.BorderStyle = C_BORDER_STYLE.BS_SOLID;
+            polygonMeasureParam.BorderEffector = null;
+            return polygonMeasureParam;
+        }
+
+        private AnnotParam CreatePolygonal()
+        {
+            pdfViewer.PDFViewTool.GetDefaultSettingParam().IsCreateSquarePolygonMeasure = false;
+            pdfViewer.SetToolType(ToolType.CreateAnnot);
+            pdfViewer.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON);
+            if(createPolygonMeasureParam == null)
+            {
+                createPolygonMeasureParam = CreatePolygonalParam();
+            }
+            pdfViewer.SetAnnotParam(createPolygonMeasureParam);
             measureControl.SetMeasureInfoType(CPDFMeasureType.CPDF_AREA_MEASURE);
             measureControl.SetInfoPanelVisble(true, false);
             var measureSetting = pdfViewer.PDFViewTool.GetMeasureSetting();
@@ -363,14 +361,11 @@ namespace ComPDFKit.Controls.PDFControl
                     measureSetting.RulerTranslate,
                     measureSetting.RulerTranslateUnit));
             //    return polygonMeasureArgs;
-            return polygonMeasureParam;
+            return createPolygonMeasureParam;
         }
 
-        private AnnotParam CreateRectangles()
+        private AnnotParam CreateRectangleParam()
         {
-            pdfViewer.PDFViewTool.GetDefaultSettingParam().IsCreateSquarePolygonMeasure = true;
-            pdfViewer.SetToolType(ToolType.CreateAnnot);
-            pdfViewer.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON);
             PolygonMeasureParam polygonMeasureParam = new PolygonMeasureParam();
             polygonMeasureParam.CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON;
             polygonMeasureParam.LineColor = new byte[] { 255, 0, 0, };
@@ -389,32 +384,22 @@ namespace ComPDFKit.Controls.PDFControl
                 RulerTranslateUnit = CPDFMeasure.CPDF_CM,
                 CaptionType = CPDFCaptionType.CPDF_CAPTION_LENGTH | CPDFCaptionType.CPDF_CAPTION_AREA,
             };
-            pdfViewer.SetAnnotParam(polygonMeasureParam);
-            measureControl.SetMeasureInfoType(CPDFMeasureType.CPDF_AREA_MEASURE);
-            //    PolygonMeasureArgs rectPolygonMeasureArgs = new PolygonMeasureArgs();
-            //    rectPolygonMeasureArgs.LineColor = Colors.Red;
-            //    rectPolygonMeasureArgs.IsOnlyDrawRect = true;
-            //    rectPolygonMeasureArgs.LineWidth = 2;
-            //    rectPolygonMeasureArgs.Transparency = 1;
-            //    rectPolygonMeasureArgs.FontColor = Colors.Red;
-            //    rectPolygonMeasureArgs.FillColor = Colors.Transparent;
-            //    rectPolygonMeasureArgs.FontName = "Arial";
-            //    rectPolygonMeasureArgs.FontSize = 14;
-            //    pdfViewer?.ClearSelectAnnots();
-            //    pdfViewer?.SetMouseMode(MouseModes.AnnotCreate);
-            //    pdfViewer?.SetToolParam(rectPolygonMeasureArgs);
-            //    measureControl.SetMeasureInfoType(CPDFMeasureType.CPDF_AREA_MEASURE);
-            //    measureControl.SetInfoPanelVisble(true, false);
-            //    measureControl.SetMeasureScale(CPDFMeasureType.CPDF_AREA_MEASURE,
-            //     string.Format("{0} {1} = {2} {3}",
-            //                 MeasureSetting.RulerBase,
-            //                 MeasureSetting.RulerBaseUnit,
-            //                 MeasureSetting.RulerTranslate,
-            //                 MeasureSetting.RulerTranslateUnit));
-            //    return rectPolygonMeasureArgs;
             return polygonMeasureParam;
         }
+        private AnnotParam CreateRectangles()
+        {
+            pdfViewer.PDFViewTool.GetDefaultSettingParam().IsCreateSquarePolygonMeasure = true;
+            pdfViewer.SetToolType(ToolType.CreateAnnot);
+            pdfViewer.SetCreateAnnotType(C_ANNOTATION_TYPE.C_ANNOTATION_POLYGON);
+            if(createRectangleMeasureParam == null)
+            {
+                createPolygonMeasureParam = CreateRectangleParam();
+            } 
+            pdfViewer.SetAnnotParam(createPolygonMeasureParam);
+            measureControl.SetMeasureInfoType(CPDFMeasureType.CPDF_AREA_MEASURE);
+            return createPolygonMeasureParam;
+        }
 
-#endregion
+        #endregion
     }
 }

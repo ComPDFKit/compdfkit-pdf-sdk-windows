@@ -2,17 +2,13 @@
 using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFPage;
 using ComPDFKit.Tool.Help;
-using ComPDFKitViewer.Annot;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ComPDFKit.PDFAnnotation.CTextAttribute;
 
 namespace ComPDFKit.Tool.UndoManger
 {
-    internal class PolygonMeasureAnnotHistory : AnnotHistory
+    public class PolygonMeasureAnnotHistory : AnnotHistory
     {
         public override int GetAnnotIndex()
         {
@@ -31,6 +27,7 @@ namespace ComPDFKit.Tool.UndoManger
             }
             return base.GetPageIndex();
         }
+
         public override void SetAnnotIndex(int newIndex)
         {
             if (CurrentParam != null)
@@ -43,6 +40,7 @@ namespace ComPDFKit.Tool.UndoManger
                 PreviousParam.AnnotIndex = newIndex;
             }
         }
+
         internal override bool Add()
         {
             PolygonMeasureParam currentParam = CurrentParam as PolygonMeasureParam;
@@ -56,7 +54,6 @@ namespace ComPDFKit.Tool.UndoManger
             if (polygonAnnot != null)
             {
                 int annotIndex = pdfPage.GetAnnotCount() - 1;
-
                 if (currentParam.HasFillColor)
                 {
                     if (currentParam.FillColor != null && currentParam.FillColor.Length == 3)
@@ -70,12 +67,11 @@ namespace ComPDFKit.Tool.UndoManger
                     polygonAnnot.SetLineColor(currentParam.LineColor);
                 }
 
-                polygonAnnot.SetTransparency((byte)currentParam.Transparency);
+                polygonAnnot.SetTransparency(currentParam.Transparency);
                 polygonAnnot.SetLineWidth(currentParam.LineWidth);
-
                 polygonAnnot.SetPoints(currentParam.SavePoints);
+                polygonAnnot.SetAnnotBorderEffector(currentParam.BorderEffector);
                 polygonAnnot.SetRect(currentParam.ClientRect);
-
                 if (currentParam.LineDash != null)
                 {
                     if (currentParam.LineDash.Length == 0)
@@ -89,28 +85,33 @@ namespace ComPDFKit.Tool.UndoManger
                         {
                             floatArray.Add(num);
                         }
+
                         polygonAnnot.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, floatArray.ToArray());
                     }
                 }
 
-                CTextAttribute textAttribute = new CTextAttribute();
-                textAttribute.FontColor = currentParam.FontColor;
-                textAttribute.FontSize = (float)currentParam.FontSize;
-                textAttribute.FontName = CFontNameHelper.ObtainFontName(CFontNameHelper.GetFontType(currentParam.FontName),
-                            currentParam.IsBold,
-                            currentParam.IsItalic);
-                polygonAnnot.SetTextAttribute(textAttribute);
-                if (currentParam.measureInfo != null)
+                if(polygonAnnot.IsMeasured())
                 {
-                    CPDFAreaMeasure polygonMeasure = polygonAnnot.GetAreaMeasure();
-                    if (polygonMeasure != null)
+                    CTextAttribute textAttribute = new CTextAttribute();
+                    textAttribute.FontColor = currentParam.FontColor;
+                    textAttribute.FontSize = (float)currentParam.FontSize;
+                    textAttribute.FontName = CFontNameHelper.ObtainFontName(CFontNameHelper.GetFontType(currentParam.FontName),
+                                currentParam.IsBold,
+                                currentParam.IsItalic);
+                    polygonAnnot.SetTextAttribute(textAttribute);
+                    if (currentParam.measureInfo != null)
                     {
-                        polygonMeasure.SetMeasureInfo(currentParam.measureInfo);
-                        polygonMeasure.SetMeasureScale(currentParam.measureInfo.RulerBase, currentParam.measureInfo.RulerBaseUnit,
-                                                       currentParam.measureInfo.RulerTranslate, currentParam.measureInfo.RulerTranslateUnit);
-                        polygonMeasure.UpdateAnnotMeasure();
+                        CPDFAreaMeasure polygonMeasure = polygonAnnot.GetAreaMeasure();
+                        if (polygonMeasure != null)
+                        {
+                            polygonMeasure.SetMeasureInfo(currentParam.measureInfo);
+                            polygonMeasure.SetMeasureScale(currentParam.measureInfo.RulerBase, currentParam.measureInfo.RulerBaseUnit,
+                                                           currentParam.measureInfo.RulerTranslate, currentParam.measureInfo.RulerTranslateUnit);
+                            polygonMeasure.UpdateAnnotMeasure();
+                        }
                     }
                 }
+ 
                 if (!string.IsNullOrEmpty(currentParam.Author))
                 {
                     polygonAnnot.SetAuthor(currentParam.Author);
@@ -120,6 +121,7 @@ namespace ComPDFKit.Tool.UndoManger
                 {
                     polygonAnnot.SetContent(currentParam.Content);
                 }
+
                 polygonAnnot.SetIsLocked(currentParam.Locked);
                 polygonAnnot.SetCreationDate(PDFHelp.GetCurrentPdfTime());
                 polygonAnnot.UpdateAp();
@@ -129,6 +131,7 @@ namespace ComPDFKit.Tool.UndoManger
                 {
                     currentParam.AnnotIndex = annotIndex;
                 }
+
                 if (PreviousParam != null)
                 {
                     PreviousParam.AnnotIndex = annotIndex;
@@ -137,6 +140,7 @@ namespace ComPDFKit.Tool.UndoManger
             }
             return false;
         }
+
         internal override bool Update(bool isUndo)
         {
             if (CurrentParam as PolygonMeasureParam == null || PreviousParam as PolygonMeasureParam == null)
@@ -146,7 +150,7 @@ namespace ComPDFKit.Tool.UndoManger
             if (MakeAnnotValid(CurrentParam))
             {
                 CPDFPolygonAnnotation polygonAnnot = Annot as CPDFPolygonAnnotation;
-                if (polygonAnnot == null || !polygonAnnot.IsValid() || !polygonAnnot.IsMeasured())
+                if (polygonAnnot == null || !polygonAnnot.IsValid())
                 {
                     return false;
                 }
@@ -208,11 +212,15 @@ namespace ComPDFKit.Tool.UndoManger
                     polygonAnnot.SetPoints(updateParam.SavePoints);
                 }
 
+                if(!updateParam.BorderEffector.Equals(checkParam.BorderEffector))
+                {
+                    polygonAnnot.SetAnnotBorderEffector(updateParam.BorderEffector);
+                }
+
                 if (!updateParam.ClientRect.Equals(checkParam.ClientRect))
                 {
                     polygonAnnot.SetRect(updateParam.ClientRect);
                 }
-
 
                 if (updateParam.Author != checkParam.Author)
                 {
@@ -228,19 +236,23 @@ namespace ComPDFKit.Tool.UndoManger
                 {
                     polygonAnnot.SetIsLocked(updateParam.Locked);
                 }
-                if (updateParam.measureInfo != checkParam.measureInfo)
+
+                if (polygonAnnot.IsMeasured())
                 {
-                    CPDFAreaMeasure polygonMeasure = polygonAnnot.GetAreaMeasure();
-                    if (polygonMeasure != null)
+                    if (updateParam.measureInfo != checkParam.measureInfo)
                     {
-                        polygonMeasure.SetMeasureInfo(updateParam.measureInfo);
-                        polygonMeasure.SetMeasureScale(updateParam.measureInfo.RulerBase, updateParam.measureInfo.RulerBaseUnit,
-                                                       updateParam.measureInfo.RulerTranslate, updateParam.measureInfo.RulerTranslateUnit);
-                        polygonMeasure.UpdateAnnotMeasure();
+                        CPDFAreaMeasure polygonMeasure = polygonAnnot.GetAreaMeasure();
+                        if (polygonMeasure != null)
+                        {
+                            polygonMeasure.SetMeasureInfo(updateParam.measureInfo);
+                            polygonMeasure.SetMeasureScale(updateParam.measureInfo.RulerBase, updateParam.measureInfo.RulerBaseUnit,
+                                                           updateParam.measureInfo.RulerTranslate, updateParam.measureInfo.RulerTranslateUnit);
+                            polygonMeasure.UpdateAnnotMeasure();
+                        }
                     }
                 }
-                polygonAnnot.SetModifyDate(PDFHelp.GetCurrentPdfTime());
 
+                polygonAnnot.SetModifyDate(PDFHelp.GetCurrentPdfTime());
                 polygonAnnot.UpdateAp();
 
                 return true;

@@ -12,7 +12,7 @@ namespace ComPDFKit.Tool
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_STRIKEOUT;
         }
-		public byte[] StrikeoutColor { get; set; }
+		public byte[] StrikeoutColor { get; set; } = new byte[3] { 255, 0, 0 };
 
 		public List<CRect> QuardRects { get; set; }
 

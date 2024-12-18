@@ -59,7 +59,7 @@ namespace ComPDFKit.Controls.PDFControlUI
             ResultListControl.Visibility = Visibility.Collapsed;
             NoResultText.Visibility = Visibility.Visible;
         }
-        
+
         public void AddSearchResult(BindSearchResult result)
         {
             if (result == null)
@@ -161,7 +161,7 @@ namespace ComPDFKit.Controls.PDFControlUI
         /// The page rotation angle.
         /// </summary>
         public int PageRotate { get; set; }
-        public object RefData {  get; set; }
+        public object RefData { get; set; }
     }
 
     internal class TextBindData
@@ -203,6 +203,59 @@ namespace ComPDFKit.Controls.PDFControlUI
                     }
                 });
 
+        public static int MapIndexToContent(string a, string b, int indexInA)
+        {
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b) || indexInA < 0 || indexInA >= a.Length)
+            {
+                return -1;
+            }
+
+            int indexInB = 0;
+            int aIndexCounter = 0;
+
+            // Iterate over b and match characters to those in a
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (b[i] != ' ')
+                {
+                    if (aIndexCounter == indexInA)
+                    {
+                        indexInB = i;
+                        break;
+                    }
+                    aIndexCounter++;
+                }
+            }
+
+            return indexInB;
+        }
+
+        public static string RestoreStringWithSpaces(string a, string b, int startIndexInB)
+        {
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b) || startIndexInB < 0 || startIndexInB >= b.Length)
+            {
+                return string.Empty;
+            }
+            a = Regex.Replace(a, @"[\r\n\s]", "");
+            int aIndex = 0;
+            string result = string.Empty;
+
+            for (int i = startIndexInB; i < b.Length && aIndex < a.Length; i++)
+            {
+                if (b[i] == ' ')
+                {
+                    result += ' ';
+                }
+                else
+                {
+                    result += a[aIndex];
+                    aIndex++;
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Get document stream data
         /// </summary>
@@ -216,44 +269,56 @@ namespace ComPDFKit.Controls.PDFControlUI
             Paragraph textPara = new Paragraph();
             Document.Blocks.Add(textPara);
             List<int> indexList = new List<int>();
-            content = Regex.Replace(content, "[\r\n]", " ");
-            if (keyword.Length > 0)
+            content = Regex.Replace(content, @"[\r\n]", " ");
+            int originalIndex = -1; 
+            string contentForMatch = Regex.Replace(content, @"[\r\n\s]", "");
+            string keywordForMatch = Regex.Replace(keyword, @"\s", "");
+
+            if (keywordForMatch.Length > 0)
             {
-                for (int i = 0; i < content.Length && i >= 0;)
+                for (int i = 0, offset = 0; i < contentForMatch.Length && i >= 0;)
                 {
-                    i = content.IndexOf(keyword, i, StringComparison.OrdinalIgnoreCase);
+                    i = contentForMatch.IndexOf(keywordForMatch, i, StringComparison.OrdinalIgnoreCase);
                     if (i == -1)
                     {
                         break;
                     }
-                    if (indexList.Contains(i) == false)
+                     
+                    originalIndex = content.IndexOf(keyword, offset, StringComparison.OrdinalIgnoreCase);
+                    if (originalIndex != -1 && !indexList.Contains(originalIndex))
                     {
-                        indexList.Add(i);
+                        indexList.Add(originalIndex);
+                        offset = originalIndex + keyword.Length;  
+                        i += keywordForMatch.Length;
                     }
-                    i += keyword.Length;
+                    else if(originalIndex == -1)
+                    {
+                        originalIndex = MapIndexToContent(contentForMatch, content, i);
+                        indexList.Add(originalIndex);
+                        offset = originalIndex + keyword.Length;  
+                        i += keywordForMatch.Length;
+                    }
                 }
             }
+            if(originalIndex != -1)
+            {
+                keyword = RestoreStringWithSpaces(keyword, content, originalIndex);
+            }
+             
             List<string> splitList = new List<string>();
             int lastIndex = -1;
             foreach (int index in indexList)
             {
-                string prevStr = string.Empty;
-                if (lastIndex == -1)
-                {
-                    prevStr = content.Substring(0, index);
-                }
-                else
-                {
-                    prevStr = content.Substring(lastIndex + keyword.Length, index - lastIndex - 1);
-                }
+                string prevStr = lastIndex == -1 ? content.Substring(0, index) : content.Substring(lastIndex + keyword.Length, index - lastIndex - keyword.Length);
                 if (prevStr != string.Empty)
                 {
                     splitList.Add(prevStr);
                 }
-
+                 
                 splitList.Add(content.Substring(index, keyword.Length));
                 lastIndex = index;
             }
+             
             if (indexList.Count > 0)
             {
                 lastIndex = indexList[indexList.Count - 1];
@@ -262,6 +327,11 @@ namespace ComPDFKit.Controls.PDFControlUI
                     splitList.Add(content.Substring(lastIndex + keyword.Length));
                 }
             }
+            else
+            {
+                splitList.Add(content);  
+            }
+             
             TextBlock addBlock = new TextBlock();
             foreach (string textappend in splitList)
             {
@@ -277,6 +347,7 @@ namespace ComPDFKit.Controls.PDFControlUI
 
             return Document;
         }
+
 
     }
 }

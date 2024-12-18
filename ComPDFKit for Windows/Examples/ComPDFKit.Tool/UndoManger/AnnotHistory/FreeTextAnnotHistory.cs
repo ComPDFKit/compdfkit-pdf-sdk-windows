@@ -1,6 +1,7 @@
 ﻿using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFPage;
 using ComPDFKit.Tool.Help;
+using ComPDFKitViewer.Annot;
 using static ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
 
 namespace ComPDFKit.Tool.UndoManger
@@ -80,10 +81,7 @@ namespace ComPDFKit.Tool.UndoManger
                 }
                 textAttr.FontColor = fontColor;
                 textAttr.FontSize = (float)currentParam.FontSize;
-                textAttr.FontName = ObtainFontName(
-					GetFontType(currentParam.FontName),
-                    currentParam.IsBold,
-                    currentParam.IsItalic);
+                textAttr.FontName = currentParam.FontName;
 
                 textAnnot.SetFreetextDa(textAttr);
 
@@ -98,6 +96,12 @@ namespace ComPDFKit.Tool.UndoManger
                 {
                     textAnnot.SetContent(currentParam.Content);
                 }
+
+                if (currentParam.Dash != null && currentParam.Dash.Length > 0)
+                {
+                    textAnnot.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, currentParam.Dash);
+                }
+
                 textAnnot.SetIsLocked(currentParam.Locked);
                 textAnnot.SetCreationDate(PDFHelp.GetCurrentPdfTime());
                 textAnnot.UpdateAp();
@@ -176,10 +180,7 @@ namespace ComPDFKit.Tool.UndoManger
                 if(updateParam.FontName != checkParam.FontName)
                 {
                     CTextAttribute textAttr = textAnnot.FreeTextDa;
-                    bool isBold = IsBold(textAttr.FontName);
-                    bool isItalic = IsItalic(textAttr.FontName);
-                    FontType fontType = GetFontType(updateParam.FontName);
-                    textAttr.FontName = ObtainFontName(fontType, isBold, isItalic);
+                    textAttr.FontName = updateParam.FontName;
                     textAnnot.SetFreetextDa(textAttr);
                 }
 
@@ -198,24 +199,6 @@ namespace ComPDFKit.Tool.UndoManger
                         textAttr.FontColor = updateParam.FontColor;
                         textAnnot.SetFreetextDa(textAttr);
                     }
-                }
-               
-                if(updateParam.IsBold != checkParam.IsBold)
-                {
-                    CTextAttribute textAttr = textAnnot.FreeTextDa;
-                    bool isItalic = IsItalic(textAttr.FontName);
-                    FontType fontType = GetFontType(textAttr.FontName);
-                    textAttr.FontName = ObtainFontName(fontType, updateParam.IsBold, isItalic);
-                    textAnnot.SetFreetextDa(textAttr);
-                }
-
-                if(updateParam.IsItalic != checkParam.IsItalic)
-                {
-                    CTextAttribute textAttr = textAnnot.FreeTextDa;
-                    bool isBold = IsBold(textAttr.FontName);
-                    FontType fontType = GetFontType(textAttr.FontName);
-                    textAttr.FontName = ObtainFontName(fontType, isBold, updateParam.IsItalic);
-                    textAnnot.SetFreetextDa(textAttr);
                 }
 
                 if (!updateParam.ClientRect.Equals(checkParam.ClientRect))
@@ -236,6 +219,15 @@ namespace ComPDFKit.Tool.UndoManger
                 if (updateParam.Locked != checkParam.Locked)
                 {
                     textAnnot.SetIsLocked(updateParam.Locked);
+                }
+
+                if (updateParam.Dash != null && updateParam.Dash.Length > 0)
+                {
+                    textAnnot.SetBorderStyle(C_BORDER_STYLE.BS_DASHDED, updateParam.Dash);
+                }
+                else
+                {
+                    textAnnot.SetBorderStyle(C_BORDER_STYLE.BS_SOLID, new float[0]);
                 }
 
                 textAnnot.SetModifyDate(PDFHelp.GetCurrentPdfTime());

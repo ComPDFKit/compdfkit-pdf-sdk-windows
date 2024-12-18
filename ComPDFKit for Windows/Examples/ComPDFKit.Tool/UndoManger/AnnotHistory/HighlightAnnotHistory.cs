@@ -39,7 +39,6 @@ namespace ComPDFKit.Tool.UndoManger
             }
         }
 
-
         internal override bool Add()
         {
             HighlightParam currentParam = CurrentParam as HighlightParam;

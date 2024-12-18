@@ -1,35 +1,9 @@
-﻿using ComPDFKit.Import;
-using ComPDFKit.Measure;
-using ComPDFKit.PDFAnnotation;
-using ComPDFKit.PDFDocument;
-using ComPDFKit.PDFPage;
-using ComPDFKit.Tool.Help;
-using ComPDFKit.Tool.SettingParam;
-using ComPDFKit.Tool.UndoManger;
-using ComPDFKit.Viewer.Helper;
-using ComPDFKit.Viewer.Layer;
-using ComPDFKitViewer;
-using ComPDFKitViewer.Annot;
-using ComPDFKitViewer.BaseObject;
+﻿using ComPDFKit.Viewer.Layer;
 using ComPDFKitViewer.Helper;
-using ComPDFKitViewer.Layer;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Annotations;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Media3D;
-using static ComPDFKit.PDFAnnotation.CTextAttribute.CFontNameHelper;
-using static ComPDFKit.Tool.Help.ImportWin32;
 
 namespace ComPDFKit.Tool.DrawTool
 {

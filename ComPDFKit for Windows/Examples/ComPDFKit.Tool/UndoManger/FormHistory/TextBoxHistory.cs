@@ -86,12 +86,9 @@ namespace ComPDFKit.Tool.UndoManger
                 }
 				textAttr.FontColor = fontColor;
 				textAttr.FontSize = (float)currentParam.FontSize;
-				textAttr.FontName = ObtainFontName(
-					GetFontType(currentParam.FontName),
-					currentParam.IsBold,
-					currentParam.IsItalic);
+				textAttr.FontName = currentParam.FontName;
 
-				textWidget.SetTextAttribute(textAttr);
+                textWidget.SetTextAttribute(textAttr);
                 textWidget.SetJustification(currentParam.Alignment);
 
 				textWidget.SetBorderWidth((float)currentParam.LineWidth);
@@ -185,11 +182,8 @@ namespace ComPDFKit.Tool.UndoManger
 				if (updateParam.FontName != checkParam.FontName)
 				{
 					CTextAttribute textAttr = textWidget.GetTextAttribute();
-					bool isBold = IsBold(textAttr.FontName);
-					bool isItalic = IsItalic(textAttr.FontName);
-					FontType fontType = GetFontType(updateParam.FontName);
-					textAttr.FontName = ObtainFontName(fontType, isBold, isItalic);
-					textWidget.SetTextAttribute(textAttr);
+					textAttr.FontName = updateParam.FontName;
+                    textWidget.SetTextAttribute(textAttr);
 				}
 
 				if (updateParam.FontSize != checkParam.FontSize)
@@ -207,24 +201,6 @@ namespace ComPDFKit.Tool.UndoManger
                         textAttr.FontColor = updateParam.FontColor;
                         textWidget.SetTextAttribute(textAttr);
                     }
-				}
-
-				if (updateParam.IsBold != checkParam.IsBold)
-				{
-					CTextAttribute textAttr = textWidget.GetTextAttribute();
-					bool isItalic = IsItalic(textAttr.FontName);
-					FontType fontType = GetFontType(textAttr.FontName);
-					textAttr.FontName = ObtainFontName(fontType, updateParam.IsBold, isItalic);
-					textWidget.SetTextAttribute(textAttr);
-				}
-
-				if (updateParam.IsItalic != checkParam.IsItalic)
-				{
-					CTextAttribute textAttr = textWidget.GetTextAttribute();
-					bool isBold = IsBold(textAttr.FontName);
-					FontType fontType = GetFontType(textAttr.FontName);
-					textAttr.FontName = ObtainFontName(fontType, isBold, updateParam.IsItalic);
-					textWidget.SetTextAttribute(textAttr);
 				}
 
 				if (updateParam.Alignment != checkParam.Alignment)

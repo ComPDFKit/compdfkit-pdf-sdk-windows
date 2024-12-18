@@ -289,6 +289,7 @@ namespace ComPDFKit.Controls.PDFControl
                         pdfView.GetDocument().WriteToLoadedPath();
                     }
                 }
+
                 keyWord = e;
                 textSearch.TextSearchDocument = pdfView.GetDocument();
                 SearchResult.ClearSearchResult();
@@ -300,7 +301,19 @@ namespace ComPDFKit.Controls.PDFControl
                 
                 keyWord = e;
                 textSearch.TextSearchDocument = pdfView.GetDocument();
-                textSearch.SearchText(e, C_Search_Options.Search_Case_Insensitive, ViewControl.Password);
+
+                C_Search_Options options = C_Search_Options.Search_Case_Insensitive;
+                if(!CaseChb.IsChecked)
+                {
+                    options |= C_Search_Options.Search_Case_Sensitive;
+                }
+
+                if(MatchChb.IsChecked)
+                {
+                    options |= C_Search_Options.Search_Match_Whole_Word;
+                }
+
+                textSearch.SearchText(e, options, ViewControl.Password);
             }
             else if (ReplaceTog.IsChecked == true)
             {

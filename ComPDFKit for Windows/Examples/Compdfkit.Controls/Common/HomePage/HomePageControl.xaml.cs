@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ComPDFKit.Controls.Compress;
 using ComPDFKit.Controls.Helper;
 using Path = System.Windows.Shapes.Path;
 
@@ -159,7 +160,11 @@ namespace ComPDFKit.Controls.PDFControl
                     }
                 case "Compress":
                     {
-                        System.Diagnostics.Process.Start("https://www.compdf.com/contact-sales");
+                        CompressDialog compressDialog = new CompressDialog()
+                        {
+                            Owner = parentWindow
+                        };
+                        compressDialog.ShowDialog();
                         break;
                     }
                 case "Measurement":
@@ -167,6 +172,7 @@ namespace ComPDFKit.Controls.PDFControl
                         OpenFileEvent?.Invoke(this, new OpenFileEventArgs(FileOperationType.OpenFileDirectly, MeasurementFileName, e.Feature));
                         break;
                     }
+
                 default: 
                     break;
             }
@@ -192,6 +198,7 @@ namespace ComPDFKit.Controls.PDFControl
         {
             customItems = new List<CustomItem>()
             {
+                new CustomItem{ IconCanvas = compressCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Compress"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Compress"), Feature = "Compress"},
                 new CustomItem{ IconCanvas = viewerCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Viewer"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Viewer"), Feature = "Viewer"},
                 new CustomItem{ IconCanvas = annotationsCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Annotations"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Annotations"), Feature = "Annotations"},
                 new CustomItem{ IconCanvas = formsCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Forms"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Forms"), Feature = "Forms"},
@@ -203,7 +210,6 @@ namespace ComPDFKit.Controls.PDFControl
                 new CustomItem{ IconCanvas = redactionCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Redaction"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Redaction"), Feature = "Redaction"},
                 new CustomItem{ IconCanvas = compareDocumentsCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_DocCompare"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_DocCompare"), Feature = "Compare Documents"},
                 new CustomItem{ IconCanvas = conversionCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Conversion"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Conversion"), Feature = "Conversion"},
-                new CustomItem{ IconCanvas = compressCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Compress"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Compress"), Feature = "Compress"},
                 new CustomItem{ IconCanvas = measurementCanvas,TitleText = LanguageHelper.CommonManager.GetString("Func_Measurement"), DescriptionText= LanguageHelper.CommonManager.GetString("FuncDetail_Measurement"), Feature = "Measurement"},
             };
         }

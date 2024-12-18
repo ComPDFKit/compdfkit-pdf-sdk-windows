@@ -1,8 +1,6 @@
 ﻿using ComPDFKit.Import;
 using ComPDFKit.PDFAnnotation;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Media;
 
 namespace ComPDFKit.Tool
 {
@@ -12,7 +10,7 @@ namespace ComPDFKit.Tool
         {
             CurrentType = C_ANNOTATION_TYPE.C_ANNOTATION_SQUIGGLY;
         }
-        public byte[] SquigglyColor { get; set; }
+        public byte[] SquigglyColor { get; set; } = new byte[3] { 255, 0, 0 };
 
         public List<CRect> QuardRects { get; set; }
 

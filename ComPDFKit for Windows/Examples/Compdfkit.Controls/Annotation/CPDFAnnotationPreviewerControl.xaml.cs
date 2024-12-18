@@ -152,6 +152,12 @@ namespace ComPDFKit.Controls.PDFControl
             SharpPath.StrokeThickness = freehandData.Thickness;
         }
 
+        public void DrawCloudPreview()
+        { 
+            CollapsedAll();
+            gdPolygon.Visibility = Visibility.Visible;
+        }
+
         public void DrawNotePreview(CPDFAnnotationData annotationData)
         {
             CollapsedAll();
@@ -176,10 +182,63 @@ namespace ComPDFKit.Controls.PDFControl
             string fontStyle = string.Empty;
 
             CPDFFont.GetFamilyStyleName(freeTextData.FontFamily, ref fontFamily, ref fontStyle);
-            FreeText.FontFamily = new FontFamily(fontFamily); 
+            FreeText.FontFamily = new FontFamily(fontFamily);
             FreeText.FontSize = freeTextData.FontSize / 1.2;
             FreeText.Foreground = new SolidColorBrush(freeTextData.BorderColor);
             FreeText.Opacity = freeTextData.Opacity;
         }
+
+        private Path DrawCloudLine(Point startPoint, Point endPoint, double radius, double angle, Brush strokeColor, double strokeThickness, bool isUpward)
+        {
+            double lineLength = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
+            double arcLength = 2 * Math.PI * radius * (angle / 360);
+            int arcCount = (int)Math.Ceiling(lineLength / arcLength);
+            Vector direction = new Vector(endPoint.X - startPoint.X, endPoint.Y - startPoint.Y);
+
+            direction.Normalize();
+            direction *= arcLength; 
+            Point currentPoint = startPoint;
+            
+            // 创建一个完整的PathGeometry
+            PathGeometry pathGeometry = new PathGeometry(); 
+            PathFigure pathFigure = new PathFigure
+            {
+                StartPoint = currentPoint,
+                IsClosed = false
+            };
+            
+            for (int i = 0; i < arcCount; i++)
+            {
+                // Calculate the end point of the arc
+                Point nextPoint = new Point(currentPoint.X + direction.X, currentPoint.Y + direction.Y);
+
+                ArcSegment arcSegment = new ArcSegment
+                {
+                    Point = nextPoint,
+                    Size = new Size(radius, radius),
+                    SweepDirection = isUpward ? SweepDirection.Clockwise : SweepDirection.Counterclockwise, // 控制圆弧方向
+                    IsLargeArc = angle > 180
+                };
+
+                // Add the ArcSegment to the path
+                pathFigure.Segments.Add(arcSegment);
+
+                // Update currentPoint to be the end point of the arc
+                currentPoint = nextPoint;
+            }
+
+            // 将所有圆弧段添加到一个PathFigure中
+            pathGeometry.Figures.Add(pathFigure);
+
+            // 创建最终的Path对象
+            Path cloudPath = new Path
+            {
+                Stroke = strokeColor,
+                StrokeThickness = strokeThickness,
+                Data = pathGeometry
+            };
+
+            return cloudPath;
+        } 
     }
 }
