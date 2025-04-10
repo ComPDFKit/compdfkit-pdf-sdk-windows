@@ -1,4 +1,9 @@
-﻿using ComPDFKit.Import;
+﻿using ComPDFKit.Controls.PDFControl;
+using ComPDFKit.DigitalSign;
+using ComPDFKit.Import;
+using ComPDFKit.PDFAnnotation;
+using ComPDFKit.PDFAnnotation.Form;
+using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFPage;
 using System;
 using System.Collections.Generic;
@@ -12,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace ComPDFKit.Controls.Printer
 {
@@ -332,9 +338,17 @@ namespace ComPDFKit.Controls.Printer
                     System.Drawing.Size pageSize = new System.Drawing.Size((int)cSize.width * widthDpiRatio, (int)cSize.height * heightDpiRatio);
 
                     byte[] bmpData = new byte[(int)(pageSize.Width * pageSize.Height * 4)];
+                    Bitmap bitmap = null;
+                    if (PrintHelper.IsPageHaveSignAP(page))
+                    {
+                        bitmap = GetPageBitmapWithFormDynamicAP(printSettingsInfo.Document, page, widthDpiRatio, heightDpiRatio, new CRect(0, pageSize.Height, pageSize.Width, 0), 0xFFFFFFFF, bmpData, printSettingsInfo.IsPrintAnnot ? 1 : 0, printSettingsInfo.IsPrintForm);
+                    }
 
-                    page.RenderPageBitmap(0, 0, pageSize.Width, pageSize.Height, 0xFFFFFFFF, bmpData, printSettingsInfo.IsPrintAnnot ? 1 : 0, printSettingsInfo.IsPrintForm);
-                    Bitmap bitmap = BuildBmp((int)pageSize.Width, (int)pageSize.Height, bmpData);
+                    if (bitmap == null)
+                    {
+                        page.RenderPageBitmap(0, 0, pageSize.Width, pageSize.Height, 0xFFFFFFFF, bmpData, printSettingsInfo.IsPrintAnnot ? 1 : 0, printSettingsInfo.IsPrintForm);
+                        bitmap = BuildBmp((int)pageSize.Width, (int)pageSize.Height, bmpData);
+                    }
 
                     if (printSettingsInfo.IsGrayscale)
                     {
@@ -416,6 +430,8 @@ namespace ComPDFKit.Controls.Printer
                     {
                         using (Bitmap resizedBitmap = ResizeBitmap(bitmap, 100))
                         {
+                            realBound.Width = (int)(cSize.width * 1.4);
+                            realBound.Height = (int)(cSize.height * 1.4);
                             if (isManualDuplex && PrintIndex % 2 == 1 && printSettingsInfo.DuplexPrintMod == DuplexPrintMod.FlipShortEdge)
                             {
                                 resizedBitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
@@ -462,6 +478,8 @@ namespace ComPDFKit.Controls.Printer
                             float aspectRatioResizedBitmap = (float)resizedBitmap.Width / resizedBitmap.Height;
                             float aspectRatioRealBound = (float)realBound.Width / realBound.Height;
 
+                            realBound.Width = (int)(cSize.width * 1.4);
+                            realBound.Height = (int)(cSize.height * 1.4);
                             realBound.Width = (int)(realBound.Width * (printSettingsInfo.PrintMode as SizeModeInfo).Scale / 100.0); 
                             realBound.Height = (int)(realBound.Height * (printSettingsInfo.PrintMode as SizeModeInfo).Scale / 100.0);
 
@@ -558,6 +576,157 @@ namespace ComPDFKit.Controls.Printer
                 g.DrawImage(bitmap, 0, 0, newWidth, newHeight);
             }
             return newBitmap;
+        }
+
+        public static Bitmap GetPageBitmapWithFormDynamicAP(CPDFDocument pdfDoc, CPDFPage page,float scaleX,float scaleY, CRect rangeRect,uint bgColor, byte[] bmpData, int flag, bool form = false)
+        {
+            if (pdfDoc==null || pdfDoc.IsValid()==false || page == null || page.IsValid() == false)
+            {
+                return null;
+            }
+
+            if (bmpData == null || bmpData.Length == 0)
+            {
+                return null;
+            }
+            if(scaleX==scaleY)
+            {
+                page.RenderPageBitmapWithMatrix(scaleX, rangeRect, bgColor, bmpData, flag, false);
+            }
+            else
+            {
+                page.RenderPageBitmap((int)rangeRect.left, (int)rangeRect.top, (int)rangeRect.width(), (int)rangeRect.height(), bgColor, bmpData, flag, false);
+            }
+
+            if (form == false)
+            {
+                return BuildBmp((int)rangeRect.width(), (int)rangeRect.height(), bmpData);
+            }
+
+            List<CPDFAnnotation> annotList = page.GetAnnotations();
+            if (annotList == null || annotList.Count == 0)
+            {
+                return BuildBmp((int)rangeRect.width(), (int)rangeRect.height(), bmpData);
+            }
+
+            Bitmap writeBitmap = BuildBmp((int)rangeRect.width(), (int)rangeRect.height(), bmpData);
+            Graphics drawGraph = Graphics.FromImage(writeBitmap);
+          
+            foreach (CPDFAnnotation rawAnnot in annotList)
+            {
+                if (rawAnnot.Type != C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET)
+                {
+                    continue;
+                }
+              
+                CRect annotRect = rawAnnot.GetRect();
+                int xPos = (int)(annotRect.left * scaleX);
+                int yPos = (int)(annotRect.top * scaleY);
+                int annotWidth = (int)(annotRect.width()*scaleX);
+                int annotHeight = (int)(annotRect.height()*scaleY);
+
+                int renderWidth = annotWidth;
+                int renderHeight = annotHeight;
+
+                System.Windows.Rect rotateRect = new System.Windows.Rect(xPos, yPos, annotWidth, annotHeight);
+                if (page.Rotation != 0)
+                {
+                    Matrix rotateMatrix = new Matrix();
+                    rotateMatrix.RotateAt(-90 * page.Rotation, rotateRect.Left + annotWidth / 2, rotateRect.Top + annotHeight / 2);
+                    rotateRect.Transform(rotateMatrix);
+
+                    renderWidth = (int)rotateRect.Width;
+                    renderHeight = (int)rotateRect.Height;
+                }
+
+                byte[] annotData = new byte[renderWidth * renderHeight * 4];
+                CPDFWidget widgetAnnot = rawAnnot as CPDFWidget;
+                CPDFSignatureWidget signatureWidget = null;
+                if (widgetAnnot.WidgetType==C_WIDGET_TYPE.WIDGET_SIGNATUREFIELDS)
+                {
+                     signatureWidget = widgetAnnot as CPDFSignatureWidget;
+                }
+                bool getSignAp = false;
+                if (signatureWidget != null && signatureWidget.IsSignAP())
+                {
+                    CPDFSignature signature = signatureWidget.GetSignature(pdfDoc);
+                    if (signature != null)
+                    {
+                        signatureWidget.GetSignatureAppearance(renderWidth, renderHeight, annotData, signature.GetSignState());
+                        getSignAp = true;
+                    }
+                }
+
+                if (!getSignAp)
+                {
+                    rawAnnot.RenderAnnot(renderWidth, renderHeight, annotData, CPDFAppearanceType.Normal);
+                }
+                Bitmap annotBitmap = BuildBmp(renderWidth, renderHeight, annotData);
+                
+                if (page.Rotation != 0)
+                {
+                    switch(page.Rotation)
+                    {
+                        case 1:
+                            annotBitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            break;
+                        case 2:
+                            annotBitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            break;
+                        case 3:
+                            annotBitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            break;
+                    }
+                  
+                }
+                drawGraph.DrawImage(annotBitmap,new Rectangle(xPos, yPos, annotWidth, annotHeight));
+            }
+
+            return writeBitmap;
+        }
+
+        /// <summary>
+        /// Check whether the page has a digitally signed dynamic appearance
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public static bool IsPageHaveSignAP(CPDFPage page)
+        {
+            if (page == null || page.IsValid() == false)
+            {
+               return false;
+            }
+
+            List<CPDFAnnotation> annotList = page.GetAnnotations();
+            if (annotList == null || annotList.Count == 0)
+            {
+                return false;
+            }
+
+            bool hasSignAp = false;
+
+            foreach (CPDFAnnotation rawAnnot in annotList)
+            {
+                if (rawAnnot.Type != C_ANNOTATION_TYPE.C_ANNOTATION_WIDGET)
+                {
+                    continue;
+                }
+               
+                CPDFWidget widgetAnnot = rawAnnot as CPDFWidget;
+                CPDFSignatureWidget signatureWidget = null;
+                if (widgetAnnot.WidgetType == C_WIDGET_TYPE.WIDGET_SIGNATUREFIELDS)
+                {
+                    signatureWidget = widgetAnnot as CPDFSignatureWidget;
+                }
+              
+                if (signatureWidget != null && signatureWidget.IsSignAP())
+                {
+                    hasSignAp = true;
+                    break;
+                }
+            }
+
+            return hasSignAp;
         }
     }
 }

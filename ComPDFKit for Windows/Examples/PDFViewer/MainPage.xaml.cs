@@ -34,6 +34,7 @@ namespace PDFViewer
         private PDFViewControl viewControl;
         private PDFViewControl passwordViewer;
         private RegularViewerControl regularViewerControl = new RegularViewerControl();
+        private ComparisonControl comparisonControl = new ComparisonControl();
         private AnnotationControl annotationControl = new AnnotationControl();
         private FormControl formControl = new FormControl();
         private ContentEditControl contentEditControl = new ContentEditControl();
@@ -182,6 +183,13 @@ namespace PDFViewer
                 CPDFSaclingControl.SetZoomTextBoxText(string.Format("{0}", (int)(pdfviewer.GetZoom() * 100)));
 
                 botaBarControl.AddBOTAContent(new[] { BOTATools.Thumbnail, BOTATools.Outline, BOTATools.Bookmark, BOTATools.Annotation, BOTATools.Search });
+                botaBarControl.ViewCertificateEvent -= digitalSignatureControl.ViewCertificateEvent;
+                botaBarControl.ViewCertificateEvent += digitalSignatureControl.ViewCertificateEvent;
+                botaBarControl.ViewSignatureEvent -= digitalSignatureControl.ViewSignatureEvent;
+                botaBarControl.ViewSignatureEvent += digitalSignatureControl.ViewSignatureEvent;
+                botaBarControl.DeleteSignatureEvent -= BotaBarControl_DeleteSignatureEvent;
+                botaBarControl.DeleteSignatureEvent += BotaBarControl_DeleteSignatureEvent;
+
                 botaBarControl.SelectBotaTool(BOTATools.Thumbnail);
                 ViewSettingBtn.IsChecked = false;
                 botaBarControl.InitWithPDFViewer(viewControl);
@@ -201,6 +209,12 @@ namespace PDFViewer
                 pdfviewer.GetDocument().FontSubset = Properties.Settings.Default.FontSubsetting;    
                 pdfviewer.ScrollStride = Properties.Settings.Default.Divisor;
             }
+        }
+
+        private void BotaBarControl_DeleteSignatureEvent(object sender, EventArgs e)
+        {
+            viewControl.PDFViewTool.IsDocumentModified = true;
+            DigitalSignatureControl_OnSignatureStatusChanged(sender, e);
         }
 
         private void PDFToolManager_MouseLeftButtonDownHandler(object sender, MouseEventObject e)
@@ -296,6 +310,9 @@ namespace PDFViewer
                         break;
                     case "Measurement":
                         ModeComboBox.SelectedIndex = 6;
+                        break;
+                    case "Compare Documents":
+                        ModeComboBox.SelectedIndex = 7;
                         break;
                     default:
                         break;
@@ -452,6 +469,7 @@ namespace PDFViewer
             SignatureHelper.VerifySignatureList(viewControl.GetCPDFViewer().GetDocument());
             signatureStatusBarControl.SetStatus(SignatureHelper.SignatureList);
             botaBarControl.LoadSignatureList();
+            viewControl.GetCPDFViewer()?.UpdateAnnotFrame();
         }
 
         /// <summary>
@@ -555,6 +573,10 @@ namespace PDFViewer
                 measureControl.ClearAllToolState();
                 measureControl.ClearViewerControl();
                 measureControl.UnloadEvent();
+            }
+            else if(currentMode == "Comparison")
+            {
+                comparisonControl.ClearViewerControl();
             }
 
             if (item.Tag as string == "Viewer")
@@ -675,11 +697,41 @@ namespace PDFViewer
                     measureControl.OnAnnotEditHandler += PdfFormControlRefreshAnnotList;
                 }
             }
+            else if(item.Tag as string == "Comparison")
+            {
+                comparisonControl.PdfViewControl = viewControl;
+                comparisonControl.InitWithPDFViewer(viewControl);
+                if (comparisonControl.PdfViewControl != null)
+                {
+                    PDFGrid.Child = comparisonControl;
+                    viewControl?.SetToolType(ToolType.Viewer);
+                    comparisonControl.OnCanSaveChanged -= ControlOnCanSaveChanged;
+                    comparisonControl.OnCanSaveChanged += ControlOnCanSaveChanged;
+                    comparisonControl.OnCompareStatusChanged -= ComparisonControl_OnCompareStatusChanged;
+                    comparisonControl.OnCompareStatusChanged += ComparisonControl_OnCompareStatusChanged;
+                    comparisonControl.SetBOTAContainer(botaBarControl);
+                    comparisonControl.SetDisplaySettingsControl(displaySettingsControl);
+                }
+            }
 
             currentMode = item.Tag as string;
             RightToolPanelButtonIsChecked = false;
             SnapshotButton.IsChecked = false;
             viewControl.FocusPDFViewTool.RemovePageSelectdUserControl();
+        }
+
+        private void ComparisonControl_OnCompareStatusChanged(object sender, UIElement e)
+        {
+            CompareResultGrid.Children.Clear();
+            if (e != null)
+            {
+                CompareResultGrid.Children.Add(e);
+                CompareResultGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CompareResultGrid.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>

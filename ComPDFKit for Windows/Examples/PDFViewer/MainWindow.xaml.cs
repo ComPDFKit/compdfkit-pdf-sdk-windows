@@ -157,6 +157,7 @@ namespace PDFViewer
                 tabItem.Tag = "Blank Page.pdf";
 
                 TabControl.Items.Add(tabItem);
+
                 viewPage.CanSave = true;
             }
             else

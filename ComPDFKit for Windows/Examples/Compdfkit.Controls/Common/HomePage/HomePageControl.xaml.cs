@@ -150,7 +150,7 @@ namespace ComPDFKit.Controls.PDFControl
                     }
                 case "Compare Documents":
                     {
-                        System.Diagnostics.Process.Start("https://www.compdf.com/pdf-sdk/document-comparison");
+                        OpenFileEvent?.Invoke(this, new OpenFileEventArgs(FileOperationType.OpenFileDirectly, SampleFileName, e.Feature));
                         break;
                     }
                 case "Conversion":

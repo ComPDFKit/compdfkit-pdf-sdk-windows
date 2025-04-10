@@ -19,7 +19,7 @@ namespace ComPDFKit.Controls.Strings {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ToolBar {
@@ -84,6 +84,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Button_Cmb {
             get {
                 return ResourceManager.GetString("Button_Cmb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content Comparison.
+        /// </summary>
+        internal static string Button_ContentComparison {
+            get {
+                return ResourceManager.GetString("Button_ContentComparison", resourceCulture);
             }
         }
         
@@ -174,6 +183,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Button_NewSig {
             get {
                 return ResourceManager.GetString("Button_NewSig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overlay Comparison.
+        /// </summary>
+        internal static string Button_OverlayComparison {
+            get {
+                return ResourceManager.GetString("Button_OverlayComparison", resourceCulture);
             }
         }
         

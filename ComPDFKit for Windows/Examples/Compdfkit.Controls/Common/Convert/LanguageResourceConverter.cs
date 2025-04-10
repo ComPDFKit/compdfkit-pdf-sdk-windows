@@ -149,4 +149,22 @@ namespace ComPDFKit.Controls.Common
             return null;
         }
     }
+    
+    public class CompareResourceConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (parameter == null || string.IsNullOrEmpty(parameter.ToString()))
+            {
+                return string.Empty;
+            }
+
+            return LanguageHelper.CompareManager.GetString(parameter.ToString());
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
 }

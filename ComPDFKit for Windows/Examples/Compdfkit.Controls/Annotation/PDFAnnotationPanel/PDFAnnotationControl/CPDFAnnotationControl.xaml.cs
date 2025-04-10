@@ -711,7 +711,6 @@ namespace ComPDFKit.Controls.PDFControl
                     break;
             }
         }
-
         private List<List<Point>> GetPoints(string Path)
         {
             StrokeCollection Strokes;

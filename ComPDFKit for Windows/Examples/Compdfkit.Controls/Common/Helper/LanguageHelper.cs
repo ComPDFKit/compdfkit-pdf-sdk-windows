@@ -14,5 +14,6 @@ namespace ComPDFKit.Controls.Helper
         public static ResourceManager SecurityManager= new ResourceManager("ComPDFKit.Controls.Strings.Security", Assembly.GetExecutingAssembly());
         public static ResourceManager DocEditorManager= new ResourceManager("ComPDFKit.Controls.Strings.DocEditor", Assembly.GetExecutingAssembly());
         public static ResourceManager CompressManager = new ResourceManager("ComPDFKit.Controls.Strings.Compress", Assembly.GetExecutingAssembly());
+        public static ResourceManager CompareManager = new ResourceManager("ComPDFKit.Controls.Strings.Compare", Assembly.GetExecutingAssembly());
     }
 }

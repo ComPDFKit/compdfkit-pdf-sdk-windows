@@ -37,7 +37,7 @@ namespace ComPDFKit.Controls.PDFControl
         {
             if (!CPDFPKCS12CertHelper.CheckPKCS12Password(FileNameTxt.Text, PasswordBoxTxt.Password))
             {
-                ErrorTipsText.Text = "Invalid Password.";
+                ErrorTipsText.Text = LanguageHelper.SigManager.GetString("InvalidPasswordError");
                 return;
             }
 
@@ -67,6 +67,7 @@ namespace ComPDFKit.Controls.PDFControl
                 PasswordTextBlock.Visibility = Visibility.Visible;
             }
             CanContinue = FileNameTxt.Text.Length > 0 && PasswordBoxTxt.Password.Length > 0;
+            ErrorTipsText.Text = "";
         }
         
         private void FileNameTxt_OnTextChanged(object sender, TextChangedEventArgs e)

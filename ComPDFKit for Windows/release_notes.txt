@@ -1,3 +1,14 @@
+*** Release Date: Mar 28, 2025 *** 
+Version 2.4.0
+- New Features
+1. Add document comparison function demonstration UI.
+2. The digital signature supports the appearance of authentication status.
+
+- Issues Addressed
+1. Fixed an issue where hyphenated text disappeared after enabling font inlining save in text editor.
+2. Fixed a crash when loading fonts with incorrect font information.
+3. Fix the issue that the printing function prints the wrong size.
+
 *** Release Date: Dec 12, 2024 ***
 Version 2.2.0
 - New Features

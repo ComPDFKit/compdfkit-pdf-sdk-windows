@@ -147,6 +147,22 @@ namespace ComPDFKit.Controls.PDFControl
                 SetZoomTextBoxText(string.Format("{0}", (int)(pdfViewer.GetZoom() * 100)));
             }
         }
+        
+        public void SetScale(string scale)
+        {
+            if (ViewControl == null || ViewControl.PDFViewTool == null)
+            {
+                return;
+            }
+            CPDFViewer pdfViewer = ViewControl.PDFViewTool.GetCPDFViewer();
+            if (pdfViewer == null)
+            {
+                return;
+            }
+            pdfViewer.SetZoom(double.Parse(scale) / 100);
+            SetZoomTextBoxText(string.Format("{0}", (int)(pdfViewer.GetZoom() * 100)));
+            pdfViewer.UpdateRenderFrame();
+        }
 
         private void CPDFScalingUI_SetPresetScaleEvent(object sender, string e)
         {

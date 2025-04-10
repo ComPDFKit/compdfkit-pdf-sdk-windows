@@ -87,11 +87,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ComPDFKit.NET, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ComPDFKit.NetFramework.2.2.0\lib\ComPDFKit.NET.dll</HintPath>
+    <Reference Include="ComPDFKit.NET, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ComPDFKit.NetFramework.2.4.0\lib\ComPDFKit.NET.dll</HintPath>
     </Reference>
-    <Reference Include="ComPDFKit.Viewer, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ComPDFKit.NetFramework.2.2.0\lib\ComPDFKit.Viewer.dll</HintPath>
+    <Reference Include="ComPDFKit.Viewer, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ComPDFKit.NetFramework.2.4.0\lib\ComPDFKit.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.1\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -172,6 +172,9 @@
       <DependentUpon>CPDFDeleteDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Asset\Styles\TCIRadioButton.cs" />
+    <Compile Include="Common\BarControl\CPDFComparisonBarControl.xaml.cs">
+      <DependentUpon>CPDFComparisonBarControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\BarControl\CPDFDigitalSignatureBarControl.xaml.cs">
       <DependentUpon>CPDFDigitalSignatureBarControl.xaml</DependentUpon>
     </Compile>
@@ -191,6 +194,10 @@
     <Compile Include="Common\BaseControl\MessageBoxEx.cs" />
     <Compile Include="Common\BaseControl\PageNumberControl.xaml.cs">
       <DependentUpon>PageNumberControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\BaseControl\PopTip.cs" />
+    <Compile Include="Common\BaseControl\WritableComboBox.xaml.cs">
+      <DependentUpon>WritableComboBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\Convert\AntiVisibilityConverter.cs" />
     <Compile Include="Common\Convert\BoolToColorConverter.cs" />
@@ -328,6 +335,21 @@
     </Compile>
     <Compile Include="Common\PropertyControl\WritableComboBoxControl.xaml.cs">
       <DependentUpon>WritableComboBoxControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Comparison\CompareContentResultControl.xaml.cs">
+      <DependentUpon>CompareContentResultControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Comparison\CompareOverwriteResultControl.xaml.cs">
+      <DependentUpon>CompareOverwriteResultControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Comparison\CompareProgressControl.xaml.cs">
+      <DependentUpon>CompareProgressControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Comparison\ComparisonControl.xaml.cs">
+      <DependentUpon>ComparisonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Comparison\ComparisonSettingDialog.xaml.cs">
+      <DependentUpon>ComparisonSettingDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Compress\CompressDialog.xaml.cs">
       <DependentUpon>CompressDialog.xaml</DependentUpon>
@@ -598,6 +620,11 @@
     <Compile Include="Snapshot\SnapshotMenu.xaml.cs">
       <DependentUpon>SnapshotMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Strings\Compare.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Compare.resx</DependentUpon>
+    </Compile>
     <Compile Include="Strings\Compress.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -676,11 +703,9 @@
     <EmbeddedResource Include="Strings\Bota.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Bota.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\Bota.zh.resx">
       <DependentUpon>Bota.resx</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\Common.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -688,7 +713,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\Common.zh.resx">
       <DependentUpon>Common.resx</DependentUpon>
-      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Strings\Compare.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Compare.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Strings\Compare.zh.resx">
+      <DependentUpon>Compare.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\Compress.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -717,7 +748,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\PropertyPanel.zh.resx">
       <DependentUpon>PropertyPanel.resx</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings\Security.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -800,6 +830,7 @@
     <EmbeddedResource Include="Asset\Cursor\PanTool2.cur">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Resource Include="Asset\Resource\CompareEmpty.png" />
     <Content Include="VirtualizingWrapPanel.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -877,6 +908,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Asset\Styles\OtherControlStyle.xaml" />
     <Page Include="Asset\Styles\RadioButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -911,6 +943,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Common\BarControl\CPDFComparisonBarControl.xaml" />
     <Page Include="Common\BarControl\CPDFDigitalSignatureBarControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -932,6 +965,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Common\BaseControl\WritableComboBox.xaml" />
     <Page Include="Common\CreateBlankPageSetting\CreateBlankPageSettingDialog.xaml" />
     <Page Include="Common\DeviceSerial\DeviceSerialControl.xaml" />
     <Page Include="Common\PasswordControl\PasswordBoxControl.xaml" />
@@ -1071,6 +1105,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Comparison\CompareContentResultControl.xaml" />
+    <Page Include="Comparison\CompareOverwriteResultControl.xaml" />
+    <Page Include="Comparison\CompareProgressControl.xaml" />
+    <Page Include="Comparison\ComparisonControl.xaml" />
+    <Page Include="Comparison\ComparisonSettingDialog.xaml" />
     <Page Include="Compress\CompressDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1412,13 +1451,12 @@
       <Name>ComPDFKit.Tool</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\ComPDFKit.NetFramework.2.2.0\build\ComPDFKit.NetFramework.targets" Condition="Exists('..\packages\ComPDFKit.NetFramework.2.2.0\build\ComPDFKit.NetFramework.targets')" />
+  <Import Project="..\packages\ComPDFKit.NetFramework.2.4.0\build\ComPDFKit.NetFramework.targets" Condition="Exists('..\packages\ComPDFKit.NetFramework.2.4.0\build\ComPDFKit.NetFramework.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\ComPDFKit.NetFramework.2.2.0\build\ComPDFKit.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ComPDFKit.NetFramework.2.2.0\build\ComPDFKit.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\ComPDFKit.NetFramework.2.4.0\build\ComPDFKit.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ComPDFKit.NetFramework.2.4.0\build\ComPDFKit.NetFramework.targets'))" />
   </Target>
 </Project>

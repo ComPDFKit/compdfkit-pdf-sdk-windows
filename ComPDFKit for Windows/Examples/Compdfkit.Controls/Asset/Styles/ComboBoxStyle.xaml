@@ -262,6 +262,7 @@
     </ControlTemplate>-->
     <Style x:Key="ComboBoxStyle1" TargetType="{x:Type ComboBox}">
         <Setter Property="Background" Value="White"/>
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <!--CmbItem-->
@@ -269,6 +270,7 @@
                     <Setter Property="MinHeight" Value="32"></Setter>
                     <Setter Property="MinWidth" Value="60"></Setter>
                     <Setter Property="FontSize" Value="12"></Setter>
+                    <Setter Property="Focusable" Value="False"></Setter>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ComboBoxItem">
@@ -308,6 +310,7 @@
                                 Foreground="{TemplateBinding Foreground}"
                                 Background="{TemplateBinding Background}" 
                                 IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"
+                                Focusable="False"
                                 >
                                     <ToggleButton.Style >
                                         <Style TargetType="ToggleButton">
@@ -337,7 +340,7 @@
                             <Grid Grid.Column="1" >
                                 <ToggleButton IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                           Foreground="{TemplateBinding Foreground}"
-                                          ClickMode="Press">
+                                          ClickMode="Press" Focusable="False">
                                     <ToggleButton.Style>
                                         <Style TargetType="ToggleButton">
                                             <Setter Property="Background" Value="White"/>

@@ -110,12 +110,13 @@ namespace ComPDFKit.Controls.PDFControl
             CPDFDocument tempDocument = CPDFDocument.CreateDocument();
             tempDocument.InsertPage(0, 200, 200, string.Empty);
             CPDFPage page = tempDocument.PageAtIndex(0);
-            CPDFSignatureWidget signatureWidget = page.CreateWidget(C_WIDGET_TYPE.WIDGET_SIGNATUREFIELDS) as CPDFSignatureWidget;
-            signatureWidget.SetRect(new CRect(0, 100, 300, 0));
+            CPDFSignatureWidget tempSignatureWidget = page.CreateWidget(C_WIDGET_TYPE.WIDGET_SIGNATUREFIELDS) as CPDFSignatureWidget;
+            tempSignatureWidget.SetRect(new CRect(0, 100, 300, 0));
+            tempSignatureWidget.UpdateFormAp();
             tempSignatureConfig.IsDrawLogo = (bool)LogoChk.IsChecked;
             if (tempSignatureConfig.IsDrawLogo)
             {
-                if(!string.IsNullOrEmpty(logoPath))
+                if (!string.IsNullOrEmpty(logoPath))
                 {
                     byte[] imageData = null;
                     int imageWidth = 0;
@@ -124,7 +125,7 @@ namespace ComPDFKit.Controls.PDFControl
                     ComPDFKit.Tool.Help.PDFHelp.ImagePathToByte(logoPath, ref imageData, ref imageWidth, ref imageHeight);
                     if (imageData != null && imageWidth > 0 && imageHeight > 0)
                     {
-                        if (signatureWidget.IsValid())
+                        if (tempSignatureWidget.IsValid())
                         {
                             tempSignatureConfig.LogoData = imageData;
                             tempSignatureConfig.LogoWidth = imageWidth;
@@ -137,11 +138,18 @@ namespace ComPDFKit.Controls.PDFControl
             tempSignatureConfig.Content = Text;
             tempSignatureConfig.TextColor = textColor;
             tempSignatureConfig.ContentColor = new float[] { 0, 0, 0 };
-            signatureWidget.UpdataApWithSignature(tempSignatureConfig);
 
-            byte[] signatureBitmapBytes = GetTempSignatureImage(signatureWidget, out int width, out int height);
+            if (DynamicAP.IsChecked == true)
+            {
+                tempSignatureWidget.UpdateSignApWithSignature(tempSignatureConfig);
+            }
+            else
+            {
+                tempSignatureWidget.UpdateApWithSignature(tempSignatureConfig);
+            }
 
-            signatureWidget.ReleaseAnnot();
+            byte[] signatureBitmapBytes = GetTempSignatureImage(tempSignatureWidget, out int width, out int height);
+            tempDocument.Release();
 
             if (signatureBitmapBytes.Length > 0)
             {
@@ -206,6 +214,7 @@ namespace ComPDFKit.Controls.PDFControl
             if (clickBorder == NoneBorder)
             {
                 tempSignatureConfig.IsDrawOnlyContent = true;
+                DynamicAP.IsEnabled = true;
             }
             else
             {
@@ -215,6 +224,7 @@ namespace ComPDFKit.Controls.PDFControl
                     tempSignatureConfig.Text = signatureName;
                     //tempSignatureConfig.ImageBitmap = null;
                     KeyboardPopup.Visibility = Visibility.Visible;
+                    DynamicAP.IsEnabled = true;
                 }
                 else
                 {
@@ -222,6 +232,8 @@ namespace ComPDFKit.Controls.PDFControl
                     if (clickBorder == TrackpadBorder)
                     {
                         CanvaDrawPopup.Visibility = Visibility.Visible;
+                        DynamicAP.IsChecked = false;
+                        DynamicAP.IsEnabled = false;
                     }
                     else if (clickBorder == ImageBorder)
                     {
@@ -243,6 +255,8 @@ namespace ComPDFKit.Controls.PDFControl
                                 }
                             }
                         }
+                        DynamicAP.IsChecked = false;
+                        DynamicAP.IsEnabled = false;
                     }
                 }
             }
@@ -286,7 +300,7 @@ namespace ComPDFKit.Controls.PDFControl
         {
             int height = 0;
             int width = 0;
-            tempSignatureConfig.ImageData = GetDrawInk(ref height,ref width);
+            tempSignatureConfig.ImageData = GetDrawInk(ref height, ref width);
             tempSignatureConfig.ImageWidth = width;
             tempSignatureConfig.ImageHeight = height;
             CanvaDrawPopup.Visibility = Visibility.Collapsed;
@@ -374,7 +388,7 @@ namespace ComPDFKit.Controls.PDFControl
 
             return rgbValues;
         }
-        
+
         private void SetProperty()
         {
             Text = string.Empty;
@@ -425,7 +439,7 @@ namespace ComPDFKit.Controls.PDFControl
                 {
                     Text += "DN: ";
                 }
-                var keyOrder = new List<string> { "CN",  "O", "OU", "emailAddress", "L", "ST", "C" };
+                var keyOrder = new List<string> { "CN", "O", "OU", "emailAddress", "L", "ST", "C" };
 
                 var keyMapping = new Dictionary<string, string>
                 {
@@ -453,7 +467,7 @@ namespace ComPDFKit.Controls.PDFControl
                     }
                 }
 
-                 Text += stringBuilder.ToString()+"\n";
+                Text += stringBuilder.ToString() + "\n";
             }
 
             if ((bool)ComPDFKitVersionChk.IsChecked)
@@ -518,9 +532,20 @@ namespace ComPDFKit.Controls.PDFControl
             }
         }
 
-        private void ClearTxt_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void ClearSignatureImage()
         {
             imagePath = string.Empty;
+            if (tempSignatureConfig != null)
+            {
+                tempSignatureConfig.ImageData = null;
+                tempSignatureConfig.ImageWidth = 0;
+                tempSignatureConfig.ImageHeight = 0;
+            }
+        }
+
+        private void ClearTxt_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ClearSignatureImage();
             //tempSignatureConfig.ImageBitmap = null;
             SetProperty();
             CreateTempSignature();
@@ -553,6 +578,26 @@ namespace ComPDFKit.Controls.PDFControl
             else
             {
                 Reasonstp.Visibility = Visibility.Visible;
+            }
+            SetProperty();
+            CreateTempSignature();
+        }
+
+        private void DynamicAPChk_Click(object sender, RoutedEventArgs e)
+        {
+            ImageBorder.IsEnabled = DynamicAP.IsChecked == true ? false : true;
+            ImageBorder.Opacity = ImageBorder.IsEnabled ? 1 : 0.4;
+            ImagePickPanel.IsEnabled = DynamicAP.IsChecked == true ? false : true;
+            ImagePickPanel.Opacity = ImageBorder.IsEnabled ? 1 : 0.4;
+            LogoChk.IsEnabled= DynamicAP.IsChecked == true ? false : true;
+            LogoChk.Opacity = LogoChk.IsEnabled ? 1 : 0.4;
+            TrackpadBorder.IsEnabled = DynamicAP.IsChecked == true ? false : true;
+            TrackpadBorder.Opacity = ImageBorder.IsEnabled ? 1 : 0.4;
+
+            if (DynamicAP.IsChecked == true)
+            {
+                LogoChk.IsChecked = false;
+                ClearSignatureImage();
             }
             SetProperty();
             CreateTempSignature();
@@ -642,9 +687,17 @@ namespace ComPDFKit.Controls.PDFControl
             {
                 location = string.Empty;
             }
-
-            signatureWidget.UpdataApWithSignature(tempSignatureConfig);
-
+            signatureWidget.UpdateFormAp();
+            if (DynamicAP.IsChecked == true)
+            {
+                signatureWidget.SetSignAP();
+                signatureWidget.UpdateSignApWithSignature(tempSignatureConfig);
+            }
+            else
+            {
+                signatureWidget.UpdateApWithSignature(tempSignatureConfig);
+            }
+            
             if (Document.WriteSignatureToFilePath(signatureWidget, filePath, SignaturePath, Password, location, reason, CPDFSignaturePermissions.CPDFSignaturePermissionsNone))
             {
                 signatureCertificate.AddToTrustedCertificates();

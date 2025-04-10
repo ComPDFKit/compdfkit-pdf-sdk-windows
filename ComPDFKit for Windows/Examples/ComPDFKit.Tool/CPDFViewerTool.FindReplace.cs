@@ -1,15 +1,10 @@
 ﻿using ComPDFKit.PDFPage;
 using ComPDFKit.PDFPage.Edit;
-using ComPDFKit.Tool.Help;
+using ComPDFKit.Tool.UndoManger;
 using ComPDFKit.Tool.UndoManger.FindReplaceHistory;
-using ComPDFKit.Viewer.Helper;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ComPDFKit.Tool
 {
@@ -102,7 +97,7 @@ namespace ComPDFKit.Tool
             // Start searching from the currently displayed page
             CPDFPage pdfPage = GetCPDFViewer().GetDocument().PageAtIndex(nextPageIndex);
             findSelectionEditPage = pdfPage.GetEditPage();
-            findSelectionEditPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
+            findSelectionEditPage.BeginEdit(contentEditType);
 
             // If the passed value is null, it will cause the program to freeze
             if (string.IsNullOrEmpty(findText))
@@ -324,33 +319,36 @@ namespace ComPDFKit.Tool
         public int ReplaceAllText(string replaceText)
         {
             int changeCount = 0;
+            GroupHistory groupHistory = new GroupHistory();
             for (int pageIndex = 0; pageIndex < PDFViewer.GetDocument().PageCount; pageIndex++)
             {
                 CPDFPage page = PDFViewer.GetDocument().PageAtIndex(pageIndex);
                 CPDFEditPage editPage = page.GetEditPage();
-                editPage.BeginEdit(CPDFEditType.EditText | CPDFEditType.EditImage | CPDFEditType.EditPath);
+                editPage.BeginEdit(contentEditType);
                 editPage.FindText(findText, options);
                 List<CPDFEditTextFindSelection> editTextFindSelectionList = editPage.GetTextFindSelectionList();
+                if (editTextFindSelectionList.Count == 0)
+                {
+                    continue;
+                }
 
+                changeCount += editTextFindSelectionList.Count;
                 for (int i = editTextFindSelectionList.Count - 1; i >= 0; i--)
                 {
-                    if (editTextFindSelectionList.Count == 0)
-                    {
-                        continue;
-                    }
-                    changeCount += editTextFindSelectionList.Count;
                     editPage.FindText(findText, options);
-
                     editPage.ReplaceText(editTextFindSelectionList[i], replaceText);
+                    FindReplaceHistory findReplaceHistory = new FindReplaceHistory();
+                    findReplaceHistory.EditPage = editPage;
+                    findReplaceHistory.PageIndex = editPage.GetPageIndex();
+                    groupHistory.Histories.Add(findReplaceHistory);
                 }
             }
 
             ResetFindPlaceStatus();
-
             SelectedEditAreaForIndex(-1, -1);
+            PDFViewer.UndoManager.AddHistory(groupHistory);
             PDFViewer.UpdateRenderFrame();
-            StartFindText(findText, options);
-            return 0;
+            return changeCount;
         }
 
         private void ResetFindPlaceStatus()

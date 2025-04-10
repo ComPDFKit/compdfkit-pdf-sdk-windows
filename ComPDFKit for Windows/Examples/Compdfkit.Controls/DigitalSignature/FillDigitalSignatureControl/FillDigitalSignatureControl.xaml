@@ -117,6 +117,7 @@
                         <RowDefinition Height="32"></RowDefinition>
                         <RowDefinition Height="32"></RowDefinition>
                         <RowDefinition Height="32"></RowDefinition>
+                        <RowDefinition Height="32"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -129,6 +130,7 @@
                     <CheckBox x:Name="DateChk" FontSize="14" Grid.Row="1" Click="DateChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Date}"></CheckBox>
                     <CheckBox x:Name="LogoChk" FontSize="14" Grid.Row="2" Click="LogoChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Logo}"></CheckBox>
                     <CheckBox x:Name="ReasonChk" FontSize="14" Grid.Row="3" Click="ReasonChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Reason}"></CheckBox>
+                    <CheckBox Name="DynamicAP" Grid.ColumnSpan="4" FontSize="14" Grid.Row="4" Click="DynamicAPChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_DynamicAP}"/>
 
                     <CheckBox x:Name="DistinguishableNameChk" FontSize="14" Grid.Column="2" Click="DistinguishableNameChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_DN}"></CheckBox>
                     <CheckBox x:Name="ComPDFKitVersionChk" FontSize="14" Grid.Column="2" Grid.Row="1" Click="ComPDFKitVersionChk_Click" Content="{Binding Converter={StaticResource SigResourceConverter},ConverterParameter=Chk_Version}"></CheckBox>
@@ -137,7 +139,7 @@
 
                     <StackPanel x:Name="Reasonstp" Visibility="Collapsed" Orientation="Horizontal" Grid.Column="4" Margin="30,0,0,0" Grid.RowSpan="2" Height="30" Width="280">
                         <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Cmb_Reason}" VerticalAlignment="Center" Width="50"></TextBlock>
-                        <ComboBox x:Name="ReasonCmb"  SelectionChanged="ReasonCmb_SelectionChanged" Width="220" VerticalContentAlignment="Center">
+                        <ComboBox Margin="5,0,0,0" x:Name="ReasonCmb"  SelectionChanged="ReasonCmb_SelectionChanged" Width="180" VerticalContentAlignment="Center">
                             <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_None}"></ComboBoxItem>
                             <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_Owner}" IsSelected="True"></ComboBoxItem>
                             <ComboBoxItem Content="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Reason_Approving}"></ComboBoxItem>
@@ -146,7 +148,7 @@
                     </StackPanel>
                     <StackPanel x:Name="PositionStp" Visibility="Collapsed" Orientation="Horizontal" Grid.Column="4" Grid.Row="1" Margin="30,10,0,0"  Grid.RowSpan="2" Height="30" Width="280">
                         <TextBlock Text="{Binding Converter={StaticResource SigResourceConverter}, ConverterParameter=Tip_Position}" VerticalAlignment="Center" Width="50"></TextBlock>
-                        <TextBox Width="220" x:Name="PositionTbx" TextChanged="PositionTbx_TextChanged"></TextBox>
+                        <TextBox Margin="5,0,0,0" Width="180" x:Name="PositionTbx" TextChanged="PositionTbx_TextChanged"></TextBox>
                     </StackPanel>
                 </Grid>
 

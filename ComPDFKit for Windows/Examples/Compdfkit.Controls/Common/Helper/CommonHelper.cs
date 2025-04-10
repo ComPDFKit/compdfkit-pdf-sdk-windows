@@ -1042,6 +1042,18 @@ namespace ComPDFKit.Controls.Helper
                 return arrowFigure;
             }
         }
+
+        public static string GetFileNameAddSuffix(string path, string filename, string suffix)
+        {
+            int i = 1;
+            string outname = filename;
+            while (File.Exists(path + @"\" + outname + suffix))
+            {
+                outname = filename + $"({i.ToString()})";
+                i++;
+            }
+            return path + @"\" + outname + suffix;
+        }
     }
 
     public class PanelState

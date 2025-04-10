@@ -1,0 +1,471 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Title_CompareDoc" xml:space="preserve">
+        <value>Compare Documents</value>
+    </data>
+    <data name="Tab_ContentComparison" xml:space="preserve">
+        <value>Content Comparison</value>
+    </data>
+    <data name="Tab_OverlayComparison" xml:space="preserve">
+        <value>Overlay Comparison</value>
+    </data>
+    <data name="Title_OldFile" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="Title_NewFile" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="Cmb_AddFile" xml:space="preserve">
+        <value>Select File</value>
+    </data>
+    <data name="Tooltip_AddFile" xml:space="preserve">
+        <value>Click to Add</value>
+    </data>
+    <data name="Box_PageRange" xml:space="preserve">
+        <value>Page Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>All Pages</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Odd Pages Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Even Page Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Custom Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>e.g. 1,3-5,10</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>All Pages</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Odd Pages Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Even Page Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Custom Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>e.g. 1,3-5,10</value>
+    </data>
+    <data name="Box_Comparison" xml:space="preserve">
+        <value>Comparison Settings</value>
+    </data>
+    <data name="Setting_Items" xml:space="preserve">
+        <value>Compare Items</value>
+    </data>
+    <data name="Check_Text" xml:space="preserve">
+        <value>Text</value>
+    </data>
+    <data name="Check_Image" xml:space="preserve">
+        <value>Images</value>
+    </data>
+    <data name="Setting_MarkDifference" xml:space="preserve">
+        <value>Mark Differences</value>
+    </data>
+    <data name="Content_Deleted" xml:space="preserve">
+        <value>Deleted Content</value>
+    </data>
+    <data name="Content_Replaced" xml:space="preserve">
+        <value>Replaced Content</value>
+    </data>
+    <data name="Content_Insert" xml:space="preserve">
+        <value>Inserted Content</value>
+    </data>
+    <data name="Button_Compare" xml:space="preserve">
+        <value>Compare</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Title_SelectFile" xml:space="preserve">
+        <value>Select File</value>
+    </data>
+    <data name="Error_SelectFile" xml:space="preserve">
+        <value>Please select 2 files to compare</value>
+    </data>
+    <data name="Title_InvalidPage" xml:space="preserve">
+        <value>Invalid Page Range</value>
+    </data>
+    <data name="Error_InvalidPage" xml:space="preserve">
+        <value>The page range that you selected is invalid. Please select again.</value>
+    </data>
+    <data name="Tip_Progress" xml:space="preserve">
+        <value>The Comparison Result Are Coming Soon</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Help</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Print</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Compare Documents</value>
+    </data>
+    <data name="Tooltip_CloseList" xml:space="preserve">
+        <value>Hide Differences List</value>
+    </data>
+    <data name="Tooltip_OpenList" xml:space="preserve">
+        <value>Open Differences List</value>
+    </data>
+    <data name="Title_DifferenceList" xml:space="preserve">
+        <value>Differences List</value>
+    </data>
+    <data name="Title_DifferenceNum" xml:space="preserve">
+        <value>Total Differences</value>
+    </data>
+    <data name="Title_Thumbnail" xml:space="preserve">
+        <value>Thumbnail</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Page 1 VS Page 1</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Deleted Content </value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Replaced Content</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Inserted Content</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Deleted</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Replaced</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Inserted</value>
+    </data>
+    <data name="Check_Sync" xml:space="preserve">
+        <value>Scroll Sync</value>
+    </data>
+    <data name="Button_Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="Button_Exit" xml:space="preserve">
+        <value>Exit</value>
+    </data>
+    <data name="Title_Save" xml:space="preserve">
+        <value>Save </value>
+    </data>
+    <data name="Box_SaveAs" xml:space="preserve">
+        <value>Save as</value>
+    </data>
+    <data name="Select_OldFile" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="Select_NewFile" xml:space="preserve">
+        <value>New File </value>
+    </data>
+    <data name="Select_Merge" xml:space="preserve">
+        <value>Merge into a New File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>MergeCompareFile.pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>保存旧文件/新文件时，文件名会默认为：原文件名称_compare.pdf</value>
+    </data>
+    <data name="Title_FileLocation" xml:space="preserve">
+        <value>File Location</value>
+    </data>
+    <data name="Button_Browse" xml:space="preserve">
+        <value>Browse</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Title_Attention" xml:space="preserve">
+        <value>Attention</value>
+    </data>
+    <data name="Warn_Save" xml:space="preserve">
+        <value>Please confirm that you have saved the comparison results file!</value>
+    </data>
+    <data name="Button_Confirm" xml:space="preserve">
+        <value>Comfirm</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Compare Documents</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Content Comparison</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Overlay Comparison</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Select File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Click to Add</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Page Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>All Pages</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Odd Pages Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Even Page Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Custom Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>e.g. 1,3-5,10</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>All Pages</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Odd Pages Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Even Page Only</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Custom Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>e.g. 1,3-5,10</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Comparison Settings</value>
+    </data>
+    <data name="Setting_Opacity" xml:space="preserve">
+        <value>Opacity</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Mark Differences</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="Setting_Blend" xml:space="preserve">
+        <value>Blend Mode</value>
+    </data>
+    <data name="Blend_Normal" xml:space="preserve">
+        <value>Normal</value>
+    </data>
+    <data name="Blend_Multiply" xml:space="preserve">
+        <value>Multiply</value>
+    </data>
+    <data name="Blend_Screen" xml:space="preserve">
+        <value>Screen</value>
+    </data>
+    <data name="Blend_Overlay" xml:space="preserve">
+        <value>Overlay</value>
+    </data>
+    <data name="Blend_Darken" xml:space="preserve">
+        <value>Darken</value>
+    </data>
+    <data name="Blend_Lighten" xml:space="preserve">
+        <value>Lighten</value>
+    </data>
+    <data name="Blend_ColorDodge" xml:space="preserve">
+        <value>ColorDodge</value>
+    </data>
+    <data name="Blend_ColorBurn" xml:space="preserve">
+        <value>ColorBurn</value>
+    </data>
+    <data name="Blend_HardLight" xml:space="preserve">
+        <value>HardLight</value>
+    </data>
+    <data name="Blend_SoftLight" xml:space="preserve">
+        <value>SoftLight</value>
+    </data>
+    <data name="Blend_Difference" xml:space="preserve">
+        <value>Difference</value>
+    </data>
+    <data name="Blend_Exclusion" xml:space="preserve">
+        <value>Exclusion</value>
+    </data>
+    <data name="Blend_Hue" xml:space="preserve">
+        <value>Hue</value>
+    </data>
+    <data name="Blend_Saturation" xml:space="preserve">
+        <value>Saturation</value>
+    </data>
+    <data name="Blend_Colour" xml:space="preserve">
+        <value>Colour</value>
+    </data>
+    <data name="Blend_Luminosity" xml:space="preserve">
+        <value>Luminosity</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Compare</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Select File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Please select 2 files to compare</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Invalid Page Range</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>The page range that you selected is invalid. Please select again.</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>The Comparison Result Are Coming Soon</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Help</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Print</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Compare Documents</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Old File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>New File</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Exit</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Attention</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Please confirm that you have saved the comparison results file!</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Comfirm</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Title_Delete" xml:space="preserve">
+        <value>Deleted</value>
+    </data>
+    <data name="Title_Replace" xml:space="preserve">
+        <value>Replaced</value>
+    </data>
+    <data name="Title_Insert" xml:space="preserve">
+        <value>Inserted</value>
+    </data>
+    <data name="Text_Page" xml:space="preserve">
+        <value>Page</value>
+    </data>
+    <data name="Delete_Page" xml:space="preserve">
+        <value>Deleted Page</value>
+    </data>
+    <data name="Delete_Text" xml:space="preserve">
+        <value>Deleted Text</value>
+    </data>
+    <data name="Delete_Image" xml:space="preserve">
+        <value>Deleted Image</value>
+    </data>
+    <data name="Insert_Page" xml:space="preserve">
+        <value>Inserted Page</value>
+    </data>
+    <data name="Insert_Text" xml:space="preserve">
+        <value>Inserted Text</value>
+    </data>
+    <data name="Insert_Image" xml:space="preserve">
+        <value>Inserted Image</value>
+    </data>
+    <data name="Error_SelectSameFile" xml:space="preserve">
+        <value>Please select 2 different documents to compare.</value>
+    </data>
+    <data name="Replaced_Text" xml:space="preserve">
+        <value>Replaced Text</value>
+    </data>
+    <data name="Replaced_Image" xml:space="preserve">
+        <value>Replaced Image</value>
+    </data>
+    <data name="Title_EmptyResult" xml:space="preserve">
+        <value>There is no difference between 2 documents.</value>
+    </data>
+</root>

@@ -33,7 +33,7 @@ namespace ComPDFKit.Tool
 
         protected bool AnnotWidgetHitTest()
         {
-            BaseAnnot baseAnnot = PDFViewer.AnnotHitTest();
+            BaseAnnot baseAnnot = PDFViewer.AnnotHitTest(true);
             if (baseAnnot != null)
             {
                 if ((baseAnnot as BaseWidget) != null)

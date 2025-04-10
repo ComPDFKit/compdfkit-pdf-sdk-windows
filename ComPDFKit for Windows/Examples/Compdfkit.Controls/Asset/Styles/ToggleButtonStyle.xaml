@@ -111,6 +111,91 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
+    <Style x:Key="TableToggleBtnStyle"
+    TargetType="{x:Type ToggleButton}">
+        <Style.BasedOn>
+            <Style TargetType="{x:Type ButtonBase}">
+                <Setter Property="FrameworkElement.FocusVisualStyle">
+                    <Setter.Value>
+                        <Style TargetType="{x:Type IFrameworkInputElement}">
+                            <Setter Property="Control.Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Rectangle
+                                        Margin="2"
+                                        SnapsToDevicePixels="True"
+                                        Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                                        StrokeDashArray="1 2"
+                                        StrokeThickness="1" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Panel.Background" Value="#EAECF2" />
+                <Setter Property="Border.BorderBrush" Value="Transparent" />
+                <Setter Property="Foreground" Value="#000000" />
+                <Setter Property="Border.BorderThickness" Value="0" />
+                <Setter Property="Control.HorizontalContentAlignment" Value="Center" />
+                <Setter Property="Control.VerticalContentAlignment" Value="Center" />
+                <Setter Property="Control.Padding" Value="1" />
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ButtonBase}">
+                            <Border
+                            Name="border"
+                            Background="{TemplateBinding Panel.Background}"
+                            BorderBrush="{TemplateBinding Border.BorderBrush}"
+                            BorderThickness="{TemplateBinding Border.BorderThickness}"
+                            SnapsToDevicePixels="True">
+                                <ContentPresenter
+                                Name="contentPresenter"
+                                Margin="{TemplateBinding Control.Padding}"
+                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                Content="{TemplateBinding ContentControl.Content}"
+                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="Button.IsDefaulted" Value="True">
+                                    <Setter TargetName="border" Property="Border.BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                </Trigger>
+                                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Panel.Background" Value="#1A000000" />
+                                    <Setter TargetName="border" Property="Border.BorderBrush" Value="#3C7FB1" />
+                                </Trigger>
+                                <Trigger Property="ButtonBase.IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Panel.Background" Value="#26000000" />
+                                    <Setter TargetName="border" Property="Border.BorderBrush" Value="#2C628B" />
+                                </Trigger>
+                                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                    <Setter TargetName="border" Property="Panel.Background" Value="#4982E6" />
+                                    <Setter TargetName="border" Property="Border.BorderBrush" Value="#245A83" />
+                                    <Setter Property="Foreground" Value="#FFFFFF" />
+                                </Trigger>
+                                <Trigger Property="UIElement.IsEnabled" Value="False">
+                                    <Setter TargetName="border" Property="Panel.Background" Value="White" />
+                                    <Setter TargetName="border" Property="Border.BorderBrush" Value="#ADB2B5" />
+                                    <Setter Property="TextElement.Foreground" Value="#838383" />
+                                </Trigger>
+                                <Trigger Property="ToggleButton.IsEnabled" Value="False">
+                                    <Setter TargetName="border" Property="Panel.Background" Value="#3AADB2B5" />
+                                    <Setter TargetName="border" Property="Border.BorderBrush" Value="#ADB2B5" />
+                                    <Setter Property="TextElement.Foreground" Value="#838383" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Style.BasedOn>
+    </Style>
 
     <Style x:Key="ToggleButtonSwitchStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>

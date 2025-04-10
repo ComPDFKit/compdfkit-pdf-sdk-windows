@@ -61,7 +61,7 @@ namespace PDFViewer.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @ 2014-2023 PDF Technologies, Inc. All Rights Reserved..
+        ///   Looks up a localized string similar to @ 2014-2025 PDF Technologies, Inc. All Rights Reserved..
         /// </summary>
         internal static string Link_CopyRight {
             get {

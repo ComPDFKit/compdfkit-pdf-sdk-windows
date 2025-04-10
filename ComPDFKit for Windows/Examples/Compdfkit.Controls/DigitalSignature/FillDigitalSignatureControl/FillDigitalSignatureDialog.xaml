@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        Width="630" Height="550">
+        Width="630" Height="565">
     <Grid>
         <local:FillDigitalSignatureControl x:Name="FillDigitalSignatureControl"></local:FillDigitalSignatureControl>
     </Grid>

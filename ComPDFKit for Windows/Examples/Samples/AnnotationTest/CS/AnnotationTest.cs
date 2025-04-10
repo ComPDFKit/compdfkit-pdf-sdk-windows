@@ -117,7 +117,7 @@ namespace AnnotationTest
             byte[] lineColor = { 255, 0, 0 };
             byte[] bgColor = { 0, 255, 0 };
 
-            CPDFBorderEffector borderEffect = new CPDFBorderEffector( C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_TWO);
+            CPDFBorderEffector borderEffect = new CPDFBorderEffector( C_BORDER_TYPE.C_BORDER_TYPE_CLOUD, C_BORDER_INTENSITY.C_INTENSITY_TWO);
             
             // Square
             CPDFSquareAnnotation square = page.CreateAnnot(C_ANNOTATION_TYPE.C_ANNOTATION_SQUARE) as CPDFSquareAnnotation;

@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.Comparison.CompareProgressControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ComPDFKit.Controls.Comparison"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="500">
+    <Grid>
+        <Grid x:Name="CompareProgressGrid">
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5" Width="370" Height="91" BorderThickness="0.5" BorderBrush="Black" Background="#FCFDFF">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="4" BlurRadius="10" Color="Black" Opacity="0.4"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Button HorizontalAlignment="Right" Click="ButtonBase_OnClick" Margin="0,-12,8,0" Background="White" Width="16" Height="16" BorderThickness="0">
+                        <Path Fill="Black">
+                            <Path.Data>
+                                M5.69231 5L9.5 1.19231L8.80769 0.5L5 4.30769L1.19231 0.5L0.5 1.19231L4.30769 5L0.5 8.80769L1.19231 9.5L5 5.69231L8.80769 9.5L9.5 8.80769L5.69231 5Z
+                            </Path.Data>
+                        </Path>
+                    </Button>
+                    <TextBlock x:Name="ProgressTxb" Grid.Row="0" FontSize="16" FontWeight="SemiBold" Margin="32,21,31,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI" TextWrapping="WrapWithOverflow"
+                               Text="The Comparison Result is Coming Soon"></TextBlock>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="32,12,31,15">
+                        <ProgressBar x:Name="CompareProgressBar" Maximum="100" Width="268" Height="8" Foreground="#1460F3"></ProgressBar>
+                        <TextBlock Text="{Binding ElementName=CompareProgressBar, Path=Value}" Margin="12,0,0,0"></TextBlock>
+                        <TextBlock Text="%"></TextBlock>
+                    </StackPanel>
+                    
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

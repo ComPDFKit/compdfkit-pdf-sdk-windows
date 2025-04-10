@@ -19,7 +19,7 @@ namespace ComPDFKit.Controls.Strings {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Signature {
@@ -214,6 +214,15 @@ namespace ComPDFKit.Controls.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Real-time Display Signature Validity.
+        /// </summary>
+        internal static string Chk_DynamicAP {
+            get {
+                return ResourceManager.GetString("Chk_DynamicAP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logo.
         /// </summary>
         internal static string Chk_Logo {
@@ -363,6 +372,15 @@ namespace ComPDFKit.Controls.Strings {
         internal static string Holder_Unit {
             get {
                 return ResourceManager.GetString("Holder_Unit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Password.
+        /// </summary>
+        internal static string InvalidPasswordError {
+            get {
+                return ResourceManager.GetString("InvalidPasswordError", resourceCulture);
             }
         }
         

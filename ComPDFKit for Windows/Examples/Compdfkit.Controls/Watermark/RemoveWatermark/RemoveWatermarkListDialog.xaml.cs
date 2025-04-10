@@ -47,7 +47,7 @@ namespace ComPDFKit.Controls.PDFControl {
                 {
                     fileInfo.Document.DeleteWatermarks();
                     string savePath = Path.Combine(path, Path.GetFileNameWithoutExtension(fileInfo.Document.FileName) + "_"
-                        + LanguageHelper.SecurityManager.GetString("FileName_RemoveWatermark"));
+                        + LanguageHelper.SecurityManager.GetString("FileName_RemoveWatermark")) + ".pdf";
                     fileInfo.Document.WriteToFilePath(savePath);
                 }
                 System.Diagnostics.Process.Start(path);

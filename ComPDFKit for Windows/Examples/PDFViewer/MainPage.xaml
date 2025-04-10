@@ -188,7 +188,7 @@
                     <cpdftools:CPDFScalingControl x:Name="CPDFSaclingControl"  Visibility="{Binding NotDocsEditorVisible, Mode=OneWay}"></cpdftools:CPDFScalingControl>
                 </StackPanel>
 
-                <ComboBox Name="ModeComboBox" Style="{StaticResource ComboBoxStyle1}" Width="150" Height="26" Grid.Column="1" HorizontalAlignment="Center" FontSize="12" Foreground="#001A4E" HorizontalContentAlignment="Center" SelectionChanged="ComboBox_SelectionChanged">
+                <ComboBox Name="ModeComboBox" Style="{StaticResource ComboBoxStyle1}" Width="176" Height="26" Grid.Column="1" HorizontalAlignment="Center" FontSize="12" Foreground="#001A4E" HorizontalContentAlignment="Center" SelectionChanged="ComboBox_SelectionChanged">
                     <ComboBoxItem Tag="Viewer" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_Viewer}"></ComboBoxItem>
                     <ComboBoxItem Tag="Annotation" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_Annotations}"></ComboBoxItem>
                     <ComboBoxItem Tag="Form" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_Forms}"></ComboBoxItem>
@@ -196,6 +196,8 @@
                     <ComboBoxItem Tag="Document Editor" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_DocEditor}"></ComboBoxItem>
                     <ComboBoxItem Tag="Digital Signature" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_Signatures}"></ComboBoxItem>
                     <ComboBoxItem Tag="Measurement" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_Measurement}"></ComboBoxItem>
+                    <ComboBoxItem Tag="Comparison" Content="{Binding Converter={StaticResource CommonResourceConverter},ConverterParameter=Func_DocCompare}"></ComboBoxItem>
+
                 </ComboBox>
 
                 <StackPanel Orientation="Horizontal" Grid.Column="2">
@@ -343,5 +345,7 @@
             </Grid>
 
         </Border>
+        
+        <Grid x:Name="CompareResultGrid" Visibility="Collapsed"></Grid>
     </Grid>
 </UserControl>

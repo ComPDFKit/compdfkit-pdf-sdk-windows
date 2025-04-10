@@ -1,5 +1,6 @@
 ﻿using ComPDFKit.Controls.Printer;
 using ComPDFKit.Import;
+using ComPDFKit.PDFAnnotation;
 using ComPDFKit.PDFPage;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
@@ -320,10 +322,18 @@ namespace ComPDFKit.Controls.PDFControl
 
             if (page != null)
             {
-                page.RenderPageBitmapWithMatrix((float)1, pageRect, 0xFFFFFFFF, bmpData, printSettingsInfo.IsPrintAnnot ? 1 : 0, printSettingsInfo.IsPrintForm);
-                Point startPoint = new Point(0, 0);
+                Bitmap bitmap = null;
+                if (PrintHelper.IsPageHaveSignAP(page))
+                {
+                    bitmap = PrintHelper.GetPageBitmapWithFormDynamicAP(printSettingsInfo.Document, page, 1, 1, pageRect, 0xFFFFFFFF, bmpData, printSettingsInfo.IsPrintAnnot ? 1 : 0, printSettingsInfo.IsPrintForm);
+                }
 
-                Bitmap bitmap = PrintHelper.BuildBmp((int)pageRect.width(), (int)pageRect.height(), bmpData);
+                if (bitmap == null)
+                {
+                    page.RenderPageBitmapWithMatrix((float)1, pageRect, 0xFFFFFFFF, bmpData, printSettingsInfo.IsPrintAnnot ? 1 : 0, printSettingsInfo.IsPrintForm);
+                    bitmap = PrintHelper.BuildBmp((int)pageRect.width(), (int)pageRect.height(), bmpData);
+                }
+                Point startPoint = new Point(0, 0);
 
                 if (printSettingsInfo.IsGrayscale)
                 {
@@ -352,12 +362,12 @@ namespace ComPDFKit.Controls.PDFControl
                         if (printSettingsInfo.PrintOrientation == PageOrientation.Portrait)
                         {
                             resizedWidth = (int)printSettingsInfo.ActualWidth;
-                            resizedHeight = (int)(printSettingsInfo.ActualWidth / bitmap.Width * bitmap.Height);
+                            resizedHeight = (int)printSettingsInfo.ActualHeight;
                         }
                         else
                         {
                             resizedHeight = (int)printSettingsInfo.ActualWidth;
-                            resizedWidth = (int)(printSettingsInfo.ActualWidth / bitmap.Height * bitmap.Width);
+                            resizedWidth = (int)printSettingsInfo.ActualHeight;
                         }
                     }
 

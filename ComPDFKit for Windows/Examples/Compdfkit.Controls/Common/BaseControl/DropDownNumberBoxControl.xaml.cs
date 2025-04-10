@@ -51,6 +51,7 @@ namespace ComPDFKit.Controls.Common
 
         public event EventHandler<string> InputEnterEvent;
         public event EventHandler<string> SetPresetEvent;
+        public event EventHandler<string> TextChangedEvent;
 
         public DropDownNumberBoxControl()
         {
@@ -125,6 +126,7 @@ namespace ComPDFKit.Controls.Common
                     TextBox.Text = Minimum.ToString();
                 }
             }
+            TextChangedEvent?.Invoke(this, TextBox.Text);
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -459,8 +459,8 @@ namespace ComPDFKit.Controls.PDFControl
                 Document = PDFViewControl.GetCPDFViewer().GetDocument(),
                 Owner = Window.GetWindow(this)
             };
-            fillDigitalSignatureDialog.AfterFillSignature -= FillDigitalSignatureDialog_AfterFillSignature; ;
-            fillDigitalSignatureDialog.AfterFillSignature += FillDigitalSignatureDialog_AfterFillSignature; ;
+            fillDigitalSignatureDialog.AfterFillSignature -= FillDigitalSignatureDialog_AfterFillSignature;
+            fillDigitalSignatureDialog.AfterFillSignature += FillDigitalSignatureDialog_AfterFillSignature;
             fillDigitalSignatureDialog.ShowDialog();
         }
 

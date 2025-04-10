@@ -141,4 +141,10 @@
     <data name="Button_Rectangle" xml:space="preserve">
         <value>Rectangle</value>
     </data>
+    <data name="Button_ContentComparison" xml:space="preserve">
+        <value>Content Comparison</value>
+    </data>
+    <data name="Button_OverlayComparison" xml:space="preserve">
+        <value>Overlay Comparison</value>
+    </data>
 </root>

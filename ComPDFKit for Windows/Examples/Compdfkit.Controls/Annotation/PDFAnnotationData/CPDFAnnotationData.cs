@@ -178,7 +178,7 @@ namespace ComPDFKit.Controls.Data
         {
             get;
             set;
-        } = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_ONE);
+        } = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_CLOUD, C_BORDER_INTENSITY.C_INTENSITY_ONE);
         public C_BORDER_STYLE BorderStyle = C_BORDER_STYLE.BS_SOLID; 
         public double Opacity = 1;
         public int Thickness = 1;

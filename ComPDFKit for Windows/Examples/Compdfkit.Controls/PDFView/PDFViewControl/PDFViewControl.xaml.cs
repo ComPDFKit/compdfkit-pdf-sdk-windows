@@ -149,6 +149,21 @@ namespace ComPDFKit.Controls.PDFControl
         {
             FocusPDFViewTool.ContextMenu = contextMenu;
         }
+        
+        public double GetVerticalOffset()
+        {
+            var viewer = GetCPDFViewer();
+            if (viewer != null)
+            {
+                return viewer.VerticalOffset;
+            }
+            return 0;
+        }
+
+        public void ScrollToVerticalOffset(double offset)
+        {
+            GetCPDFViewer()?.SetVerticalOffset(offset);
+        }
 
         private void PDFToolManager_MouseRightButtonDownHandler(object sender, MouseEventObject e)
         {
@@ -228,10 +243,9 @@ namespace ComPDFKit.Controls.PDFControl
                 splitHeightScale = HorizontalView.ActualHeight / ViewToolGrid.ActualHeight;
             }
         }
-
-        public void InitDocument(string Path)
+        
+        public void InitDocument(CPDFDocument pdfDoc)
         {
-            CPDFDocument pdfDoc = CPDFDocument.InitWithFilePath(Path);
             if (pdfDoc != null)
             {
                 PDFViewTool.GetCPDFViewer().InitDoc(pdfDoc);
@@ -244,6 +258,23 @@ namespace ComPDFKit.Controls.PDFControl
                 splitViewerTool.GetCPDFViewer().InitDoc(pdfDoc);
 
                 splitViewerTool.GetCPDFViewer().SetFitMode(FitMode.FitHeight);
+                splitViewerTool.GetCPDFViewer().SetViewMode(ViewMode.SingleContinuous);
+            }
+        }
+
+        public void InitDocument(string Path)
+        {
+            CPDFDocument pdfDoc = CPDFDocument.InitWithFilePath(Path);
+            if (pdfDoc != null)
+            {
+                PDFViewTool.GetCPDFViewer().InitDoc(pdfDoc);
+                PDFViewTool.GetCPDFViewer().SetFitMode(FitMode.FitOriginal);
+                PDFViewTool.GetCPDFViewer().SetViewMode(ViewMode.SingleContinuous);
+
+                PDFViewTool.SetIsMultiSelected(true);
+
+                splitViewerTool.GetCPDFViewer().InitDoc(pdfDoc);
+                splitViewerTool.GetCPDFViewer().SetFitMode(FitMode.FitOriginal);
                 splitViewerTool.GetCPDFViewer().SetViewMode(ViewMode.SingleContinuous);
             }
         }
@@ -667,9 +698,20 @@ namespace ComPDFKit.Controls.PDFControl
                 BaseAnnot hitAnnot = GetCPDFViewer().AnnotHitTest();
                 if (hitAnnot != null)
                 {
-                    if (hitAnnot is LinkAnnot || hitAnnot is BaseWidget)
+                    if (hitAnnot is LinkAnnot)
                     {
                         newCursor = Cursors.Hand;
+                    }
+                    else if(hitAnnot is BaseWidget )
+                    {
+                        if (PDFViewTool.IsAnnotReadOnly(hitAnnot) == false)
+                        {
+                            newCursor = Cursors.Hand;
+                        }
+                        else
+                        {
+                            newCursor = Cursors.Arrow;
+                        }
                     }
                     else
                     {
@@ -770,9 +812,21 @@ namespace ComPDFKit.Controls.PDFControl
 
                     if (hitAnnot != null)
                     {
-                        if (hitAnnot is LinkAnnot || hitAnnot is BaseWidget)
+                        if (hitAnnot is LinkAnnot)
                         {
                             newCursor = Cursors.Hand;
+                            cursorSet = true;
+                        }
+                        else if (hitAnnot is BaseWidget)
+                        {
+                            if (PDFViewTool.IsAnnotReadOnly(hitAnnot) == false)
+                            {
+                                newCursor = Cursors.Hand;
+                            }
+                            else
+                            {
+                                newCursor = Cursors.Arrow;
+                            }
                             cursorSet = true;
                         }
                         else

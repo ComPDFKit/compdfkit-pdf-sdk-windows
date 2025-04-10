@@ -45,6 +45,16 @@ namespace ComPDFKit.Tool
         // Inner default pop-up control
         private bool isInternalPopup;
 
+        public bool IsAnnotReadOnly(BaseAnnot checkAnnot)
+        {
+            AnnotData annotData = checkAnnot?.GetAnnotData();
+            if (annotData != null && annotData.Annot?.IsValid()==true)
+            {
+                return annotData.Annot.GetIsReadOnly();
+            }
+            return false;
+        }
+
         public bool ShowFormHitPop(BaseWidget hitForm)
         {
             List<C_WIDGET_TYPE> formTypeList = new List<C_WIDGET_TYPE>()
@@ -57,7 +67,11 @@ namespace ComPDFKit.Tool
             if(hitForm != null && formTypeList.Contains(hitForm.GetFormType()))
             {
                 UIElement newUI = null;
-              
+                if (IsAnnotReadOnly(hitForm)) 
+                {
+                    return false;
+                }
+             
                 switch(hitForm.GetFormType())
                 {
                     case C_WIDGET_TYPE.WIDGET_TEXTFIELD:

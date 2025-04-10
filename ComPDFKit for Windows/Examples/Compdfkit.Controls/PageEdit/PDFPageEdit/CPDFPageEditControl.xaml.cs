@@ -1,4 +1,6 @@
-﻿using ComPDFKit.PDFDocument;
+﻿using ComPDFKit.Controls.Printer;
+using ComPDFKit.Import;
+using ComPDFKit.PDFDocument;
 using ComPDFKit.PDFPage;
 using ComPDFKit.Viewer.Helper;
 using ComPDFKitViewer;
@@ -8,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -1346,7 +1349,7 @@ namespace ComPDFKit.Controls.PDFControl
                     Image img = GetImageElement(item);
                     if (i >= (range.Item1 - 1) && i <= range.Item2 || ViewportHelper.IsInViewport(sv, item)) 
                     {
-                        if (img.Source == null && !visiblePageIndexes.Contains(i))
+                        if (img.Source == null || !visiblePageIndexes.Contains(i))
                         {
                             visiblePageIndexes.Add(i);
                             await Task.Delay(1);
@@ -1976,6 +1979,7 @@ namespace ComPDFKit.Controls.PDFControl
                 UpdateAllPageNum();
                 pdfViewer?.UpdateVirtualNodes();
                 CanSave = true;
+                ItemsInViewHitTest();
             }
         }
 
@@ -2316,7 +2320,28 @@ namespace ComPDFKit.Controls.PDFControl
             CPDFPage page = pdfdoc.PageAtIndex(pageIndex);
             byte[] bmpData = new byte[imageWidth * imageHeight * 4];
 
-            await Task.Run(() => page.RenderPageBitmap(0, 0, imageWidth, imageHeight, 0xFFFFFFFF, bmpData, 1, true));
+            await Task.Run(() =>
+            {
+                bool isgetSignAp = false;
+                if(PrintHelper.IsPageHaveSignAP(page))
+                {
+                    double widthDpiRatio = imageWidth / page.PageSize.width;
+                    double heightDpiRatio = imageHeight / page.PageSize.height;
+                    System.Drawing.Bitmap bitmap = PrintHelper.GetPageBitmapWithFormDynamicAP(pdfdoc, page, (float)widthDpiRatio, (float)heightDpiRatio, new CRect(0, imageHeight, imageWidth, 0), 0xFFFFFFFF, bmpData, 1, true);
+                    if (bitmap != null)
+                    {
+                        System.Drawing.Imaging.BitmapData imageData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, imageWidth, imageHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                        Marshal.Copy(imageData.Scan0, bmpData, 0, bmpData.Length);
+                        bitmap.UnlockBits(imageData);
+                        isgetSignAp = true;
+                    }
+                }
+               
+                if(!isgetSignAp) 
+                {
+                    page.RenderPageBitmap(0, 0, imageWidth, imageHeight, 0xFFFFFFFF, bmpData, 1, true);
+                }
+            });
             if (OnThumbnailGenerated != null)
             {
                 OnThumbnailGenerated(pageIndex, bmpData, imageWidth, imageHeight);

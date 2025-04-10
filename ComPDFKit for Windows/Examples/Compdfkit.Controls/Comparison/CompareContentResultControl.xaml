@@ -1,0 +1,329 @@
+﻿<UserControl x:Class="ComPDFKit.Controls.Comparison.CompareContentResultControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ComPDFKit.Controls.Comparison"
+    xmlns:common="clr-namespace:ComPDFKit.Controls.Common"
+    xmlns:controls="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+    xmlns:pdfControl="clr-namespace:ComPDFKit.Controls.PDFControl" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="1200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ComPDFKit.Controls;component/Asset/Styles/OtherControlStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <common:CommonResourceConverter x:Key="CommonResourceConverter"></common:CommonResourceConverter>
+            <common:BoolToVisibleConverter x:Key="BoolToVisibleConverter"></common:BoolToVisibleConverter>
+            <common:TextLengthToBoolConverter x:Key="TextLengthToBoolConverter"/>
+            <common:CompareResourceConverter x:Key="ResourceConverter"></common:CompareResourceConverter>
+            <local:GroupHeaderConverter x:Key="GroupHeaderConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Background="#FCFDFF">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <ToggleButton x:Name="LeftToolPanelButton" Margin="13,0,0,0" BorderThickness="0" Width="30" Height="30" Style="{StaticResource ToggleButtonStyle}" Background="Transparent" Click="LeftToolPanelButton_Click">
+                        <ToggleButton.Content>
+                            <Path Fill="#43474D" Width="30" Height="30">
+                                <Path.Data>
+                                    M22.5 8.5H7.5V12.25H13H22.5V8.5ZM12.25 13.75H7.5V21.5H12.25V13.75ZM13.75 21.5V13.75H22.5V21.5H13.75ZM7.5 7H6V8.5V21.5V23H7.5H22.5H24V21.5V8.5V7H22.5H7.5Z
+                                </Path.Data>
+                            </Path>
+                        </ToggleButton.Content>
+                        <ToggleButton.ToolTip>
+                            <ToolTip x:Name="PanelToolTip" Content="{Binding Converter={StaticResource ResourceConverter},ConverterParameter=Tooltip_CloseList}"></ToolTip>
+                        </ToggleButton.ToolTip>
+                    </ToggleButton>
+                    <Line Margin="13,0,13,0" Stroke="#E0E0E0" X1="0" Y1="5" X2="0" Y2="35"></Line>
+                    <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="8,0,0,0" MinWidth="220">
+                        <StackPanel Orientation="Horizontal">
+                            <Rectangle Fill="#FF3333" Margin="0,0,0,0" Name="DeleteColorRect" RadiusX="2" RadiusY="2" Width="16" Height="16" StrokeThickness="1" Stroke="#1A000000"></Rectangle>
+                            <TextBlock Name="DeleteColorText" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="80" TextTrimming="CharacterEllipsis" ToolTip="{Binding ElementName=DeleteColorText,Path=Text}" 
+                                       Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_Delete}"></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="26,0,26,0" Background="White">
+                            <Rectangle Fill="#FFBB00" Margin="0,0,0,0" Name="ReplaceColorRect" RadiusX="2" RadiusY="2" Width="16" Height="16" StrokeThickness="1" Stroke="#1A000000"></Rectangle>
+                            <TextBlock Name="ReplaceColorText" Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="80" TextTrimming="CharacterEllipsis" ToolTip="{Binding ElementName=ReplaceColorText,Path=Text}" 
+                                       Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_Replace}"></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Rectangle Fill="#2D77FA" Margin="0,0,0,0" Name="InsertColorRect" RadiusX="2" RadiusY="2" Width="16" Height="16" StrokeThickness="1" Stroke="#1A000000"></Rectangle>
+                            <TextBlock Name="InsertColorText" Margin="8,0,0,0" VerticalAlignment="Center" ToolTip="{Binding ElementName=InsertColorText,Path=Text}" 
+                                       Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_Insert}"></TextBlock>
+                        </StackPanel>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,12,5">
+                    <CheckBox Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Check_Sync}"
+                              x:Name="SynchronizedScrollingCKBox" BorderThickness="2" BorderBrush="Black" VerticalContentAlignment="Center" FontSize="14" FontFamily="Segoe UI"
+                              Checked="SynchronizedScrollingCKBox_OnChecked" Unchecked="SynchronizedScrollingCKBox_OnUnchecked"></CheckBox>
+                    <Button Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Save}"
+                            Width="112" Height="32" Margin="19,0,8,0" Click="SaveBtn_Click"></Button>
+                    <Button Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Exit}"
+                            Width="112" Height="32" Click="CloseBtn_Click"></Button>
+                </StackPanel>
+            </DockPanel>
+            <Grid x:Name="ResultGrid" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" MinWidth="258" Visibility="{Binding ElementName=LeftToolPanelButton,Path=IsChecked,Converter={StaticResource BoolToVisibleConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <ToggleButton x:Name="ThumbnailBtn" Width="129" Height="32" Background="#EAECF2" Click="ThumbnailBtn_Click" IsChecked="False" Style="{StaticResource TableToggleBtnStyle}">
+                        <Path Name="ThumbnailBtnPath" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M9.8075 1.10001H1.90039V14.9H14.1004V5.3929L9.8075 1.10001ZM12.3934 5.10001L10.1 2.80666L10.0994 5.10001H12.3934ZM9.10039 2.10001H2.90039V13.899H13.0994V6.10001H9.10039V2.10001Z" Fill="{Binding ElementName=ThumbnailBtn,Path=Foreground}" />
+                    </ToggleButton>
+                    <ToggleButton x:Name="CompareBtn" Width="129" Height="32" Click="CompareBtn_Click" IsChecked="True" Background="#EAECF2" Foreground="#FFFFFF" Style="{StaticResource TableToggleBtnStyle}">
+                        <Path Name="CompareBtnPath" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M0.5 0.5H0V1V13V13.5H0.5H15.5H16V13V1V0.5H15.5H0.5ZM1 12.5V1.5H15V12.5H1ZM8.646 8.49719C8.73389 9.54114 9.65234 10.25 11.085 10.25C12.5615 10.25 13.5063 9.51107 13.5063 8.32535V8.32105C13.5063 7.40169 12.9614 6.87756 11.6299 6.59831L10.9399 6.44795C10.1182 6.27611 9.78418 5.97538 9.78418 5.5157V5.5114C9.78418 4.92713 10.3335 4.58774 11.0762 4.58774C11.8452 4.58344 12.3418 4.95291 12.4253 5.45985L12.4341 5.5157H13.3877L13.3833 5.45555C13.313 4.49323 12.4341 3.75 11.0894 3.75C9.74463 3.75 8.79541 4.48893 8.79102 5.55866V5.56295C8.79102 6.47802 9.34473 7.06229 10.6323 7.32865L11.3267 7.47472C12.166 7.65086 12.5088 7.96018 12.5088 8.43705V8.44134C12.5088 9.01702 11.9331 9.41226 11.1245 9.41226C10.2764 9.41226 9.66553 9.05139 9.61279 8.4886L9.6084 8.44134H8.6416L8.646 8.49719ZM2.30029 3.90036L4.55908 10.0996H5.64453L7.90332 3.90036H6.83545L5.13916 8.93969H5.06445L3.36816 3.90036H2.30029Z" Fill="{Binding ElementName=CompareBtn,Path=Foreground}" />
+                    </ToggleButton>
+                </StackPanel>
+                <Grid Grid.Row="1" Visibility="{Binding ElementName=ThumbnailBtn,Path=IsChecked,Converter={StaticResource BoolToVisibleConverter}}">
+                    <TextBlock Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_Thumbnail}"
+                               Name="ThumbnailText" FontFamily="Segoe UI" FontSize="18" Margin="12,24,0,0" FontWeight="DemiBold"></TextBlock>
+                    <ScrollViewer x:Name="EditListBoxSV" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Margin="0,54,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Width="120">
+                                <ListBox Name="PageOldEditListBox" AllowDrop="True" Background="Transparent" BorderThickness="0" ScrollViewer.CanContentScroll="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.ScrollChanged="PageEditListBox_ScrollChanged" SelectionChanged="PageEditListBox_SelectionChanged" SelectionMode="Extended" SizeChanged="PageEditListBox_SizeChanged" VirtualizingPanel.CacheLength="1" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Standard">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            <EventSetter Event="PreviewMouseDoubleClick" Handler="ListBoxItem_PreviewMouseDoubleClick" />
+                                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown" />
+                                            <Setter Property="Template" Value="{DynamicResource ListBoxItemControlTemplate}" />
+                                            <Setter Property="Width" Value="auto" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <controls:VirtualizingWrapPanel Margin="0,0,0,0" Background="#FCFDFF" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                </ListBox>
+                            </Grid>
+                            <Grid Width="120">
+                                <ListBox Name="PageNewEditListBox" AllowDrop="True" Background="Transparent" BorderThickness="0" ScrollViewer.CanContentScroll="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.ScrollChanged="PageEditListBox_ScrollChanged" SelectionChanged="PageEditListBox_SelectionChanged" SelectionMode="Extended" SizeChanged="PageEditListBox_SizeChanged" VirtualizingPanel.CacheLength="1" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Standard">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            <EventSetter Event="PreviewMouseDoubleClick" Handler="ListBoxItem_PreviewMouseDoubleClick" />
+                                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown" />
+                                            <Setter Property="Template" Value="{DynamicResource ListBoxItemControlTemplate}" />
+                                            <Setter Property="Width" Value="auto" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <controls:VirtualizingWrapPanel Margin="0,0,0,0" Background="White" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                </ListBox>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+                <Grid Grid.Row="1" Visibility="{Binding ElementName=CompareBtn,Path=IsChecked,Converter={StaticResource BoolToVisibleConverter}}" Name="ResultListPanel">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="12,8,0,8" Height="24" 
+                               Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_DifferenceList}"
+                               FontSize="18" FontWeight="DemiBold" FontFamily="Segoe UI"></TextBlock>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,8,0,8" Height="14">
+                        
+                        <TextBlock Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_DifferenceNum}"
+                                   FontSize="11" Foreground="#333333" FontFamily="Segoe UI" Name="TotalChangesText"></TextBlock>
+                        <TextBlock Text=":" FontSize="11" Foreground="#333333" FontFamily="Segoe UI"></TextBlock>
+                        <TextBlock Name="TotalResultText" FontSize="11" Margin="4,0,0,0" FontFamily="Segoe UI" Text="0"></TextBlock>
+                    </StackPanel>
+                    <Grid Grid.Row="2" Visibility="Collapsed" Name="NoCompareGrid" Panel.ZIndex="2">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Width="140" Height="140" Source="../Asset/Resource/CompareEmpty.png" />
+                            <TextBlock Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_EmptyResult}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <ListView Grid.Row="2" Name="ResultList" BorderThickness="0" SelectionChanged="SearchResultList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                        <ListBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                    <Expander Name="Expander" Margin="-1,-1,-1,-1" HorizontalAlignment="Stretch" Style="{StaticResource GropExpanderHeader}">
+                                                        <Expander.Header>
+                                                            <Grid Height="25" HorizontalAlignment="Stretch" Background="#FFE2E3E6">
+                                                                <TextBlock Name="GroupTitle" Margin="10,0,0,0" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" FontSize="12" FontWeight="SemiBold" TextAlignment="Left" Text="{Binding Name,Converter={StaticResource GroupHeaderConverter}}">
+                                                                </TextBlock>
+                                                                <TextBlock Name="Count" Margin="0,0,8,0" HorizontalAlignment="Right" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" FontSize="12" FontWeight="SemiBold" Foreground="#FF666666" Text="{Binding ItemCount}" TextAlignment="Right" />
+                                                            </Grid>
+                                                        </Expander.Header>
+                                                        <ItemsPresenter />
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ListBox.GroupStyle>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel Background="White" Margin="1,0,0,0"></VirtualizingStackPanel>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <ItemContainerTemplate>
+                                <StackPanel Orientation="Horizontal" Width="200">
+                                    <Border Background="{Binding BindColorProperty}" Name="DeleteColorRect1" CornerRadius="1" Width="36" Height="16" BorderThickness="1" BorderBrush="#1A000000" Margin="16,0,0,0">
+                                        <TextBlock Text="{Binding BindIndexProperty}" HorizontalAlignment="Center" Foreground="White" FontSize="11"></TextBlock>
+                                    </Border>
+                                    <RichTextBox Background="Transparent" Foreground="#000000" FontFamily="Segoe UI" FontSize="14" IsReadOnly="True" BorderThickness="0" Padding="12,6,10,6" local:RichTextBoxHelper.DocumentBind="{Binding BindProperty}" VerticalContentAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Width="180">
+                                    </RichTextBox>
+                                </StackPanel>
+                            </ItemContainerTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Background="#EAECF2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="10"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0">
+                        <pdfControl:CPDFScalingControl x:Name="OldScalingControl" Margin="12,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"></pdfControl:CPDFScalingControl>
+                        <TextBlock x:Name="OldFileTxb" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                            <TextBlock.ToolTip>
+                                <TextBlock x:Name="OldFileTxbToolTip"></TextBlock>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DockPanel>
+                    <pdfControl:PDFViewControl Grid.Row="1" x:Name="LeftViewer"/>
+                </Grid>
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowsPreview="True" Background="#ECECEC" Cursor="SizeWE" BorderBrush="#DCDCDC" BorderThickness="0.6">
+                </GridSplitter>
+                <Ellipse Grid.Column="1" Width="6" Height="6" Fill="#DCDCDC" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"></Ellipse>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0">
+                        <pdfControl:CPDFScalingControl x:Name="NewScalingControl" Margin="12,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"></pdfControl:CPDFScalingControl>
+                        <TextBlock x:Name="NewFileTxb" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                            <TextBlock.ToolTip>
+                                <TextBlock x:Name="NewFileTxbToolTip"></TextBlock>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DockPanel>
+                    <pdfControl:PDFViewControl Grid.Row="1" x:Name="RightViewer"/>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Name="SavePopGrid" Background="#20000000" Visibility="Collapsed">
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5" Width="432" Height="303" BorderThickness="0.5" BorderBrush="Black" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="4" BlurRadius="10" Color="Black" Opacity="0.4"/>
+                </Border.Effect>
+                <Grid Margin="20,5,20,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="44"></RowDefinition>
+                        <RowDefinition Height="137"></RowDefinition>
+                        <RowDefinition Height="48"></RowDefinition>
+                        <RowDefinition Height="64"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid>
+
+                        <TextBlock Margin="0,10,0,0" FontSize="14" FontFamily="Segoe UI" Height="20" Name="SaveText"
+                                   Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_Save}"></TextBlock>
+                        <Button Click="CancelBtn_Click" HorizontalAlignment="Right" Background="White" Width="16" Height="16" BorderThickness="0">
+                            <Path Fill="Black">
+                                <Path.Data>
+                                    M5.69231 5L9.5 1.19231L8.80769 0.5L5 4.30769L1.19231 0.5L0.5 1.19231L4.30769 5L0.5 8.80769L1.19231 9.5L5 5.69231L8.80769 9.5L9.5 8.80769L5.69231 5Z
+                                </Path.Data>
+                            </Path>
+                        </Button>
+                    </Grid>
+                    <GroupBox Grid.Row="1" Header="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Box_SaveAs}">
+                        <StackPanel Margin="8,24,0,0">
+                            <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+                                <CheckBox Name="OldCheckBox" VerticalAlignment="Center" IsChecked="True" 
+                                             Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Select_OldFile}"></CheckBox>
+                            </StackPanel>
+                            <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+                                <CheckBox Name="NewCheckBox" VerticalAlignment="Center" 
+                                          Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Select_NewFile}"></CheckBox>
+                            </StackPanel>
+                            <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+                                <CheckBox Name="CombineCheckBox" VerticalAlignment="Center" 
+                                          Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Select_Merge}"></CheckBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5,16,0,0">
+                        <TextBlock x:Name="TxbFilePath" VerticalAlignment="Center" 
+                                   Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_FileLocation}"
+                                   MaxWidth="75" Height="20" TextTrimming="WordEllipsis" ToolTip="{Binding ElementName=TxbFilePath,Path=Text}"/>
+                        <TextBox x:Name="CmbFilePath" Width="193" Height="32" Margin="10,0" IsReadOnly="True" Padding="8,5,0,0"/>
+                        <Button Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Browse}"
+                                Height="32" Width="100"  HorizontalAlignment="Right" BorderThickness="1" Click="BrowseFilePathButton_Click"></Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Right" Margin="0,20,2,0">
+                        <Button Width="112" Height="32" Padding="0,2,0,2" Background="#E1E1E1" BorderBrush="#FA477EDE" BorderThickness="1" Click="ConfirmSaveBtn_Click" IsEnabled="{Binding ElementName=CmbFilePath,Path=Text,Converter={StaticResource TextLengthToBoolConverter}}"
+                                Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Save}"></Button>
+                        <Button Width="112" Height="32" Padding="0,2,0,2" Margin="10,0,0,0" Background="#E1E1E1" BorderBrush="#33000000" BorderThickness="1" Click="CancelBtn_Click"
+                                Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Cancel}"/>
+
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid Name="CloseConfirmGrid" Background="#20000000" Visibility="Collapsed">
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5" Width="320" Height="168" BorderThickness="0.5" BorderBrush="Black" Background="#FCFDFF">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="4" BlurRadius="10" Color="Black" Opacity="0.4"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock FontSize="14" FontWeight="Bold" Margin="24,16,24,0" HorizontalAlignment="Left" FontFamily="Segoe UI" TextWrapping="WrapWithOverflow"
+                               Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Title_Attention}"></TextBlock>
+                    <TextBlock Grid.Row="1" FontSize="14" Margin="24,16,24,0" HorizontalAlignment="Left" FontFamily="Segoe UI" TextWrapping="WrapWithOverflow"
+                               Text="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Warn_Save}"></TextBlock>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="24,24,24,20">
+                        <Button Width="130" Padding="0,2,0,2"  Background="#E1E1E1" BorderBrush="#33000000" BorderThickness="1" Click="CancelCloseBtn_Click"
+                                Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Cancel}"></Button>
+                        <Button Width="130" Padding="0,2,0,2" Margin="10,0,0,0" Height="32" Click="ConfirmExitBtn_Click" Foreground="White" Background="#1460F3" BorderThickness="1"
+                                Content="{Binding Converter={StaticResource ResourceConverter}, ConverterParameter=Button_Confirm}"></Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -30,7 +30,7 @@ namespace ComPDFKit.Controls.Common
 
         public event EventHandler<CPDFBorderEffector> LineShapeChanged;
 
-        private CPDFBorderEffector _borderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_TWO);
+        private CPDFBorderEffector _borderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_CLOUD, C_BORDER_INTENSITY.C_INTENSITY_TWO);
         public CPDFBorderEffector BorderEffector
         {
             get
@@ -49,7 +49,7 @@ namespace ComPDFKit.Controls.Common
                 {
                     rdoStreat.IsChecked = true;
                 }
-                else if (_borderEffector.BorderType == C_BORDER_TYPE.C_BORDER_TYPE_Cloud)
+                else if (_borderEffector.BorderType == C_BORDER_TYPE.C_BORDER_TYPE_CLOUD)
                 {
                     if (_borderEffector.BorderIntensity == C_BORDER_INTENSITY.C_INTENSITY_TWO)
                     {
@@ -90,10 +90,10 @@ namespace ComPDFKit.Controls.Common
                     BorderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_STRAIGHT, C_BORDER_INTENSITY.C_INTENSITY_ZERO);
                     break;
                 case cloud1:
-                    BorderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_TWO);
+                    BorderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_CLOUD, C_BORDER_INTENSITY.C_INTENSITY_TWO);
                     break;
                 case cloud2:
-                    BorderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_Cloud, C_BORDER_INTENSITY.C_INTENSITY_ONE);
+                    BorderEffector = new CPDFBorderEffector(C_BORDER_TYPE.C_BORDER_TYPE_CLOUD, C_BORDER_INTENSITY.C_INTENSITY_ONE);
                     break;
             }
             LineShapeChanged?.Invoke(this, BorderEffector);

@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
-using System.IO;
+using System.IO; 
 using System.Reflection;
-using System.Resources;
+using System.Resources; 
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Threading;
+using System.Xml;
 using ComPDFKit.NativeMethod;
+using ComPDFKit.PDFDocument;
 using ComPDFKit.Controls.Helper;
 using PDFViewer.Properties;
 
@@ -34,7 +39,7 @@ namespace PDFViewer
                 return false; 
             }
 
-            LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify(SDKLicenseHelper.ParseLicenseXML());
+            LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify(SDKLicenseHelper.ParseLicenseXML(), false); 
             return (verifyResult == LicenseErrorCode.E_LICENSE_SUCCESS); 
         }
 
@@ -113,4 +118,5 @@ namespace PDFViewer
             throw new NotSupportedException();
         }
     }
+
 }

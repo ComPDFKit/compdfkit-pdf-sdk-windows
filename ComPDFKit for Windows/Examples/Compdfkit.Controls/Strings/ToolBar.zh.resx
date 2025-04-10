@@ -134,4 +134,10 @@
     <data name="Button_Line" xml:space="preserve">
         <value>线</value>
     </data>
+    <data name="Button_ContentComparison" xml:space="preserve">
+        <value>内容对比</value>
+    </data>
+    <data name="Button_OverlayComparison" xml:space="preserve">
+        <value>叠加比较</value>
+    </data>
 </root>

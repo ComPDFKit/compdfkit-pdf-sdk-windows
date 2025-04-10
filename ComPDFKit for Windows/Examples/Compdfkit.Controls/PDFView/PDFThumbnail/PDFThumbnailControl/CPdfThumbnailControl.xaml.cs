@@ -11,6 +11,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ComPDFKit.Import;
+using ComPDFKit.Controls.Printer;
+using System.Runtime.InteropServices;
 
 namespace ComPDFKit.Controls.PDFControl
 {
@@ -284,7 +287,33 @@ namespace ComPDFKit.Controls.PDFControl
             CPDFPage page = pdfdoc.PageAtIndex(pageIndex);
             byte[] bmpData = new byte[imageWidth * imageHeight * 4];
 
-            await Task.Run(() => page.RenderPageBitmap(0, 0, imageWidth, imageHeight, 0xFFFFFFFF, bmpData, 1, true));
+            await Task.Run(() =>
+            {
+                bool isgetSignAp = false;
+                if (PrintHelper.IsPageHaveSignAP(page))
+                {
+                    double widthDpiRatio = imageWidth / page.PageSize.width;
+                    double heightDpiRatio = imageHeight / page.PageSize.height;
+
+                    System.Drawing.Bitmap bitmap = PrintHelper.GetPageBitmapWithFormDynamicAP(pdfdoc, page, (float)widthDpiRatio, (float)heightDpiRatio, new CRect(0, imageHeight, imageWidth, 0), 0xFFFFFFFF, bmpData, 1, true);
+                    if (bitmap != null)
+                    {
+                        System.Drawing.Imaging.BitmapData imageData = bitmap.LockBits(
+                            new System.Drawing.Rectangle(0, 0, imageWidth, imageHeight),
+                            System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                        Marshal.Copy(imageData.Scan0, bmpData, 0, bmpData.Length);
+                        bitmap.UnlockBits(imageData);
+                        isgetSignAp=true;
+                    }
+                }
+                   
+                if(!isgetSignAp)
+                {
+                    page.RenderPageBitmap(0, 0, imageWidth, imageHeight, 0xFFFFFFFF, bmpData, 1, true);
+                }
+            });
             if (OnThumbnailGenerated != null)
             {
                 OnThumbnailGenerated(pageIndex, bmpData, imageWidth, imageHeight);

@@ -22,6 +22,7 @@ namespace ComPDFKit.Controls.PDFControlUI
                 if (_scale != value)
                 {
                     _scale = value;
+                    ZoomTextChangedEvent?.Invoke(null, ZoomTextBox.Text);
                     OnPropertyChanged(nameof(Scale));
                 }
             }
@@ -33,6 +34,7 @@ namespace ComPDFKit.Controls.PDFControlUI
         public event EventHandler<string> SetPresetScaleEvent;
         public event EventHandler ScaleIncreaseEvent;
         public event EventHandler ScaleDecreaseEvent;
+        public event EventHandler<string> ZoomTextChangedEvent;
 
         public CPDFScalingUI()
         {
@@ -123,6 +125,7 @@ namespace ComPDFKit.Controls.PDFControlUI
                 {
                     ZoomTextBox.Text = 1.ToString();
                 }
+                Scale = num;
             }
         }
 

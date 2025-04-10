@@ -1,0 +1,461 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Title_CompareDoc" xml:space="preserve">
+        <value>文档对比</value>
+    </data>
+    <data name="Tab_ContentComparison" xml:space="preserve">
+        <value>内容对比</value>
+    </data>
+    <data name="Tab_OverlayComparison" xml:space="preserve">
+        <value>叠加比较</value>
+    </data>
+    <data name="Title_OldFile" xml:space="preserve">
+        <value>旧文件</value>
+    </data>
+    <data name="Title_NewFile" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="Cmb_AddFile" xml:space="preserve">
+        <value>选择文件</value>
+    </data>
+    <data name="Tooltip_AddFile" xml:space="preserve">
+        <value>点击添加文件</value>
+    </data>
+    <data name="Box_PageRange" xml:space="preserve">
+        <value>页面范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>全部页面</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>奇数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>偶数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>自定义范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>例如 1,3-5,10</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>全部页面</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>奇数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>偶数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>自定义范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>例如 1,3-5,10</value>
+    </data>
+    <data name="Box_Comparison" xml:space="preserve">
+        <value>对比设置</value>
+    </data>
+    <data name="Setting_Items" xml:space="preserve">
+        <value>对比内容</value>
+    </data>
+    <data name="Check_Text" xml:space="preserve">
+        <value>文本</value>
+    </data>
+    <data name="Check_Image" xml:space="preserve">
+        <value>图片</value>
+    </data>
+    <data name="Setting_MarkDifference" xml:space="preserve">
+        <value>提示颜色</value>
+    </data>
+    <data name="Content_Deleted" xml:space="preserve">
+        <value>删除的内容</value>
+    </data>
+    <data name="Content_Replaced" xml:space="preserve">
+        <value>替换的内容</value>
+    </data>
+    <data name="Content_Insert" xml:space="preserve">
+        <value>插入的内容</value>
+    </data>
+    <data name="Button_Compare" xml:space="preserve">
+        <value>对比</value>
+    </data>
+    <data name="Button_Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Title_SelectFile" xml:space="preserve">
+        <value>选择文件</value>
+    </data>
+    <data name="Error_SelectFile" xml:space="preserve">
+        <value>请选择两个文件进行对比</value>
+    </data>
+    <data name="Title_InvalidPage" xml:space="preserve">
+        <value>无效页码范围</value>
+    </data>
+    <data name="Error_InvalidPage" xml:space="preserve">
+        <value>您选择的页面范围无效，请重新选择。</value>
+    </data>
+    <data name="Tip_Progress" xml:space="preserve">
+        <value>比对结果即将揭晓</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>帮助</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>打印</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件 .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件 .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>文档对比</value>
+    </data>
+    <data name="Tooltip_CloseList" xml:space="preserve">
+        <value>收起差异列表</value>
+    </data>
+    <data name="Tooltip_OpenList" xml:space="preserve">
+        <value>打开差异列表</value>
+    </data>
+    <data name="Title_DifferenceList" xml:space="preserve">
+        <value>差异列表</value>
+    </data>
+    <data name="Title_DifferenceNum" xml:space="preserve">
+        <value>差异数量</value>
+    </data>
+    <data name="Title_Thumbnail" xml:space="preserve">
+        <value>缩略图</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>第一页 VS 第一页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>已删除的内容</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>替换的内容</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>插入的内容</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>删除</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>替换</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>插入</value>
+    </data>
+    <data name="Check_Sync" xml:space="preserve">
+        <value>同步滚动</value>
+    </data>
+    <data name="Button_Save" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="Button_Exit" xml:space="preserve">
+        <value>退出</value>
+    </data>
+    <data name="Title_Save" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="Box_SaveAs" xml:space="preserve">
+        <value>保存选项</value>
+    </data>
+    <data name="Select_OldFile" xml:space="preserve">
+        <value>保存旧文件</value>
+    </data>
+    <data name="Select_NewFile" xml:space="preserve">
+        <value>保存新文件</value>
+    </data>
+    <data name="Select_Merge" xml:space="preserve">
+        <value>合并为一个新文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>MergeCompareFile.pdf</value>
+    </data>
+    <data name="Title_FileLocation" xml:space="preserve">
+        <value>文件位置</value>
+    </data>
+    <data name="Button_Browse" xml:space="preserve">
+        <value>浏览</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Title_Attention" xml:space="preserve">
+        <value>注意</value>
+    </data>
+    <data name="Warn_Save" xml:space="preserve">
+        <value>请确认您已经保存对比结果文件</value>
+    </data>
+    <data name="Button_Confirm" xml:space="preserve">
+        <value>确认</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>文档对比</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>内容对比</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>叠加比较</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>选择文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>点击添加文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>页面范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>全部页面</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>奇数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>偶数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>自定义范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>例如 1,3-5,10</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>全部页面</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>奇数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>偶数页</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>自定义范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>例如 1,3-5,10</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>对比设置</value>
+    </data>
+    <data name="Setting_Opacity" xml:space="preserve">
+        <value>文档不透明度</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>文档显示颜色</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="Setting_Blend" xml:space="preserve">
+        <value>混合模式</value>
+    </data>
+    <data name="Blend_Normal" xml:space="preserve">
+        <value>正常</value>
+    </data>
+    <data name="Blend_Multiply" xml:space="preserve">
+        <value>正片叠底</value>
+    </data>
+    <data name="Blend_Screen" xml:space="preserve">
+        <value>滤色</value>
+    </data>
+    <data name="Blend_Overlay" xml:space="preserve">
+        <value>叠加</value>
+    </data>
+    <data name="Blend_Darken" xml:space="preserve">
+        <value>变暗</value>
+    </data>
+    <data name="Blend_Lighten" xml:space="preserve">
+        <value>变亮</value>
+    </data>
+    <data name="Blend_ColorDodge" xml:space="preserve">
+        <value>颜色减淡</value>
+    </data>
+    <data name="Blend_ColorBurn" xml:space="preserve">
+        <value>颜色加深</value>
+    </data>
+    <data name="Blend_HardLight" xml:space="preserve">
+        <value>强光</value>
+    </data>
+    <data name="Blend_SoftLight" xml:space="preserve">
+        <value>柔光</value>
+    </data>
+    <data name="Blend_Difference" xml:space="preserve">
+        <value>差异</value>
+    </data>
+    <data name="Blend_Exclusion" xml:space="preserve">
+        <value>排除</value>
+    </data>
+    <data name="Blend_Hue" xml:space="preserve">
+        <value>色相</value>
+    </data>
+    <data name="Blend_Saturation" xml:space="preserve">
+        <value>饱和度</value>
+    </data>
+    <data name="Blend_Colour" xml:space="preserve">
+        <value>颜色</value>
+    </data>
+    <data name="Blend_Luminosity" xml:space="preserve">
+        <value>明度</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>对比</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>选择文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>请选择两个文件进行对比</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>无效页码范围</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>您选择的页面范围无效，请重新选择。</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>比对结果即将揭晓</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>帮助</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>打印</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件 .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件 .pdf</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>文档对比</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>旧文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>新文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>退出</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>注意</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>请确认您已经保存对比结果文件</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>确认</value>
+    </data>
+    <data name="" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Title_Delete" xml:space="preserve">
+        <value>删除</value>
+    </data>
+    <data name="Title_Replace" xml:space="preserve">
+        <value>替换</value>
+    </data>
+    <data name="Title_Insert" xml:space="preserve">
+        <value>插入</value>
+    </data>
+    <data name="Text_Page" xml:space="preserve">
+        <value>页码</value>
+    </data>
+    <data name="Delete_Page" xml:space="preserve">
+        <value>删除的页面</value>
+    </data>
+    <data name="Delete_Text" xml:space="preserve">
+        <value>删除的文本</value>
+    </data>
+    <data name="Delete_Image" xml:space="preserve">
+        <value>删除的图片</value>
+    </data>
+    <data name="Insert_Page" xml:space="preserve">
+        <value>插入的页面</value>
+    </data>
+    <data name="Insert_Text" xml:space="preserve">
+        <value>插入的文本</value>
+    </data>
+    <data name="Insert_Image" xml:space="preserve">
+        <value>插入的图片</value>
+    </data>
+    <data name="Error_SelectSameFile" xml:space="preserve">
+        <value>请选择2个不同的文档进行比较。</value>
+    </data>
+    <data name="Replaced_Image" xml:space="preserve">
+        <value>替换的图片</value>
+    </data>
+    <data name="Replaced_Text" xml:space="preserve">
+        <value>替换的文本</value>
+    </data>
+    <data name="Title_EmptyResult" xml:space="preserve">
+        <value>两份文件没有区别</value>
+    </data>
+</root>
