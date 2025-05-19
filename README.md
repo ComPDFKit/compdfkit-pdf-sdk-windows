@@ -7,7 +7,7 @@ More Information can be found at: [https://www.compdf.com/guides/pdf-sdk/windows
 - [Related](#related)
 - [Requirements](#requirements)
 - [How to Make a Windows Program in C#](#how-to-make-a-windows-program-in-c)
-- [Supports](#supports)
+- [Supports](#support)
 - [License ](#license)
 - [Note](#note)
 
@@ -47,7 +47,8 @@ More Information can be found at: [https://www.compdf.com/guides/pdf-sdk/windows
 
 3. Configure your project: Set your project name and choose the location to store your program. The project name is called "ComPDFKit Demo" in this example. This sample project uses .NET Framework 4.6.1 as the programming framework.
 
-   <img src="images-windows/vs2022_3.png" alt="2.4" width="50%" height="50%"/>
+<img src="images-windows/vs2022_3.png" alt="2.4" width="50%" height="50%"/>
+
 
 4. Click the **Create** button. Then, the new project will be created.
 
