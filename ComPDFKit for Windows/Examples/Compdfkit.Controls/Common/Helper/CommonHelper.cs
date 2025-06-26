@@ -55,6 +55,26 @@ namespace ComPDFKit.Controls.Helper
                 return string.Empty;
             }
         }
+
+        public static string GetLicenseXMLPath()
+        {
+            try
+            {
+                string callPath = System.IO.Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+                string xmlPath = System.IO.Path.Combine(callPath, "license_key_windows.xml");
+
+                if(File.Exists(xmlPath))
+                {
+                    return xmlPath;
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+            return string.Empty;
+        }
     }
 
     public static class CommonHelper

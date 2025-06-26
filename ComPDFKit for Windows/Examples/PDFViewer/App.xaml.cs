@@ -39,7 +39,7 @@ namespace PDFViewer
                 return false; 
             }
 
-            LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify(SDKLicenseHelper.ParseLicenseXML(), false); 
+            LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify(SDKLicenseHelper.GetLicenseXMLPath()); 
             return (verifyResult == LicenseErrorCode.E_LICENSE_SUCCESS); 
         }
 
