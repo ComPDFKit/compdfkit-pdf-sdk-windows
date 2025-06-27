@@ -23,9 +23,44 @@ More Information can be found at: [https://www.compdf.com/guides/pdf-sdk/windows
 
 # Requirements
 
-- Windows 7, 8, 10, and 11 (32-bit and 64-bit).
-- Visual Studio 2017 or higher (Make sure the **.NET Desktop Development** is installed).
-- .NET Framework 4.5 or higher.
+Before starting, please make sure that you have already met the following prerequisites.
+
+#### Get ComPDFKit License Key
+
+ComPDF provides two types of license key: 30-day free trial license, and formal license.
+
+#### How to Get Free Trial License
+
+**Method 1: Apply Online**
+
+If you want to get PDF SDK trials for **Web, Windows, Android, iOS, Flutter, and React Native**, simply apply for a [30-day free trial license](https://www.compdf.com/contact-sales) online.
+
+You can check features supported by the free trial license on our [Pricing page](https://www.compdf.com/pricing).
+
+**Method 2: Contact Sales**
+
+For other platforms or features outside of the trial license, feel free to [contact our sales team](https://www.compdf.com/contact-sales).
+
+#### How to Get Formal License
+
+ComPDFKit PDF SDK is a commercial SDK that requires a license for application release. Any documents, sample code, or source code distribution from the released package of ComPDFKit to any third party is prohibited.
+
+To get formal licenses for Windows platforms, advanced features, custom requirements, or quote inquiries, feel free to [contact our sales team](https://www.compdf.com/contact-sales).
+
+For Windows PDF SDK, formal license must be bound to your developer device ID ([How to find the developer device ID](https://www.compdf.com/faq/how-to-find-the-device-id) ), and each license is only valid for one device ID in development mode. 
+
+#### **Download PDF SDK**
+
+Download the ComPDFKit PDF SDK for Windows on [GitHub](https://github.com/ComPDFKit/compdfkit-pdf-sdk-windows) or [NuGet](https://www.nuget.org/packages/ComPDFKit.NetFramework).
+
+#### System Requirements
+
+| System Requirements        | Windows 7, 8, 10, and 11 (32-bit and 64-bit)                 |
+| -------------------------- | ------------------------------------------------------------ |
+| **IDE**                    | Visual Studio 2017 or higher (Make sure the **.NET Desktop Development** is installed) |
+| **Framework Requirements** | .NET Framework 4.5 or higher                                 |
+
+
 
 # How to Make a Windows Program in C#
 
@@ -112,61 +147,44 @@ Rather than targeting a package held at Nuget, you may set up a configuration to
 6. Once that's complete, you'll see a reference to the package in the Solution Explorer under **References**.
 
    <img src="images-windows/2.4.2.9.png" alt="2.4" width="50%" height="50%"/>
-   
 ## Apply the License Key
 
-You can [contact the ComPDFKit team](https://www.compdf.com/contact-us) to obtain a trial license. Before using any classes from the ComPDFKit PDF SDK, you need to choose the corresponding scheme from the following two options based on the license type and apply the license to your application.
+If you haven't get a license key, please check out [how to obtain a license key](###Get ComPDFKit License Key).
 
-**Online Authentication**
+ComPDFKit PDF SDK currently supports two authentication methods to verify license keys: online authentication and offline authentication.
 
-You can perform online authentication using the following approach:
+*Learn about:* 
 
-```c#
+- [*What is the authentication mechanism of ComPDFKit's license?*](https://www.compdf.com/faq/authentication-mechanism-of-compdfkit-license)
+
+- [*What are the differences between Online Authentication and Offline Authentication?*](https://www.compdf.com/faq/the-differences-between-online-authentication-and-offline-authentication)
+
+#### Copy the License Key
+
+After getting the license key, follow the steps below to apply it to your project.
+
+1. In the email you received, locate the `XML` file containing the license key.
+
+2. Copy the license key `XML` file to your own project.
+
+#### Apply the License Key
+
+You can perform authentication using the following method:
+
+```C#
 public static bool LicenseVerify()
 {
 	if (!CPDFSDKVerifier.LoadNativeLibrary())
 	{ 
 		return false;
 	}
-	LicenseErrorCode status = CPDFSDKVerifier.OnlineLicenseVerify("Input your license here.");
+	string xmlPath = "The path to your license key XML file";
+	LicenseErrorCode status = CPDFSDKVerifier.LicenseVerify(xmlPath);
 	return status == LicenseErrorCode.E_LICENSE_SUCCESS;
 }
 ```
 
-Additionally, if you need to confirm the communication status with the server during online authentication, you can implement the `CPDFSDKVerifier.LicenseRefreshed` callback:
 
-```C#
-CPDFSDKVerifier.LicenseRefreshed += CPDFSDKVerifier_LicenseRefreshed;
-
-private void CPDFSDKVerifier_LicenseRefreshed(object sender, ResponseModel e)
-{
-    if(e != null)
-    {
-        string message = string.Format("{0} {1}", e.Code, e.Message);
-        Trace.WriteLine(message);
-    }
-    else
-    {
-        Trace.WriteLine("Network not connected."); 
-    } 
-}
-
-```
-
-**Offline Authentication** 
-
-The following is the `LicenseVerify()` method for implementing offline authentication:
-
-```c#
-bool LicenseVerify()
-{
-    if (!CPDFSDKVerifier.LoadNativeLibrary())
-        return false;
-
-    LicenseErrorCode verifyResult = CPDFSDKVerifier.LicenseVerify("Input your license here.", false);
-    return (verifyResult == LicenseErrorCode.E_LICENSE_SUCCESS);
-}
-```
 
 ## Display a PDF Document
 
