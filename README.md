@@ -54,7 +54,7 @@ If you find ComPDF SDK useful, please consider giving us a ⭐ **Star** on GitHu
 
 ComPDF SDK for Windows delivers a smooth, feature-rich PDF experience for desktop applications.
 
-![ComPDF SDK for Windows](images-windows\ComPDF%20SDK%20for%20Windows.png)
+![ComPDF SDK for Windows](images-windows/ComPDF%20SDK%20for%20Windows.png)
 
 ## Requirements
 
@@ -107,14 +107,14 @@ This section will help you quickly get started with ComPDF SDK to build a Window
 ### Create a New Project
 
 1. Open Visual Studio 2022, and click **Create a new project**.
-   ![vs2022_1](images-windows\vs2022_1.png)
+   ![vs2022_1](images-windows/vs2022_1.png)
 
 2. Choose **WPF App (.NET Framework)** and click **Next**.
-   ![vs2022_2](images-windows\vs2022_2.png)
+   ![vs2022_2](images-windows/vs2022_2.png)
 
 3. Configure your project: Set your project name and choose the location to store your program. The project name is called "ComPDF Demo" in this example. This sample project uses .NET Framework 4.6.1 as the programming framework.
 
-![vs2022_3](images-windows\vs2022_3.png)
+![vs2022_3](images-windows/vs2022_3.png)
 
 4. Click the **Create** button. Then, the new project will be created.
 
@@ -126,14 +126,14 @@ There are two ways to add ComPDF to your Project: [Nuget Repository](https://www
 
 1. Open your project's solution, and in the Solution Explorer, right-click on **References** and click on the menu item **Manage NuGet Packages**. This will open the NuGet Package Manager for your solution.
 
-![9](images-windows\2.4.2.9.png)
+![9](images-windows/2.4.2.9.png)
 
 2. Go to [ComPDF.NetFramework](https://www.nuget.org/packages/ComPDFKit.NetFramework) in Nuget, and click on the **Install** button to install the package.
 
-![3](images-windows\2.4.2.3.png)
+![3](images-windows/2.4.2.3.png)
 
 3. Once that is complete, you'll see a reference to the package in the Solution Explorer under **References**.
-   ![4](images-windows\2.4.2.4.png)
+   ![4](images-windows/2.4.2.4.png)
 
 **Local Package**
 
@@ -143,7 +143,7 @@ Rather than targeting a package held at Nuget, you may set up a configuration to
 
 2. Create or edit a ***"nuget.config"*** file in the same directory as your solution file (e.g. ***"ComPDF Demo.sln"***).
 
-![5](images-windows\2.4.2.5.png)
+![5](images-windows/2.4.2.5.png)
 
 - The contents of the file should contain an XML element, _packageSources_ - which describes where to find NuGet packages - as a child of a root node named _configuration_. If the file already exists, add the extra _packageSources_ entry shown below. If the file is blank, copy and paste the entirety of the following contents:
 
@@ -158,16 +158,16 @@ Rather than targeting a package held at Nuget, you may set up a configuration to
 
 - Edit the _value_ of the contents to correctly refer to the location of the directory containing the ***"ComPDF.NetFramework....nupkg"*** package - for example, C:\Users\me\nugetPackages\. Now save the file, and close and reopen your solution for Visual Studio to force a read of the NuGet configuration.
 3. Open your project's solution, and in the Solution Explorer, right-click on **References** and click on the menu item **Manage NuGet Packages…**. This will open the NuGet Package Manager for your solution.
-   ![6](images-windows\2.4.2.6.png)
+   ![6](images-windows/2.4.2.6.png)
 
 4. On the right-hand side of the manager in the Package source dropdown window, choose the entry _ComPDFKitSource_ (or whatever you decided to name it). You should then see the entry for ***"ComPDF.NetFramework"***.
-   ![7](images-windows\2.4.2.7.png)
+   ![7](images-windows/2.4.2.7.png)
 
 5. On the right side, in the panel describing the package, click on the **Install** button to install the package.
-   ![8](images-windows\2.4.2.8.png)
+   ![8](images-windows/2.4.2.8.png)
 
 6. Once that's complete, you'll see a reference to the package in the Solution Explorer under **References**.
-   ![9](images-windows\2.4.2.9.png)
+   ![9](images-windows/2.4.2.9.png)
 
 ### Apply the License Key
 
@@ -287,18 +287,18 @@ namespace ComPDFKit_Demo
 
 4. Now run the project and you will see the PDF file that you want to display.  The PDF Viewer has been created successfully.
 
-![4](images-windows\2.4.4.png)
+![4](images-windows/2.4.4.png)
 
 ### Troubleshooting
 
 1. License Verification Failed
 - If "System.IO.FileNotFoundException" occurred in the `LicenseVerify()` function like this:
 
-![vs2022_4](images-windows\vs2022_4.png)
+![vs2022_4](images-windows/vs2022_4.png)
 
 - Check your WPF project and ensure that you chose **WPF App(.NET Framework)** instead of **WPF Application** when creating the project.
 
-![vs2022_5](images-windows\vs2022_5.png)
+![vs2022_5](images-windows/vs2022_5.png)
 
 2. Other Problems
    If you encounter other integration issues while using ComPDF SDK for Windows, feel free to contact [our support team](https://www.compdf.com/support?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows).
