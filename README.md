@@ -1,12 +1,10 @@
 # ComPDF SDK for Windows (.NET PDF Library)
 
-As part of the KDAN ecosystem, [ComPDF SDK for Windows](https://www.compdf.com/?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) is developed and maintained by [ComPDF](https://www.compdf.com/?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), enabling developers to quickly and seamlessly integrate advanced PDF functionalities—such as viewing, editing, annotating, filling forms, and signing—into Windows applications.
+As part of the KDAN ecosystem, [ComPDF SDK for Windows](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) is developed and maintained by [ComPDF](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), enabling developers to quickly and seamlessly integrate advanced PDF functionalities—such as viewing, editing, annotating, filling forms, and signing—into Windows applications.
 
-The ComPDF Windows PDF Library provides an easy-to-use .NET API that helps teams ship PDF features faster without complex integrations. You can start with a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) and evaluate the SDK in your own Windows project.
+The ComPDF Windows PDF Library provides an easy-to-use .NET API that helps teams ship PDF features faster without complex integrations. You can start with a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) and evaluate the SDK in your own Windows project.
 
-[ComPDF SDK](https://www.compdf.com/?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) seamlessly operates on [Web](https://www.compdf.com/web?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), [Windows](https://www.compdf.com/windows?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), [Android](https://www.compdf.com/android?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), [iOS](https://www.compdf.com/ios?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), [Mac](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), and [Server](https://www.compdf.com/server?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), with support for cross-platform frameworks such as [React Native](https://www.compdf.com/react-native?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), [Flutter](https://www.compdf.com/flutter?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows), etc.
-
-
+[ComPDF SDK](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) seamlessly operates on [Web](https://www.compdf.com/web?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Windows](https://www.compdf.com/windows?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Android](https://www.compdf.com/android?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [iOS](https://www.compdf.com/ios?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Mac](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), and [Server](https://www.compdf.com/server?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), with support for cross-platform frameworks such as [React Native](https://www.compdf.com/react-native?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Flutter](https://www.compdf.com/flutter?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), etc.
 
 If you find ComPDF SDK useful, please consider giving us a ⭐ **Star** on GitHub — it helps us grow and improve. Got questions or ideas? Join the conversation in our [Discussions](https://github.com/ComPDFKit/compdfkit-pdf-sdk-windows/discussions).
 
@@ -14,41 +12,38 @@ If you find ComPDF SDK useful, please consider giving us a ⭐ **Star** on GitHu
 
 <img src="images-windows/Windows%20demo%20GIF.gif" title="" alt="Windows demo GIF" data-align="center">
 
-
-
 **Why ComPDF SDK for Windows?**
 
 * **Easy to Integrate:** Integrate PDF functionalities easily with our powerful SDK and clear documentation and guides with few lines of code.
-
+  
 * **Fully Customizable UI:** Design a unique interface for your products with fully customizable UI source code by a high-performing SDK.
-
-* **[Comprehensive PDF Features:](https://www.compdf.com/pdf-sdk/features-list?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)** Supports generation, viewing, annotation, page editing, content editing, conversion, OCR, redaction, signing, forms, parsing, measurement, compression, comparison, color separation, batch processing, and more.
-
+  
+* **[Comprehensive PDF Features:](https://www.compdf.com/pdf-sdk/features-list?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)** Supports generation, viewing, annotation, page editing, content editing, conversion, OCR, redaction, signing, forms, parsing, measurement, compression, comparison, color separation, batch processing, and more.
+  
 * **Faster Time-to-Market:** Comprehensive SDK libraries save your time and expenses and roll out your applications and projects.
-
+  
 * **High-quality Service:** We provide 24/7 professional one-to-one technical support, including onsite service and remote assistance via phone and email.
-
----
+  
 
 ## Table of Contents
 
-- [Related](#related)
-- [Preview](#preview)
-- [Requirements](#requirements)
-- [How to Make a Windows Program in C#](#how-to-make-a-windows-program-in-c)
-  - [Installation](#install)
-- [Changelog](#changelog)
-- [Free Trial & License](#free-trial)
-- [Support](#support)
+* [Related](#related)
+* [Preview](#preview)
+* [Requirements](#requirements)
+* [How to Make a Windows Program in C#](#how-to-make-a-windows-program-in-c)
+  * [Installation](#install)
+* [Changelog](#changelog)
+* [Free Trial and License](#free-trial-and-license)
+* [Support](#support)
 
 ## Related
 
-- [ComPDF SDK for Windows Documentation Guide](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
-- [ComPDF API Library for .NET](https://github.com/ComPDFKit/compdfkit-api-.net)
-- Download [ComPDF SDK for .NET](https://www.nuget.org/packages/ComPDFKit.NetFramework) on NuGet
-- [How to Build a Windows PDF Viewer or Editor](https://www.compdf.com/blog/build-a-windows-pdf-viewer-or-editor?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
-- [Code Samples for Windows](https://www.compdf.com/guides/pdf-sdk/windows/examples?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
-- [ComPDF API Reference](https://api.compdf.com/api-reference/overview?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
+* [ComPDF SDK for Windows Documentation Guide](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+* [ComPDF API Library for .NET](https://github.com/ComPDFKit/compdfkit-api-.net)
+* Download [ComPDF SDK for .NET](https://www.nuget.org/packages/ComPDFKit.NetFramework) on NuGet
+* [How to Build a Windows PDF Viewer or Editor](https://www.compdf.com/blog/build-a-windows-pdf-viewer-or-editor?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+* [Code Samples for Windows](https://www.compdf.com/guides/pdf-sdk/windows/examples?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+* [ComPDF API Reference](https://api.compdf.com/api-reference/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
 
 ## Preview
 
@@ -68,21 +63,21 @@ ComPDF provides two types of license key: a **30-day free trial license** and a 
 
 **Method 1: Apply Online**
 
-If you want to get PDF SDK trials for **Web, Windows, Android, iOS, Flutter, and React Native**, simply apply for a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) online.
+If you want to get PDF SDK trials for **Web, Windows, Android, iOS, Flutter, and React Native**, simply apply for a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) online.
 
-You can check features supported by the free trial license on our [Pricing page](https://www.compdf.com/pricing?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows).
+You can check features supported by the free trial license on our [Pricing page](https://www.compdf.com/pricing?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
 **Method 2: Contact Sales**
 
-For other platforms or features outside of the trial license, feel free to [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows).
+For other platforms or features outside of the trial license, feel free to [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
 #### How to Get a Formal License
 
 ComPDF SDK is a commercial SDK that requires a license for application release. Any documents, sample code, or source code distribution from the released package of ComPDF to any third party is prohibited.
 
-To get formal licenses for Windows platforms, advanced features, custom requirements, or quote inquiries, feel free to [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows).
+To get formal licenses for Windows platforms, advanced features, custom requirements, or quote inquiries, feel free to [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
-For the Windows PDF SDK, the formal license must be bound to your developer device ID ([How to find the developer device ID](https://www.compdf.com/faq/how-to-find-the-device-id?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)), and each license is only valid for one device ID in development mode.
+For the Windows PDF SDK, the formal license must be bound to your developer device ID ([How to find the developer device ID](https://www.compdf.com/faq/how-to-find-the-device-id?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)), and each license is only valid for one device ID in development mode.
 
 ### Download the PDF SDK
 
@@ -177,9 +172,9 @@ ComPDFKit PDF SDK currently supports two authentication methods to verify licens
 
 _Learn about:_
 
-* [_What is the authentication mechanism of ComPDFKit's license?_](https://www.compdf.com/faq/authentication-mechanism-of-compdfkit-license?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
-
-* [_What are the differences between Online Authentication and Offline Authentication?_](https://www.compdf.com/faq/the-differences-between-online-authentication-and-offline-authentication?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
+* [_What is the authentication mechanism of ComPDFKit's license?_](https://www.compdf.com/faq/authentication-mechanism-of-compdfkit-license?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+  
+* [_What are the differences between Online Authentication and Offline Authentication?_](https://www.compdf.com/faq/the-differences-between-online-authentication-and-offline-authentication?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
 
 #### Copy the License Key
 
@@ -301,28 +296,28 @@ namespace ComPDFKit_Demo
 ![vs2022_5](images-windows/vs2022_5.png)
 
 2. Other Problems
-   If you encounter other integration issues while using ComPDF SDK for Windows, feel free to contact [our support team](https://www.compdf.com/support?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows).
+   If you encounter other integration issues while using ComPDF SDK for Windows, feel free to contact [our support team](https://www.compdf.com/support?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
 ## Changelog
 
-Keep up with the latest updates, improvements, and bug fixes for ComPDF SDK for Windows: [View Windows Changelog](https://www.compdf.com/pdf-sdk/changelog-windows?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
+Keep up with the latest updates, improvements, and bug fixes for ComPDF SDK for Windows: [View Windows Changelog](https://www.compdf.com/pdf-sdk/changelog-windows?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
 
-## Free Trial & License
+## Free Trial and License
 
-[ComPDF SDK for Windows](https://www.compdf.com/?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) offers a **30-day free trial license** so you can evaluate all core PDF capabilities in your own application.
+[ComPDF SDK for Windows](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) offers a **30-day free trial license** so you can evaluate all core PDF capabilities in your own application.
 
 To get started:
 
-1. Apply for a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
-2. Review supported trial features on the [Pricing page](https://www.compdf.com/pricing?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
+1. Apply for a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+2. Review supported trial features on the [Pricing page](https://www.compdf.com/pricing?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
 3. Follow the [Apply the License Key](#apply-the-license-key) steps above to activate the SDK in your project
 
-For custom deployments, advanced features, or volume licensing, please [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows)
+For custom deployments, advanced features, or volume licensing, please [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
 
 ## Support
 
 ComPDF offers professional technical support and 5×24 responsive service.
 
-- For detailed information, please visit our [Guides](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) page.
-- For technical assistance, please reach out to our [Technical Support](https://www.compdf.com/support?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows).
-- To get more details and an accurate quote, please contact our [Sales Team](https://www.compdf.com/contact-sales?utm_source=github_readme_sdk_windows&utm_medium=referral&utm_campaign=github_readme_sdk_windows) or [send an email](mailto:support@compdf.com).
+* For detailed information, please visit our [Guides](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) page.
+* For technical assistance, please reach out to our [Technical Support](https://www.compdf.com/support?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
+* To get more details and an accurate quote, please contact our [Sales Team](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) or [send an email](mailto:support@compdf.com).
