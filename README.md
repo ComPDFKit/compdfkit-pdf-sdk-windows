@@ -1,12 +1,10 @@
 # ComPDF SDK for Windows (.NET PDF Library)
 
-As part of the KDAN ecosystem, [ComPDF SDK for Windows](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) is developed and maintained by [ComPDF](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), enabling developers to quickly and seamlessly integrate advanced PDF functionalities—such as viewing, editing, annotating, filling forms, and signing—into Windows applications.
+[ComPDF SDK for Windows](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) (Part of the KDAN ecosystem) enables developers to quickly and seamlessly integrate advanced PDF functionalities—such as viewing, editing, annotating, filling forms, and signing — into Windows applications.
 
 The ComPDF Windows PDF Library provides an easy-to-use .NET API that helps teams ship PDF features faster without complex integrations. You can start with a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) and evaluate the SDK in your own Windows project.
 
-[ComPDF SDK](https://www.compdf.com/?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) seamlessly operates on [Web](https://www.compdf.com/web?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Windows](https://www.compdf.com/windows?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Android](https://www.compdf.com/android?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [iOS](https://www.compdf.com/ios?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Mac](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), and [Server](https://www.compdf.com/server?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), with support for cross-platform frameworks such as [React Native](https://www.compdf.com/react-native?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), [Flutter](https://www.compdf.com/flutter?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit), etc.
-
-If you find ComPDF SDK useful, please consider giving us a ⭐ **Star** on GitHub — it helps us grow and improve. Got questions or ideas? Join the conversation in our [Discussions](https://github.com/ComPDFKit/compdfkit-pdf-sdk-windows/discussions).
+> If you find ComPDF SDK useful, please consider giving us a ⭐ **Star** on GitHub — it helps us grow and improve. Got questions or ideas? Join the conversation in our [Discussions](https://github.com/ComPDFKit/compdfkit-pdf-sdk-windows/discussions).
 
 
 
@@ -27,23 +25,110 @@ If you find ComPDF SDK useful, please consider giving us a ⭐ **Star** on GitHu
 
 ## Table of Contents
 
-* [Related](#related)
-* [Preview](#preview)
-* [Requirements](#requirements)
-* [How to Make a Windows Program in C#](#how-to-make-a-windows-program-in-c)
-  * [Installation](#install)
-* [Changelog](#changelog)
-* [Free Trial and License](#free-trial-and-license)
-* [Support](#support)
+- [Supported Features](#supported-features)
+- [Preview](#preview)
+- [Requirements](#requirements)
+- [How to Make a Windows Program in C#](#how-to-make-a-windows-program-in-c)
+  - [Video Guide](#video-guide)
+  - [Create a New Project](#create-a-new-project)
+  - [Installation](#install)
+  - [Apply the License Key](#apply-the-license-key)
+  - [Display a PDF Document](#display-a-pdf-document)
+  - [Troubleshooting](#troubleshooting)
+- [Free Trial and License](#free-trial-and-license)
+- [Support](#support)
+- [Changelog](#changelog)
+- [Related](#related)
 
-## Related
+## Supported Features
 
-* [ComPDF SDK for Windows Documentation Guide](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
-* [ComPDF API Library for .NET](https://github.com/ComPDFKit/compdfkit-api-.net)
-* Download [ComPDF SDK for .NET](https://www.nuget.org/packages/ComPDFKit.NetFramework) on NuGet
-* [How to Build a Windows PDF Viewer or Editor](https://www.compdf.com/blog/build-a-windows-pdf-viewer-or-editor?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
-* [Code Samples for Windows](https://www.compdf.com/guides/pdf-sdk/windows/examples?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
-* [ComPDF API Reference](https://api.compdf.com/api-reference/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+**Viewer**: Fast and smooth PDF rendering and viewing
+
+* Display Modes - single/double page, vertical & horizontal scrolling, cover mode, crop mode
+* Text Search & Selection
+* PDF Navigation - outlines, bookmarks
+
+**Annotations**:
+
+- Notes - add longer comments with adjustable icon shape and color
+* Ink - freehand drawing with customizable color, opacity, line thickness
+* Text - add, move, resize text directly on page
+* Inspector - adjust annotation looks (line styles, borders, colors, opacity, font)
+* Comment on Annotations and Update Status
+* Import & Export & Flatten Annotations (XFDF, FDF, JSON)
+* Highlight, Underline, Strikeout, Squiggly
+* Shapes - Rectangle, Oval, Line, Arrow, Polygon, Polyline, Cloud
+* Stamps, Sound, Movie, File Attachment, Link, Distance, Perimeter, Area
+
+**Forms**:
+
+* Process fillable and static PDF forms
+
+* Form filling, form creation, form flattening
+
+**Document Editor**: 
+
+- Page manipulation - insert, delete, rotate, reorder, extract, crop
+
+- Split PDF, Merge PDF
+
+**Content Editor**: Edit PDF text and images directly like in Word
+
+**Security**:
+
+* Encryption - set open password, permission password
+
+* Restrict printing, copying, editing
+
+**Signatures**:
+
+* Electronic Signatures - draw, type, image signatures
+
+* Digital Signatures - certificate-based signature validation
+
+**Watermark:** 
+
+- Add Text or Image Watermarks
+
+- Delete Watermarks
+
+- Customize Watermarks
+
+**OCR:**
+
+- AI OCR
+
+- Recognize Tables, Graphics, Images
+
+- Support recognition in 80+ Languages
+
+**Compare Documents**: Side-by-side document comparison to highlight differences
+
+**Redaction**: Permanently remove sensitive content from PDFs
+
+**Measurement**: Distance, area, perimeter measurement tools
+
+**Compress**: Optimize and reduce PDF file size
+
+**PDF/A, PDF/X, PDF/E, PDF/UA**: Standards compliance for archiving, printing, engineering, and accessibility
+
+**Convert Files**: 
+
+- Convert PDF to Word, Excel, PPT, HTML, CSV, images (PNG,JPEG, JPEG, JPEG2000, BMP, TIFF, TGA, GIF), RTF, TXT, JSON, XML, markdown, searchable PDF, searchable OFD.
+
+- Convert images (PNG,JPEG, JPEG, JPEG2000, BMP, TIFF, TGA, GIF) to Word, Excel, PPT, HTML, CSV, RTF, TXT, JSON, XML.
+
+- Convert Word, Excel, PPT, HTML, CSV, PNG, RTF, TXT to PDF
+
+**UI Customization**:
+
+- Toolbar Customization
+
+- UI Personalization
+
+- Ready-Made UI Options
+
+- Out-of-the-box Source Code
 
 ## Preview
 
@@ -61,13 +146,13 @@ ComPDF provides two types of license key: a **30-day free trial license** and a 
 
 #### How to Get a Free Trial License
 
-**Method 1: Apply Online**
+- **Method 1: Apply Online**
 
 If you want to get PDF SDK trials for **Web, Windows, Android, iOS, Flutter, and React Native**, simply apply for a [30-day free trial license](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) online.
 
 You can check features supported by the free trial license on our [Pricing page](https://www.compdf.com/pricing?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
-**Method 2: Contact Sales**
+- **Method 2: Contact Sales**
 
 For other platforms or features outside of the trial license, feel free to [contact our sales team](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
@@ -298,9 +383,6 @@ namespace ComPDFKit_Demo
 2. Other Problems
    If you encounter other integration issues while using ComPDF SDK for Windows, feel free to contact [our support team](https://www.compdf.com/support?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 
-## Changelog
-
-Keep up with the latest updates, improvements, and bug fixes for ComPDF SDK for Windows: [View Windows Changelog](https://www.compdf.com/pdf-sdk/changelog-windows?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
 
 ## Free Trial and License
 
@@ -321,3 +403,23 @@ ComPDF offers professional technical support and 5×24 responsive service.
 * For detailed information, please visit our [Guides](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) page.
 * For technical assistance, please reach out to our [Technical Support](https://www.compdf.com/support?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
 * To get more details and an accurate quote, please contact our [Sales Team](https://www.compdf.com/contact-sales?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit) or [send an email](mailto:support@compdf.com).
+
+
+## Changelog
+
+Keep up with the latest updates, improvements, and bug fixes for ComPDF SDK for Windows: [View Windows Changelog](https://www.compdf.com/pdf-sdk/changelog-windows?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit).
+
+## Related
+
+* Detailed Guides:
+  
+  - [Documentation Guides](https://www.compdf.com/guides/pdf-sdk/windows/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+  
+  - [Code Samples for Windows](https://www.compdf.com/guides/pdf-sdk/windows/examples?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+  
+  - [ComPDF API Reference](https://api.compdf.com/api-reference/overview?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+
+* [Steps to Build a Windows PDF Viewer or Editor](https://www.compdf.com/blog/build-a-windows-pdf-viewer-or-editor?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+
+* [More platforms and frameworks](https://www.compdf.com/documentation?utm_source=github&utm_medium=compdfkit-pdf-sdk-windows&utm_campaign=compdfkit_pdf_sdk_windows_repo&ref_platform_id=github_compdfkit)
+
